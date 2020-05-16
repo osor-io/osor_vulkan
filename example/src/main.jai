@@ -23,89 +23,6 @@ Feel free to request changes here :)
 
 
 
-Per_Frame_Data :: struct
-{
-    resolution_x : s32;
-    resolution_y : s32;
-    time : float32;
-    delta_time : float32;
-
-    mouse_position_x : s32;
-    mouse_position_y : s32;
-    something : s32;
-    something_else : s32;
-}
-
-
-Per_View_Data :: struct
-{
-    view_from_world_matrix : Matrix4;
-    projection_from_view_matrix : Matrix4;
-}
-
-
-Per_Object_Data :: struct
-{
-    world_from_model_matrix : Matrix4;
-}
-
-
-Vertex :: struct
-{
-    position : Vector3;
-    color : Vector3;
-}
-
-
-Assets :: struct
-{
-    #run_and_insert insert_array_of_bytes("Example_Fullscreen_Vertex_Shader_Code",   "src/shaders/built/fullscreen_example.vert.spv");
-    #run_and_insert insert_array_of_bytes("Example_Fullscreen_Fragment_Shader_Code", "src/shaders/built/fullscreen_example.frag.spv");
-
-    #run_and_insert insert_array_of_bytes("Example_Model_Vertex_Shader_Code",   "src/shaders/built/model_example.vert.spv");
-    #run_and_insert insert_array_of_bytes("Example_Model_Fragment_Shader_Code", "src/shaders/built/model_example.frag.spv");
-}
-
-
-make_vertex_and_index_buffer_for_cube :: () -> [8] Vertex, [6*2*3] u32
-{
-    vertices : [8] Vertex;
-    vertices[0].position = make_vector3(-1.0, +1.0, -1.0);
-    vertices[1].position = make_vector3(+1.0, +1.0, -1.0);
-    vertices[2].position = make_vector3(-1.0, +1.0, +1.0);
-    vertices[3].position = make_vector3(+1.0, +1.0, +1.0);
-    vertices[4].position = make_vector3(-1.0, -1.0, -1.0);
-    vertices[5].position = make_vector3(+1.0, -1.0, -1.0);
-    vertices[6].position = make_vector3(-1.0, -1.0, +1.0);
-    vertices[7].position = make_vector3(+1.0, -1.0, +1.0);
-    vertices[0].color = make_vector3(0.0, 1.0, 0.0);
-    vertices[1].color = make_vector3(1.0, 1.0, 0.0);
-    vertices[2].color = make_vector3(0.0, 1.0, 1.0);
-    vertices[3].color = make_vector3(1.0, 1.0, 1.0);
-    vertices[4].color = make_vector3(0.0, 0.0, 0.0);
-    vertices[5].color = make_vector3(1.0, 0.0, 0.0);
-    vertices[6].color = make_vector3(0.0, 0.0, 1.0);
-    vertices[7].color = make_vector3(1.0, 0.0, 1.0);
-    indices : [6*2*3] u32;  
-    counter := 0;
-    tri(0,2,1); tri(2,3,1);
-    tri(2,6,3); tri(3,6,7);
-    tri(1,5,0); tri(0,5,4);
-    tri(0,4,2); tri(2,4,6);
-    tri(3,5,1); tri(3,7,5);
-    tri(6,4,5); tri(6,5,7);
-    return vertices, indices;
-    tri :: (a : u32, b : u32, c : u32) #expand
-    {
-        `indices[`counter] = a;
-        `indices[`counter+1] = b;
-        `indices[`counter+2] = c;
-        `counter += 3;
-    }
-}
-    
-
-
 main :: ()
 {
     window_handle := create_window(window_name="Vulkan Example", width=1920, height=1080);
@@ -425,6 +342,92 @@ main :: ()
     // # Wait for idle after exiting main loop to make sure we destroy things after we stopped using them
     vkDeviceWaitIdle(vulkan_context.device);
 }
+
+
+
+Per_Frame_Data :: struct
+{
+    resolution_x : s32;
+    resolution_y : s32;
+    time : float32;
+    delta_time : float32;
+
+    mouse_position_x : s32;
+    mouse_position_y : s32;
+    something : s32;
+    something_else : s32;
+}
+
+
+Per_View_Data :: struct
+{
+    view_from_world_matrix : Matrix4;
+    projection_from_view_matrix : Matrix4;
+}
+
+
+Per_Object_Data :: struct
+{
+    world_from_model_matrix : Matrix4;
+}
+
+
+Vertex :: struct
+{
+    position : Vector3;
+    color : Vector3;
+}
+
+
+Assets :: struct
+{
+    #run_and_insert insert_array_of_bytes("Example_Fullscreen_Vertex_Shader_Code",   "src/shaders/built/fullscreen_example.vert.spv");
+    #run_and_insert insert_array_of_bytes("Example_Fullscreen_Fragment_Shader_Code", "src/shaders/built/fullscreen_example.frag.spv");
+
+    #run_and_insert insert_array_of_bytes("Example_Model_Vertex_Shader_Code",   "src/shaders/built/model_example.vert.spv");
+    #run_and_insert insert_array_of_bytes("Example_Model_Fragment_Shader_Code", "src/shaders/built/model_example.frag.spv");
+}
+
+
+make_vertex_and_index_buffer_for_cube :: () -> [8] Vertex, [6*2*3] u32
+{
+    vertices : [8] Vertex;
+    vertices[0].position = make_vector3(-1.0, +1.0, -1.0);
+    vertices[1].position = make_vector3(+1.0, +1.0, -1.0);
+    vertices[2].position = make_vector3(-1.0, +1.0, +1.0);
+    vertices[3].position = make_vector3(+1.0, +1.0, +1.0);
+    vertices[4].position = make_vector3(-1.0, -1.0, -1.0);
+    vertices[5].position = make_vector3(+1.0, -1.0, -1.0);
+    vertices[6].position = make_vector3(-1.0, -1.0, +1.0);
+    vertices[7].position = make_vector3(+1.0, -1.0, +1.0);
+    vertices[0].color = make_vector3(0.0, 1.0, 0.0);
+    vertices[1].color = make_vector3(1.0, 1.0, 0.0);
+    vertices[2].color = make_vector3(0.0, 1.0, 1.0);
+    vertices[3].color = make_vector3(1.0, 1.0, 1.0);
+    vertices[4].color = make_vector3(0.0, 0.0, 0.0);
+    vertices[5].color = make_vector3(1.0, 0.0, 0.0);
+    vertices[6].color = make_vector3(0.0, 0.0, 1.0);
+    vertices[7].color = make_vector3(1.0, 0.0, 1.0);
+    indices : [6*2*3] u32;  
+    counter := 0;
+    tri(0,2,1); tri(2,3,1);
+    tri(2,6,3); tri(3,6,7);
+    tri(1,5,0); tri(0,5,4);
+    tri(0,4,2); tri(2,4,6);
+    tri(3,5,1); tri(3,7,5);
+    tri(6,4,5); tri(6,5,7);
+    return vertices, indices;
+    tri :: (a : u32, b : u32, c : u32) #expand
+    {
+        `indices[`counter] = a;
+        `indices[`counter+1] = b;
+        `indices[`counter+2] = c;
+        `counter += 3;
+    }
+}
+    
+    
+
 
 
 //
