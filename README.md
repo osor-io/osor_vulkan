@@ -8,7 +8,7 @@ Not much to say about [the header](vulkan_header.jai). It should just pick up th
 
 ## [Loader](vulkan_loader.jai)
 
-There is instructions for usage of the loader in [the file itself](vulkan_loader.jai). It defines globals that will hold the procedure pointers to the API procedures. Then by using the three `load_vulkan_*` procedure you'll be able to fill all these global procedure pointers and start using them.
+There are instructions for usage of the loader in [the file itself](vulkan_loader.jai). It defines globals that will hold the procedure pointers to the API procedures. Then by using the three `load_vulkan_*` procedures you'll be able to fill all these global procedure pointers and start using them.
 
 ## Notes
 
