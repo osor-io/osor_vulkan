@@ -12,7 +12,7 @@ There is instructions for usage of the loader in [the file itself](vulkan_loader
 
 ## Notes
 
-- **I have only been able to test this on Windows** so far. Should be fairly simple to test on other platforms and modify the header/loader if required. Any problems you encounter please report here or contact me. The current example also has only been done in Windows, even though the platform specific code is mainly limited to creating a surface and should be easy to shape to your platform. **This will be looked at**.
+- **I have only been able to test this on Windows** so far. Should be fairly simple to test on other platforms and modify the header/loader if required. Any problems you encounter please report here in an issue or contact me. The current example also has only been done in Windows, even though the platform specific code is mainly limited to creating a surface and should be easy to shape to your platform. **This will be looked at**.
 
 ## License
 
