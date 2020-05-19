@@ -6,14 +6,6 @@
 
 
 
-/*
-    @@TODO
-    - Put this in source control
-    - Extend loader to check which procedures we got successfully or something maybe??
-*/
-
-
-
 
 assert_and_error :: (value : bool, format : string = "", args : ..Any, caller_location := #caller_location)
 {
@@ -439,7 +431,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 for Include..Union
                 {
-                    if equal_nocase(enum_string(it), category_string)
+                    if equal_nocase(get_enum_name(it), category_string)
                         category = it;
                 }
             }
@@ -1205,10 +1197,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             enum_value.value_type = In_Int;
 
-            offset_value, success := string_to_int(offset);
+            offset_value, offset_success := string_to_int(offset);
+            assert(offset_success);
             assert(offset_value >= 0);
 
-            extension_number_value, success := string_to_int(extension_number);
+            extension_number_value, extension_number_success := string_to_int(extension_number);
+            assert(extension_number_success);
             assert(extension_number_value >= 0);
 
             int_value := 1_000_000_000 + ((extension_number_value-1) * 1_000) + offset_value;
@@ -1216,7 +1210,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             if dir == "-" int_value = -int_value;
 
-            assert(success);
             enum_value.value_in_int = int_value;
             enum_value.comment = comment;
             array_add(*instance.values, enum_value);
@@ -2242,7 +2235,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
-        print_to_builder(*types_builder, "#if CURRENT_VULKAN_PLATFORM == %.%\n{\n\n", get_type_name(type_of(platform)), get_enum_name(platform));
+        print_to_builder(*types_builder, "#if CURRENT_VULKAN_PLATFORM == .%\n{\n\n", get_enum_name(platform));
         output_all_structs(structs, *types_builder, platform);
         output_all_procedure_pointers(procedure_pointers, *types_builder, platform);
         output_all_commands(loader_commands, *types_builder, platform);
@@ -2556,7 +2549,7 @@ An Example in Windows would look something like this:
         {
             platform := cast(Vulkan_Platform) it;
             if !has_some(loader_commands, platform) continue;
-            write("    #if CURRENT_VULKAN_PLATFORM == %.%\n    {\n", get_type_name(type_of(platform)), get_enum_name(platform));
+            write("    #if CURRENT_VULKAN_PLATFORM == .%\n    {\n", get_enum_name(platform));
             write_all_commands(loader_commands, "load", "library_handle", platform);
             write("    }\n");
         }
@@ -2569,7 +2562,7 @@ An Example in Windows would look something like this:
         {
             platform := cast(Vulkan_Platform) it;
             if !has_some(instance_commands, platform) continue;
-            write("    #if CURRENT_VULKAN_PLATFORM == %.%\n    {\n", get_type_name(type_of(platform)), get_enum_name(platform));
+            write("    #if CURRENT_VULKAN_PLATFORM == .%\n    {\n", get_enum_name(platform));
             write_all_commands(instance_commands, "vkGetInstanceProcAddr", "instance", platform);
             write("    }\n");
         }
@@ -2582,7 +2575,7 @@ An Example in Windows would look something like this:
         {
             platform := cast(Vulkan_Platform) it;
             if !has_some(device_commands, platform) continue;
-            write("    #if CURRENT_VULKAN_PLATFORM == %.%\n    {\n", get_type_name(type_of(platform)), get_enum_name(platform));
+            write("    #if CURRENT_VULKAN_PLATFORM == .%\n    {\n", get_enum_name(platform));
             write_all_commands(device_commands, "vkGetDeviceProcAddr", "device", platform);
             write("    }\n");
         }
@@ -2623,7 +2616,7 @@ An Example in Windows would look something like this:
         for get_enum_values(Vulkan_Platform)
         {
             platform := cast(Vulkan_Platform) it;
-            write("#if CURRENT_VULKAN_PLATFORM == %.%\n{\n", get_type_name(type_of(platform)), get_enum_name(platform));
+            write("#if CURRENT_VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
             write_all_commands(loader_commands,   "Loader Commands", platform);
             write_all_commands(instance_commands, "Instance Commands", platform);
             write_all_commands(device_commands,   "Device Commands", platform);
@@ -2720,7 +2713,7 @@ An Example in Windows would look something like this:
         prelude_to_add := platform_preludes[platform];
         if prelude_to_add
         {
-            print_to_builder(*prelude_builder, "#if CURRENT_VULKAN_PLATFORM == %.%\n{\n", get_type_name(type_of(platform)),get_enum_name(platform));
+            print_to_builder(*prelude_builder, "#if CURRENT_VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
             append(*prelude_builder, prelude_to_add);
             print_to_builder(*prelude_builder, "} // %\n\n", get_enum_name(platform));
         }

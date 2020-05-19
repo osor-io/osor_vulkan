@@ -89,19 +89,19 @@ VK_SHADER_UNUSED_KHR :u32: cast(u32) (~0);
 VK_SHADER_UNUSED_NV :: VK_SHADER_UNUSED_KHR;
 
 
-#if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.X11
+#if CURRENT_VULKAN_PLATFORM == .X11
 {
     #import "Linux";
     // @@TODO: We probably need more things here
 } // X11
 
-#if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Wayland
+#if CURRENT_VULKAN_PLATFORM == .Wayland
 {
     #import "Linux";
     // @@TODO: We probably need more things here
 } // Wayland
 
-#if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Windows
+#if CURRENT_VULKAN_PLATFORM == .Windows
 {
     #import "Windows";
 } // Windows
@@ -16838,7 +16838,7 @@ PFN_vkDeferredOperationJoinKHR :: #type (device : VkDevice,
                                          operation : VkDeferredOperationKHR) -> VkResult #c_call;
 
 
-#if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.X11
+#if CURRENT_VULKAN_PLATFORM == .X11
 {
 
 // Type VkXlibSurfaceCreateInfoKHR
@@ -16895,7 +16895,7 @@ PFN_vkGetRandROutputDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Wayland
+else #if CURRENT_VULKAN_PLATFORM == .Wayland
 {
 
 // Type VkWaylandSurfaceCreateInfoKHR
@@ -16932,7 +16932,7 @@ PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR :: #type (physicalDevice : 
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Windows
+else #if CURRENT_VULKAN_PLATFORM == .Windows
 {
 
 // Type VkWin32SurfaceCreateInfoKHR
@@ -17149,7 +17149,7 @@ PFN_vkImportFenceWin32HandleKHR :: #type (device : VkDevice,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.XCB
+else #if CURRENT_VULKAN_PLATFORM == .XCB
 {
 
 // Type VkXcbSurfaceCreateInfoKHR
@@ -17187,7 +17187,7 @@ PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR :: #type (physicalDevice : VkPh
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Zircon
+else #if CURRENT_VULKAN_PLATFORM == .Zircon
 {
 
 // Type VkImagePipeSurfaceCreateInfoFUCHSIA
@@ -17214,7 +17214,7 @@ PFN_vkCreateImagePipeSurfaceFUCHSIA :: #type (instance : VkInstance,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.GGP
+else #if CURRENT_VULKAN_PLATFORM == .GGP
 {
 
 // Type VkStreamDescriptorSurfaceCreateInfoGGP
@@ -17253,7 +17253,7 @@ PFN_vkCreateStreamDescriptorSurfaceGGP :: #type (instance : VkInstance,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Android
+else #if CURRENT_VULKAN_PLATFORM == .Android
 {
 
 // Type VkAndroidSurfaceCreateInfoKHR
@@ -17310,7 +17310,7 @@ PFN_vkGetMemoryAndroidHardwareBufferANDROID :: #type (device : VkDevice,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.MacOS
+else #if CURRENT_VULKAN_PLATFORM == .MacOS
 {
 
 // Type VkMetalSurfaceCreateInfoEXT

@@ -118,40 +118,40 @@ load_vulkan_instance_procedures :: (instance : VkInstance)
     vkCreateHeadlessSurfaceEXT = xx vkGetInstanceProcAddr(instance, "vkCreateHeadlessSurfaceEXT");
     vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = xx vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV");
     vkGetPhysicalDeviceToolPropertiesEXT = xx vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceToolPropertiesEXT");
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.X11
+    #if CURRENT_VULKAN_PLATFORM == .X11
     {
     vkCreateXlibSurfaceKHR = xx vkGetInstanceProcAddr(instance, "vkCreateXlibSurfaceKHR");
     vkGetPhysicalDeviceXlibPresentationSupportKHR = xx vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
     vkAcquireXlibDisplayEXT = xx vkGetInstanceProcAddr(instance, "vkAcquireXlibDisplayEXT");
     vkGetRandROutputDisplayEXT = xx vkGetInstanceProcAddr(instance, "vkGetRandROutputDisplayEXT");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Wayland
+    #if CURRENT_VULKAN_PLATFORM == .Wayland
     {
     vkCreateWaylandSurfaceKHR = xx vkGetInstanceProcAddr(instance, "vkCreateWaylandSurfaceKHR");
     vkGetPhysicalDeviceWaylandPresentationSupportKHR = xx vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Windows
+    #if CURRENT_VULKAN_PLATFORM == .Windows
     {
     vkCreateWin32SurfaceKHR = xx vkGetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.XCB
+    #if CURRENT_VULKAN_PLATFORM == .XCB
     {
     vkCreateXcbSurfaceKHR = xx vkGetInstanceProcAddr(instance, "vkCreateXcbSurfaceKHR");
     vkGetPhysicalDeviceXcbPresentationSupportKHR = xx vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Zircon
+    #if CURRENT_VULKAN_PLATFORM == .Zircon
     {
     vkCreateImagePipeSurfaceFUCHSIA = xx vkGetInstanceProcAddr(instance, "vkCreateImagePipeSurfaceFUCHSIA");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.GGP
+    #if CURRENT_VULKAN_PLATFORM == .GGP
     {
     vkCreateStreamDescriptorSurfaceGGP = xx vkGetInstanceProcAddr(instance, "vkCreateStreamDescriptorSurfaceGGP");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Android
+    #if CURRENT_VULKAN_PLATFORM == .Android
     {
     vkCreateAndroidSurfaceKHR = xx vkGetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.MacOS
+    #if CURRENT_VULKAN_PLATFORM == .MacOS
     {
     vkCreateMetalSurfaceEXT = xx vkGetInstanceProcAddr(instance, "vkCreateMetalSurfaceEXT");
     }
@@ -477,7 +477,7 @@ load_vulkan_device_procedures :: (device : VkDevice)
     vkGetDeferredOperationMaxConcurrencyKHR = xx vkGetDeviceProcAddr(device, "vkGetDeferredOperationMaxConcurrencyKHR");
     vkGetDeferredOperationResultKHR = xx vkGetDeviceProcAddr(device, "vkGetDeferredOperationResultKHR");
     vkDeferredOperationJoinKHR = xx vkGetDeviceProcAddr(device, "vkDeferredOperationJoinKHR");
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Windows
+    #if CURRENT_VULKAN_PLATFORM == .Windows
     {
     vkGetMemoryWin32HandleNV = xx vkGetDeviceProcAddr(device, "vkGetMemoryWin32HandleNV");
     vkGetMemoryWin32HandleKHR = xx vkGetDeviceProcAddr(device, "vkGetMemoryWin32HandleKHR");
@@ -487,7 +487,7 @@ load_vulkan_device_procedures :: (device : VkDevice)
     vkGetFenceWin32HandleKHR = xx vkGetDeviceProcAddr(device, "vkGetFenceWin32HandleKHR");
     vkImportFenceWin32HandleKHR = xx vkGetDeviceProcAddr(device, "vkImportFenceWin32HandleKHR");
     }
-    #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Android
+    #if CURRENT_VULKAN_PLATFORM == .Android
     {
     vkGetAndroidHardwareBufferPropertiesANDROID = xx vkGetDeviceProcAddr(device, "vkGetAndroidHardwareBufferPropertiesANDROID");
     vkGetMemoryAndroidHardwareBufferANDROID = xx vkGetDeviceProcAddr(device, "vkGetMemoryAndroidHardwareBufferANDROID");
@@ -893,19 +893,19 @@ vkDestroyDeferredOperationKHR : PFN_vkDestroyDeferredOperationKHR;
 vkGetDeferredOperationMaxConcurrencyKHR : PFN_vkGetDeferredOperationMaxConcurrencyKHR;
 vkGetDeferredOperationResultKHR : PFN_vkGetDeferredOperationResultKHR;
 vkDeferredOperationJoinKHR : PFN_vkDeferredOperationJoinKHR;
-#if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.X11
+#if CURRENT_VULKAN_PLATFORM == .X11
 {
 vkCreateXlibSurfaceKHR : PFN_vkCreateXlibSurfaceKHR;
 vkGetPhysicalDeviceXlibPresentationSupportKHR : PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR;
 vkAcquireXlibDisplayEXT : PFN_vkAcquireXlibDisplayEXT;
 vkGetRandROutputDisplayEXT : PFN_vkGetRandROutputDisplayEXT;
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Wayland
+else #if CURRENT_VULKAN_PLATFORM == .Wayland
 {
 vkCreateWaylandSurfaceKHR : PFN_vkCreateWaylandSurfaceKHR;
 vkGetPhysicalDeviceWaylandPresentationSupportKHR : PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR;
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Windows
+else #if CURRENT_VULKAN_PLATFORM == .Windows
 {
 vkCreateWin32SurfaceKHR : PFN_vkCreateWin32SurfaceKHR;
 vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;
@@ -916,26 +916,26 @@ vkImportSemaphoreWin32HandleKHR : PFN_vkImportSemaphoreWin32HandleKHR;
 vkGetFenceWin32HandleKHR : PFN_vkGetFenceWin32HandleKHR;
 vkImportFenceWin32HandleKHR : PFN_vkImportFenceWin32HandleKHR;
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.XCB
+else #if CURRENT_VULKAN_PLATFORM == .XCB
 {
 vkCreateXcbSurfaceKHR : PFN_vkCreateXcbSurfaceKHR;
 vkGetPhysicalDeviceXcbPresentationSupportKHR : PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR;
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Zircon
+else #if CURRENT_VULKAN_PLATFORM == .Zircon
 {
 vkCreateImagePipeSurfaceFUCHSIA : PFN_vkCreateImagePipeSurfaceFUCHSIA;
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.GGP
+else #if CURRENT_VULKAN_PLATFORM == .GGP
 {
 vkCreateStreamDescriptorSurfaceGGP : PFN_vkCreateStreamDescriptorSurfaceGGP;
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.Android
+else #if CURRENT_VULKAN_PLATFORM == .Android
 {
 vkCreateAndroidSurfaceKHR : PFN_vkCreateAndroidSurfaceKHR;
 vkGetAndroidHardwareBufferPropertiesANDROID : PFN_vkGetAndroidHardwareBufferPropertiesANDROID;
 vkGetMemoryAndroidHardwareBufferANDROID : PFN_vkGetMemoryAndroidHardwareBufferANDROID;
 }
-else #if CURRENT_VULKAN_PLATFORM == Vulkan_Platform.MacOS
+else #if CURRENT_VULKAN_PLATFORM == .MacOS
 {
 vkCreateMetalSurfaceEXT : PFN_vkCreateMetalSurfaceEXT;
 }
