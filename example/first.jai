@@ -43,7 +43,7 @@
     
     compiler_begin_intercept(main_workspace);
     {
-        add_build_file("X:/jai_modules/Vulkan/example/src/main.jai", main_workspace);
+        add_build_file("./src/main.jai", main_workspace);
 
         success_building := false;
         while true {
