@@ -90,12 +90,12 @@ main :: ()
     defer vulkan_destroy_framebuffers(*vulkan_context, *framebuffers);
 
     // # Creating buffer for our per-frame per-buffer and per-object data for the shader
-    per_frame_uniform_buffer, per_frame_uniform_buffer_memory := vulkan_create_uniform_buffer(*vulkan_context, Per_Frame_Data);
-    defer vulkan_destroy_buffer(*vulkan_context, *per_frame_uniform_buffer, *per_frame_uniform_buffer_memory);
-    per_view_uniform_buffer, per_view_uniform_buffer_memory := vulkan_create_uniform_buffer(*vulkan_context, Per_View_Data);
-    defer vulkan_destroy_buffer(*vulkan_context, *per_view_uniform_buffer, *per_view_uniform_buffer_memory);
-    per_object_uniform_buffer, per_object_uniform_buffer_memory := vulkan_create_uniform_buffer(*vulkan_context, Per_Object_Data);
-    defer vulkan_destroy_buffer(*vulkan_context, *per_object_uniform_buffer, *per_object_uniform_buffer_memory);
+    per_frame_uniform_buffers, per_frame_uniform_buffer_memories := vulkan_create_uniform_buffers(*vulkan_context, Per_Frame_Data);
+    defer vulkan_destroy_uniform_buffers(*vulkan_context, *per_frame_uniform_buffers, *per_frame_uniform_buffer_memories);
+    per_view_uniform_buffers, per_view_uniform_buffer_memories := vulkan_create_uniform_buffers(*vulkan_context, Per_View_Data);
+    defer vulkan_destroy_uniform_buffers(*vulkan_context, *per_view_uniform_buffers, *per_view_uniform_buffer_memories);
+    per_object_uniform_buffers, per_object_uniform_buffer_memories := vulkan_create_uniform_buffers(*vulkan_context, Per_Object_Data);
+    defer vulkan_destroy_uniform_buffers(*vulkan_context, *per_object_uniform_buffers, *per_object_uniform_buffer_memories);
 
     // # Making a vertex and index buffer with some contents to draw!
     vertices, indices := make_vertex_and_index_buffer_for_cube();
@@ -225,8 +225,8 @@ main :: ()
                                                       command_buffer, 
                                                       common_pipeline_layout, 
                                                       per_frame_descriptor_set_layout, 
-                                                      per_frame_uniform_buffer, 
-                                                      per_frame_uniform_buffer_memory, 
+                                                      per_frame_uniform_buffers[swapchain_image_index], 
+                                                      per_frame_uniform_buffer_memories[swapchain_image_index], 
                                                       per_frame_data, 
                                                       set = 0,
                                                       binding = 0);
@@ -235,8 +235,8 @@ main :: ()
                                                       command_buffer, 
                                                       common_pipeline_layout, 
                                                       per_view_descriptor_set_layout, 
-                                                      per_view_uniform_buffer, 
-                                                      per_view_uniform_buffer_memory, 
+                                                      per_view_uniform_buffers[swapchain_image_index], 
+                                                      per_view_uniform_buffer_memories[swapchain_image_index], 
                                                       per_view_data, 
                                                       set = 1,
                                                       binding = 0);
@@ -271,8 +271,8 @@ main :: ()
                                                           command_buffer, 
                                                           common_pipeline_layout, 
                                                           per_object_descriptor_set_layout, 
-                                                          per_object_uniform_buffer, 
-                                                          per_object_uniform_buffer_memory, 
+                                                          per_object_uniform_buffers[swapchain_image_index], 
+                                                          per_object_uniform_buffer_memories[swapchain_image_index], 
                                                           per_object_data, 
                                                           set = 2,
                                                           binding = 0);
@@ -2286,6 +2286,41 @@ vulkan_allocate_descriptor_set :: (using vulkan_context : *Vulkan_Context, layou
         current_descriptor_pool.last_frame_that_used_it = current_frame;
     }
     return set;
+}
+
+
+vulkan_create_uniform_buffers :: (using vulkan_context : *Vulkan_Context, $Buffer_Type : Type) -> [] VkBuffer, [] VkDeviceMemory
+{
+    count := swapchain_images.count;
+    buffers : [] VkBuffer;
+    buffers.data = xx alloc(count * size_of(VkBuffer));
+    buffers.count = count;
+    memories : [] VkDeviceMemory;
+    memories.data = xx alloc(count * size_of(VkDeviceMemory));
+    memories.count = count;
+    for 0..buffers.count-1
+    {
+        buffer, memory := vulkan_create_uniform_buffer(vulkan_context, Buffer_Type);
+        buffers[it] = buffer;
+        memories[it] = memory;
+    }
+    return buffers, memories;
+}
+
+
+vulkan_destroy_uniform_buffers :: (using vulkan_context : *Vulkan_Context, buffers : * [] VkBuffer, memories : * [] VkDeviceMemory)
+{
+    assert(buffers.count == memories.count);
+    for 0..buffers.count-1
+    {
+        buffer := *(<<buffers)[it];
+        memory := *(<<memories)[it];
+        vulkan_destroy_buffer(vulkan_context, buffer, memory); 
+    }
+    free(buffers.data);
+    free(memories.data);
+    buffers.count = 0;
+    memories.count = 0;
 }
 
 
