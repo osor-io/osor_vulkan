@@ -2503,9 +2503,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     loader_builder : String_Builder;
     init_string_builder(*loader_builder);
     defer reset(*loader_builder);
-    // output some initial info
-    {
-        get_loader_procedure_for_platform := #string DONE
+
+    initial_loader_code := #string DONE
 /*
 This file handles loading the entry points for the Vulkan API. Vulkan works
 by having a dynamic library deployed on the system that you have to load and get the
@@ -2538,118 +2537,104 @@ An Example in Windows would look something like this:
 */
 
 
-        DONE
-        append(*loader_builder, get_loader_procedure_for_platform);
-    }
-    // Output the loader procedures
+load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type)
+{
+    info := type_info(type_of(_vulkan_loader_commands));
+    for member: info.members 
     {
-        write("load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type)\n{\n");
-        write_all_commands(loader_commands, "load", "library_handle");
-        for get_enum_values(Vulkan_Platform)
+        member_to_set := cast(**void)((cast(*u8)*_vulkan_loader_commands) + member.offset_in_bytes);
+        <<member_to_set = cast(*void) load(library_handle, member.name.data);
+    }
+}
+
+
+load_vulkan_instance_procedures :: (instance : VkInstance)
+{
+    info := type_info(type_of(_vulkan_instance_commands));
+    for member: info.members 
+    {
+        member_to_set := cast(**void)((cast(*u8)*_vulkan_instance_commands) + member.offset_in_bytes);
+        <<member_to_set = cast(*void) vkGetInstanceProcAddr(instance, member.name.data);
+    }
+}
+
+
+load_vulkan_device_procedures :: (device: VkDevice)
+{
+    info := type_info(type_of(_vulkan_device_commands));
+    for member: info.members 
+    {
+        member_to_set := cast(**void)((cast(*u8)*_vulkan_device_commands) + member.offset_in_bytes);
+        <<member_to_set = cast(*void) vkGetDeviceProcAddr(device, member.name.data);
+    }
+}
+
+
+    DONE
+    append(*loader_builder, initial_loader_code);
+    // Output the command variables into a struct and instantiate it
+    {
+        write("using _vulkan_all_commands : Vulkan_All_Commands;\n");
+        write("Vulkan_All_Commands :: struct\n{\n");
+        
+        write("    using _vulkan_loader_commands : Vulkan_Loader_Commands;\n");
+        write("    Vulkan_Loader_Commands :: struct\n    {\n");
+        do_it_for_commands(loader_commands);
+        write("    }\n\n");
+        
+        write("    using _vulkan_instance_commands : Vulkan_Instance_Commands;\n");
+        write("    Vulkan_Instance_Commands :: struct\n    {\n");
+        do_it_for_commands(instance_commands);
+        write("    }\n\n");
+
+        write("    using _vulkan_device_commands : Vulkan_Device_Commands;\n");
+        write("    Vulkan_Device_Commands :: struct\n    {\n");
+        do_it_for_commands(device_commands);
+        write("    }\n");
+
+        write("}\n");
+
+        do_it_for_commands :: (commands : [] *Command_Instance) #expand
         {
-            platform := cast(Vulkan_Platform) it;
-            if !has_some(loader_commands, platform) continue;
-            write("    #if CURRENT_VULKAN_PLATFORM == .%\n    {\n", get_enum_name(platform));
-            write_all_commands(loader_commands, "load", "library_handle", platform);
-            write("    }\n");
+            did_first_if := false;
+            write_all_commands(commands);
+            for get_enum_values(Vulkan_Platform)
+            {
+                platform := cast(Vulkan_Platform) it;
+                if !has_commands(commands, platform) continue;
+                if !did_first_if
+                {
+                    did_first_if = true;
+                    write("        #if CURRENT_VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                }
+                else
+                {
+                    write("        else #if CURRENT_VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                }
+                write_all_commands(commands, platform, "            ");
+                write("        }\n");
+            }
         }
-        write("}\n\n\n");
 
-        write("load_vulkan_instance_procedures :: (instance : VkInstance)\n{\n");
-        //write("    assert(vkGetInstanceProcAddr != null);\n");
-        write_all_commands(instance_commands, "vkGetInstanceProcAddr", "instance");
-        for get_enum_values(Vulkan_Platform)
-        {
-            platform := cast(Vulkan_Platform) it;
-            if !has_some(instance_commands, platform) continue;
-            write("    #if CURRENT_VULKAN_PLATFORM == .%\n    {\n", get_enum_name(platform));
-            write_all_commands(instance_commands, "vkGetInstanceProcAddr", "instance", platform);
-            write("    }\n");
-        }
-        write("}\n\n\n");
-
-        write("load_vulkan_device_procedures :: (device : VkDevice)\n{\n");
-        //write("    assert(vkGetDeviceProcAddr != null);\n");
-        write_all_commands(device_commands, "vkGetDeviceProcAddr", "device");
-        for get_enum_values(Vulkan_Platform)
-        {
-            platform := cast(Vulkan_Platform) it;
-            if !has_some(device_commands, platform) continue;
-            write("    #if CURRENT_VULKAN_PLATFORM == .%\n    {\n", get_enum_name(platform));
-            write_all_commands(device_commands, "vkGetDeviceProcAddr", "device", platform);
-            write("    }\n");
-        }
-        write("}\n\n\n");
-
-
-        has_some :: (commands : [] *Command_Instance, platform : Vulkan_Platform) -> bool
+        has_commands :: (commands : [] *Command_Instance, platform : Vulkan_Platform = xx -1) -> bool
         {
             for command : commands
-            {
-                if platform == command.requires_platform return true;
-            }
+                if platform == command.requires_platform
+                    return true;
             return false;
         }
-        write_all_commands :: (commands : [] *Command_Instance, load_procedure : string, first_argument : string, platform : Vulkan_Platform = xx -1) #expand
-        {            
-            for command : commands
-            {
-                if platform != command.requires_platform continue;
-                write_command(command, load_procedure, first_argument);
-            }
-        }
-        write_command :: (command : *Command_Instance, load_procedure : string, first_argument : string) #expand
-        {
-            write("    % = xx %(%, \"%\");\n", command.name, load_procedure, first_argument, command.name);
-        }
-        write :: (format : string, args : ..Any) #expand
-        {
-            print_to_builder(*loader_builder, format, ..args);
-        }
-    }    
-    // Output the global command variables
-    {
-        write_all_commands(loader_commands,   "Loader Commands");
-        write_all_commands(instance_commands, "Instance Commands");
-        write_all_commands(device_commands,   "Device Commands");
-        
-        for get_enum_values(Vulkan_Platform)
-        {
-            platform := cast(Vulkan_Platform) it;
-            write("#if CURRENT_VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
-            write_all_commands(loader_commands,   "Loader Commands", platform);
-            write_all_commands(instance_commands, "Instance Commands", platform);
-            write_all_commands(device_commands,   "Device Commands", platform);
-            if it == platform_count - 1
-                write("}\n\n\n");
-            else
-                write("}\nelse ");
-        }
 
-        write_all_commands :: (commands : [] *Command_Instance, header : string, platform : Vulkan_Platform = xx -1) #expand
+        write_all_commands :: (commands : [] *Command_Instance, platform : Vulkan_Platform = xx -1, before_each_line := "        ") #expand
         {            
             for command : commands
             {
                 if platform != command.requires_platform continue;
-                write_command(command);
+                write_command(command, before_each_line);
             }
         }
-        write_command :: (command : *Command_Instance) #expand
+        write_command :: (command : *Command_Instance, before_each_line := "") #expand
         {
-            #if 0 // Disabling outputting comments for the loader cause you shouldn't be there for documentation anyway.
-            {
-                if command.command_kind ==
-                {
-                    case Command_Instance.Command_Kind.Instance;
-                    write("// Instance Command\n");
-                    case Command_Instance.Command_Kind.Device;
-                    write("// Device Command\n");
-                    case Command_Instance.Command_Kind.None;
-                    write("// Loader Command\n");
-                    case; assert(false);
-                }
-            print_extensions_that_reference(*loader_builder, command.extensions_that_reference_this);
-            }
+            write(before_each_line);
             write("% : PFN_%;\n", command.name, command.name);
         }
         write :: (format : string, args : ..Any) #expand
