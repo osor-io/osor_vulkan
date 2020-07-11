@@ -80,6 +80,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         GGP;
         Android;
         MacOS;
+        IDirectFB;
     }
 
     platform_count :: #run get_enum_count(Vulkan_Platform);
@@ -93,6 +94,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "xcb/xcb.h",               Vulkan_Platform.XCB);
     table_add(*requires_strings_to_platform, "zircon/types.h",          Vulkan_Platform.Zircon);
     table_add(*requires_strings_to_platform, "ggp_c/vulkan_types.h",    Vulkan_Platform.GGP);
+    table_add(*requires_strings_to_platform, "directfb.h",              Vulkan_Platform.IDirectFB);
 
 
 
@@ -353,6 +355,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     enums              : [..] Enum_Instance;
     procedure_pointers : [..] Procedure_Instance;
     base_types         : [..] Base_Type_Instance;
+    ignored_base_types : [..] string;
     bitmasks           : [..] Bitmask_Instance;
     handles            : [..] Handle_Instance;
     commands           : [..] Command_Instance;
@@ -727,14 +730,26 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 base_type_instance : Base_Type_Instance;
                 type_node := find_first_node_with_name(type, "type");
-                assert(type_node != null);
-                assert(type_node.contents.count > 0);
-                right_hand_type := strip_quotes_and_whitespace(type_node.contents[0]);
-                right_hand_type = c_basic_type_to_jai(right_hand_type);
-                base_type_instance.name  = type_name;
-                base_type_instance.alias = right_hand_type;
-                array_add(*base_types, base_type_instance);
-                type_instance.index = base_types.count - 1;
+                if type_node
+                {
+                    assert(type_node != null);
+                    assert(type_node.contents.count > 0);
+                    right_hand_type := strip_quotes_and_whitespace(type_node.contents[0]);
+                    right_hand_type = c_basic_type_to_jai(right_hand_type);
+                    base_type_instance.name  = type_name;
+                    base_type_instance.alias = right_hand_type;
+                    array_add(*base_types, base_type_instance);
+                    type_instance.index = base_types.count - 1;
+                }
+                else
+                {
+                    array_add(*ignored_base_types, type.all_node_text_content);
+                    type_instance.index = ignored_base_types.count - 1;
+                    // @@NOTE: At the time of writing basetypes with no type have been included, these are only used
+                    // currently for forward declarations of things which this language shouldn't need so we're ignoring
+                    // them for now. You can check out the contents with the print below.
+                    //print("Found a basetype with no type\nContents:\n%\n\n", type.all_node_text_content); 
+                }
             }
 
             case Bitmask;
@@ -1784,7 +1799,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     // that alias it. This would make it so when we need to update a type we just have to traverse the "alias" chain of all
     // the types it has and check if any of them hit a "requires" for a platform.
     //
-    // In practice, alias levels then do be just 1, and type requirements don't have to trickle down very deep, so doing
+    // In practice, alias levels tend to be just 1, and type requirements don't have to trickle down very deep, so doing
     // this only once does the trick.
     //
 
@@ -2038,11 +2053,11 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         {
             if enum_instance.is_bit_mask
             {
-                print_to_builder(*enums_builder, "using % :: enum_flags u32\n", enum_instance.name);
+                print_to_builder(*enums_builder, "using % :: enum_flags u32 #specified \n", enum_instance.name);
             }
             else
             {
-                print_to_builder(*enums_builder, "using % :: enum s32\n", enum_instance.name);
+                print_to_builder(*enums_builder, "using % :: enum s32 #specified\n", enum_instance.name);
             }
             print_to_builder(*enums_builder, "{\n");
             if enum_instance.values.count == 0
@@ -2661,9 +2676,14 @@ load_vulkan_device_procedures :: (device: VkDevice)
         // although it should be mostly just including the platform code for
         // a specific platform and maybe define a type here and there.
         
+        print("\n");
         print("Defines (% items):\n", defines.count);
         for defines print("  %\n", it);
         // These we should have handled in our hand written prelude
+
+        print("\n");
+        print("Ignored Basetypes (% items):\n", ignored_base_types.count);
+        for ignored_base_types print("  Contents of node:\n%\n\n", it);
     }
 
 
@@ -2887,7 +2907,7 @@ VULKAN_LINUX_PRELUDE :: #string DONE
 DONE
 
 VK_BOOL_CODE :: #string DONE
-using VkBool32 :: enum u32
+using VkBool32 :: enum u32 #specified
 {
     VK_FALSE :: 0;
     VK_TRUE  :: 1;

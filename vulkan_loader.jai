@@ -192,6 +192,11 @@ Vulkan_All_Commands :: struct
         {
             vkCreateMetalSurfaceEXT : PFN_vkCreateMetalSurfaceEXT;
         }
+        else #if CURRENT_VULKAN_PLATFORM == .IDirectFB
+        {
+            vkCreateDirectFBSurfaceEXT : PFN_vkCreateDirectFBSurfaceEXT;
+            vkGetPhysicalDeviceDirectFBPresentationSupportEXT : PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
+        }
     }
 
     using _vulkan_device_commands : Vulkan_Device_Commands;
@@ -514,6 +519,22 @@ Vulkan_All_Commands :: struct
         vkGetDeferredOperationMaxConcurrencyKHR : PFN_vkGetDeferredOperationMaxConcurrencyKHR;
         vkGetDeferredOperationResultKHR : PFN_vkGetDeferredOperationResultKHR;
         vkDeferredOperationJoinKHR : PFN_vkDeferredOperationJoinKHR;
+        vkCmdSetCullModeEXT : PFN_vkCmdSetCullModeEXT;
+        vkCmdSetFrontFaceEXT : PFN_vkCmdSetFrontFaceEXT;
+        vkCmdSetPrimitiveTopologyEXT : PFN_vkCmdSetPrimitiveTopologyEXT;
+        vkCmdSetViewportWithCountEXT : PFN_vkCmdSetViewportWithCountEXT;
+        vkCmdSetScissorWithCountEXT : PFN_vkCmdSetScissorWithCountEXT;
+        vkCmdBindVertexBuffers2EXT : PFN_vkCmdBindVertexBuffers2EXT;
+        vkCmdSetDepthTestEnableEXT : PFN_vkCmdSetDepthTestEnableEXT;
+        vkCmdSetDepthWriteEnableEXT : PFN_vkCmdSetDepthWriteEnableEXT;
+        vkCmdSetDepthCompareOpEXT : PFN_vkCmdSetDepthCompareOpEXT;
+        vkCmdSetDepthBoundsTestEnableEXT : PFN_vkCmdSetDepthBoundsTestEnableEXT;
+        vkCmdSetStencilTestEnableEXT : PFN_vkCmdSetStencilTestEnableEXT;
+        vkCmdSetStencilOpEXT : PFN_vkCmdSetStencilOpEXT;
+        vkCreatePrivateDataSlotEXT : PFN_vkCreatePrivateDataSlotEXT;
+        vkDestroyPrivateDataSlotEXT : PFN_vkDestroyPrivateDataSlotEXT;
+        vkSetPrivateDataEXT : PFN_vkSetPrivateDataEXT;
+        vkGetPrivateDataEXT : PFN_vkGetPrivateDataEXT;
         #if CURRENT_VULKAN_PLATFORM == .Windows
         {
             vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;
