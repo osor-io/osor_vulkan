@@ -86,7 +86,7 @@ build_shader :: (filename : string, output : string) #expand
     output_string, 
     error_string := os_run_command("glslc", filename, "-o", output);
     if !success
-        print("Coulnd't build shader %!! Error: %\n", filename, error_string);
+        print("Couldn't build shader %!! Error: %\n", filename, error_string);
     else
         print("Built % to %\n", filename, output);
 }
