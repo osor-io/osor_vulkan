@@ -381,11 +381,11 @@ Vertex :: struct
 
 Assets :: struct
 {
-    #run_and_insert insert_array_of_bytes("Example_Fullscreen_Vertex_Shader_Code",   "src/shaders/built/fullscreen_example.vert.spv");
-    #run_and_insert insert_array_of_bytes("Example_Fullscreen_Fragment_Shader_Code", "src/shaders/built/fullscreen_example.frag.spv");
+    #insert #run insert_array_of_bytes("Example_Fullscreen_Vertex_Shader_Code",   "src/shaders/built/fullscreen_example.vert.spv");
+    #insert #run insert_array_of_bytes("Example_Fullscreen_Fragment_Shader_Code", "src/shaders/built/fullscreen_example.frag.spv");
 
-    #run_and_insert insert_array_of_bytes("Example_Model_Vertex_Shader_Code",   "src/shaders/built/model_example.vert.spv");
-    #run_and_insert insert_array_of_bytes("Example_Model_Fragment_Shader_Code", "src/shaders/built/model_example.frag.spv");
+    #insert #run insert_array_of_bytes("Example_Model_Vertex_Shader_Code",   "src/shaders/built/model_example.vert.spv");
+    #insert #run insert_array_of_bytes("Example_Model_Fragment_Shader_Code", "src/shaders/built/model_example.frag.spv");
 }
 
 
@@ -489,7 +489,7 @@ using Vulkan_Context :: struct
         is_supported : Is_Set;
         Is_Set :: struct
         {
-            #run_and_insert 
+            #insert #run () -> string
             {
                 builder: String_Builder;
                 defer free_buffers(*builder);
@@ -498,7 +498,7 @@ using Vulkan_Context :: struct
                     print_to_builder(*builder, "% := false;\n", cleanup_extension_name(it));
                 }
                 return builder_to_string(*builder);
-            }
+            }();
         }
     }
 
@@ -2695,7 +2695,7 @@ fill_extension_set :: (array_of_extension_properties : [] $Extension_Properties_
     for properties : array_of_extension_properties
     {
         name := properties.extensionName;
-        #run_and_insert
+        #insert #run () -> string
         {
             builder: String_Builder;
             defer free_buffers(*builder);
@@ -2706,7 +2706,7 @@ fill_extension_set :: (array_of_extension_properties : [] $Extension_Properties_
                 print_to_builder(*builder, "if to_string(name) == \"%\" is_set.% = true;\n", og_name, clean_name);
             }
             return builder_to_string(*builder);
-        }
+        }();
     }
     return is_set;
 }
@@ -2715,7 +2715,7 @@ fill_extension_set :: (array_of_extension_properties : [] $Extension_Properties_
 get_set_extension_cstrings :: (is_set : Vulkan_Context.Extension_Data.Is_Set) -> [] *u8 #must 
 {
     names := new_temporary_array(*u8);
-    #run_and_insert
+    #insert #run () -> string
     {
         builder: String_Builder;
         defer free_buffers(*builder);
@@ -2726,7 +2726,7 @@ get_set_extension_cstrings :: (is_set : Vulkan_Context.Extension_Data.Is_Set) ->
             print_to_builder(*builder, "if is_set.%  array_add(*names, \"%\");\n", clean_name, og_name);
         }
         return builder_to_string(*builder);
-    }
+    }();
     return names;
 }
 
@@ -2751,6 +2751,7 @@ cleanup_extension_name :: (name : string) -> string
 }
 
 
+
 //
 // Generates 
 //
@@ -2763,7 +2764,7 @@ cleanup_extension_name :: (name : string) -> string
 // @@TODO: I would really like to use varargs here, but I found no way to "flatten" it to the be able to call "procedure"
 // so for now I'm just generating versions of this procedure with different number of arguments.
 //
-#run_and_insert
+#insert #run () -> string
 {
     FILL_ARRAY_STRING :: #string DONE
 
@@ -2815,7 +2816,6 @@ cleanup_extension_name :: (name : string) -> string
                          arguments, 
                          forwarding_args, forwarding_args);
     }
-    return builder_to_string(*builder);
 
     /*
     
@@ -2824,7 +2824,7 @@ cleanup_extension_name :: (name : string) -> string
     which I can't find a way to do right now for it to work with polymorphism. Essentially I would like to do something
     like the following:
 
-    test :: ($procedure : $Procedure) -> #run_and_insert get_array_type(procedure)
+    test :: ($procedure : $Procedure) -> #insert #run get_array_type(procedure)
     {
         // . . .
     }
@@ -2842,7 +2842,8 @@ cleanup_extension_name :: (name : string) -> string
     }
 
     */
-}
+    return builder_to_string(*builder);
+}();
 
 alloc_and_copy_array :: (array : [] $T, allocator := context.allocator, allocator_data := context.allocator_data) -> [] T #must
 {
