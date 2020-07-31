@@ -574,7 +574,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
                 $want_debug_extensions := true)
 {
     // # Loader Procedures
-    #if OS_WINDOWS
+    #if OS == .WINDOWS
     {
         vulkan_library := LoadLibraryA("vulkan-1.dll");
         load_vulkan_loader_procedures(vulkan_library, GetProcAddress);
@@ -605,7 +605,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
     {
         desired_instance_extensions := new_temporary_array(string);
         array_add(*desired_instance_extensions, "VK_KHR_surface");
-        #if OS_WINDOWS
+        #if OS == .WINDOWS
             array_add(*desired_instance_extensions, "VK_KHR_win32_surface");
         else #assert(false);
         #if want_debug_extensions array_add(*desired_instance_extensions, "VK_EXT_debug_utils");
@@ -618,7 +618,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
 
         debug_extension_enabled = array_contains_string(enabled_instance_extensions, "VK_EXT_debug_utils");
         assert(array_contains_string(enabled_instance_extensions, "VK_KHR_surface"));
-        #if OS_WINDOWS
+        #if OS == .WINDOWS
             assert(array_contains_string(enabled_instance_extensions, "VK_KHR_win32_surface"));
         else #assert(false);
     }
@@ -712,7 +712,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
 
 
     // # Surface
-    #if OS_WINDOWS
+    #if OS == .WINDOWS
     {
         surface_create_info : VkWin32SurfaceCreateInfoKHR;
         surface_create_info.hinstance = GetModuleHandleW(null);
@@ -1385,7 +1385,7 @@ vulkan_create_swapchain :: (vulkan_context : *Vulkan_Context,
 }
 
 
-#if OS_WINDOWS
+#if OS == .WINDOWS
 {
     Window_Handle :: HWND;
 }

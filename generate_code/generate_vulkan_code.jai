@@ -2848,11 +2848,11 @@ load_vulkan_device_procedures :: (device: VkDevice)
 
 VULKAN_GENERAL_PRELUDE :: #string DONE
 
-#if OS_WINDOWS
+#if OS == .WINDOWS
 {
     CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.Windows;
 }
-else #if OS_LINUX
+else #if OS == .LINUX
 {
     CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.X11;
     //
@@ -2864,7 +2864,7 @@ else #if OS_LINUX
     // which platform they want.
     //
 }
-else #if OS_MACOSX
+else #if OS == .MACOS
 {
     CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
 }
