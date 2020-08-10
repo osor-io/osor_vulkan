@@ -436,13 +436,13 @@ make_vertex_and_index_buffer_for_cube :: () -> [8] Vertex, [6*2*3] u32
 // selecting an extension we might want to use should be as easy as adding
 // it to this array and then check, for example, for is_enabled.ray_tracing
 //
-Extensions_We_Might_Want :: {:string:
+Extensions_We_Might_Want :: string.[
     "VK_KHR_swapchain",
     "VK_KHR_ray_tracing",
     "VK_KHR_deferred_host_operations",
     "VK_KHR_pipeline_library",
     "VK_NV_mesh_shader"
-};
+];
 
 using Vulkan_Context :: struct
 {
@@ -2873,7 +2873,7 @@ insert_array_of_bytes :: (name_of_constant : string, filename : string) -> strin
     builder : String_Builder;
     init_string_builder(*builder);
     defer free_buffers(*builder);
-    print_to_builder(*builder, "% :: {:u8: ", name_of_constant);
+    print_to_builder(*builder, "% :: u8.[ ", name_of_constant);
     data, success := read_entire_file(filename);
     if !success
     {
@@ -2890,7 +2890,7 @@ insert_array_of_bytes :: (name_of_constant : string, filename : string) -> strin
         else
             print_to_builder(*builder, "%, ", it);
     }
-    print_to_builder(*builder, "};\n", name_of_constant);
+    print_to_builder(*builder, "];\n", name_of_constant);
     return builder_to_string(*builder);
 }
 
