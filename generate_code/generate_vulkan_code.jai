@@ -1051,7 +1051,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             }
             else if found_unsigned && !found_long
             {
-                print_to_builder(*prelude_builder, "% :u32: cast(u32) %;\n", name, value_parsed);
+                print_to_builder(*prelude_builder, "% :u32: cast,trunc(u32) %;\n", name, value_parsed);
             }
             else if found_unsigned && found_long
             {

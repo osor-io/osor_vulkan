@@ -592,7 +592,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
         properties := vulkan_fill_array(VkLayerProperties, vkEnumerateInstanceLayerProperties);
         for desired : desired_instance_layers
             for property : properties
-                if desired == to_string(property.layerName)
+                if desired == to_string(property.layerName.data)
                     array_add(*enabled_layers, desired);
 
         validation_enabled = array_contains_string(enabled_layers, "VK_LAYER_KHRONOS_validation");
@@ -613,7 +613,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
         instance_properties := vulkan_fill_array(VkExtensionProperties, vkEnumerateInstanceExtensionProperties, null);
         for desired : desired_instance_extensions
             for property : instance_properties 
-                if desired == to_string(property.extensionName)
+                 if desired == to_string(property.extensionName.data)
                     array_add(*enabled_instance_extensions, desired);
 
         debug_extension_enabled = array_contains_string(enabled_instance_extensions, "VK_EXT_debug_utils");
@@ -903,7 +903,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
             for properties : physical_devices_properties
             {
                 print("% - % - %MB - score % %\n", 
-                      to_string(properties.properties.deviceName), 
+                      to_string(properties.properties.deviceName.data), 
                       properties.properties.deviceType,
                       physical_devices_device_local_memory_sizes[it_index] / (1024 * 1024),
                       scores[it_index],
@@ -2694,7 +2694,7 @@ fill_extension_set :: (array_of_extension_properties : [] $Extension_Properties_
     is_set : Vulkan_Context.Extension_Data.Is_Set;
     for properties : array_of_extension_properties
     {
-        name := properties.extensionName;
+        name := to_string(properties.extensionName.data);
         #insert #run () -> string
         {
             builder: String_Builder;
@@ -2703,7 +2703,7 @@ fill_extension_set :: (array_of_extension_properties : [] $Extension_Properties_
             {
                 og_name := it;
                 clean_name := cleanup_extension_name(og_name);
-                print_to_builder(*builder, "if to_string(name) == \"%\" is_set.% = true;\n", og_name, clean_name);
+                print_to_builder(*builder, "if name == \"%\" is_set.% = true;\n", og_name, clean_name);
             }
             return builder_to_string(*builder);
         }();
