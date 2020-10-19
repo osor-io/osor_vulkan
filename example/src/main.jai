@@ -656,14 +656,6 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
                      callback_data : *VkDebugUtilsMessengerCallbackDataEXT,
                      user_data : *void) -> VkBool32 #c_call
         {            
-            if callback_data.messageIdNumber ==
-            {
-                // @@TODO @@REMOVE: Ignoring these cause we know they are a bug
-                // in validation layers as confirmed by people in khronos.
-                case 0x2b9c1a49; return VK_FALSE;
-                case 0x864cfc05; return VK_FALSE;
-                case 0xe1c6e541; return VK_FALSE;
-            }
             is_error   : bool = xx message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
             is_warning : bool = xx message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
             is_info    : bool = xx message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
@@ -672,7 +664,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
             is_validation  : bool = xx message_types & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
             is_performance : bool = xx message_types & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
             message := callback_data.pMessage;
-            should_log := (!is_info);
+            should_log := (!is_info && !is_verbose);
             if should_log
             {
                 severity_string := ifx is_error "[ERROR]" 
