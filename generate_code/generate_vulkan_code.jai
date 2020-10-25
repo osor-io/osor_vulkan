@@ -874,17 +874,14 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     index += 1;
                     assert(tokens[index].type == Open_Parentheses);
                     index += 1;
-                    if tokens[index].type == Identifier
+                    if tokens[index].type == Identifier &&
+                       tokens[index].text == "void" &&
+                       tokens[index+1].type == Close_Parentheses &&
+                       tokens[index+2].type == Semicolon
                     {
-                        assert(tokens[index].text == "void");
-                        index += 1;
-                        assert(tokens[index].type == Close_Parentheses);
-                        index += 1;
-                        assert(tokens[index].type == Semicolon);
-                        index += 1;
-                        has_arguments = false;
+                        has_arguments = false; // The argument list is "(void)", so no arguments
                     }
-                    else if tokens[index].type == End
+                    else
                     {
                         has_arguments = true;
                     }

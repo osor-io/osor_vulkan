@@ -155,6 +155,7 @@ Vulkan_All_Commands :: struct
         vkCreateHeadlessSurfaceEXT : PFN_vkCreateHeadlessSurfaceEXT;
         vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV : PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV;
         vkGetPhysicalDeviceToolPropertiesEXT : PFN_vkGetPhysicalDeviceToolPropertiesEXT;
+        vkGetPhysicalDeviceFragmentShadingRatesKHR : PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR;
         #if CURRENT_VULKAN_PLATFORM == .X11
         {
             vkCreateXlibSurfaceKHR : PFN_vkCreateXlibSurfaceKHR;
@@ -535,6 +536,13 @@ Vulkan_All_Commands :: struct
         vkDestroyPrivateDataSlotEXT : PFN_vkDestroyPrivateDataSlotEXT;
         vkSetPrivateDataEXT : PFN_vkSetPrivateDataEXT;
         vkGetPrivateDataEXT : PFN_vkGetPrivateDataEXT;
+        vkCmdCopyBuffer2KHR : PFN_vkCmdCopyBuffer2KHR;
+        vkCmdCopyImage2KHR : PFN_vkCmdCopyImage2KHR;
+        vkCmdBlitImage2KHR : PFN_vkCmdBlitImage2KHR;
+        vkCmdCopyBufferToImage2KHR : PFN_vkCmdCopyBufferToImage2KHR;
+        vkCmdCopyImageToBuffer2KHR : PFN_vkCmdCopyImageToBuffer2KHR;
+        vkCmdResolveImage2KHR : PFN_vkCmdResolveImage2KHR;
+        vkCmdSetFragmentShadingRateKHR : PFN_vkCmdSetFragmentShadingRateKHR;
         #if CURRENT_VULKAN_PLATFORM == .Windows
         {
             vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;
