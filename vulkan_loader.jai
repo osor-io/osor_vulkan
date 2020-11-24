@@ -457,9 +457,7 @@ Vulkan_All_Commands :: struct
         vkCreateAccelerationStructureNV : PFN_vkCreateAccelerationStructureNV;
         vkDestroyAccelerationStructureKHR : PFN_vkDestroyAccelerationStructureKHR;
         vkDestroyAccelerationStructureNV : PFN_vkDestroyAccelerationStructureNV;
-        vkGetAccelerationStructureMemoryRequirementsKHR : PFN_vkGetAccelerationStructureMemoryRequirementsKHR;
         vkGetAccelerationStructureMemoryRequirementsNV : PFN_vkGetAccelerationStructureMemoryRequirementsNV;
-        vkBindAccelerationStructureMemoryKHR : PFN_vkBindAccelerationStructureMemoryKHR;
         vkBindAccelerationStructureMemoryNV : PFN_vkBindAccelerationStructureMemoryNV;
         vkCmdCopyAccelerationStructureNV : PFN_vkCmdCopyAccelerationStructureNV;
         vkCmdCopyAccelerationStructureKHR : PFN_vkCmdCopyAccelerationStructureKHR;
@@ -482,6 +480,8 @@ Vulkan_All_Commands :: struct
         vkCreateRayTracingPipelinesKHR : PFN_vkCreateRayTracingPipelinesKHR;
         vkCmdTraceRaysIndirectKHR : PFN_vkCmdTraceRaysIndirectKHR;
         vkGetDeviceAccelerationStructureCompatibilityKHR : PFN_vkGetDeviceAccelerationStructureCompatibilityKHR;
+        vkGetRayTracingShaderGroupStackSizeKHR : PFN_vkGetRayTracingShaderGroupStackSizeKHR;
+        vkCmdSetRayTracingPipelineStackSizeKHR : PFN_vkCmdSetRayTracingPipelineStackSizeKHR;
         vkGetImageViewHandleNVX : PFN_vkGetImageViewHandleNVX;
         vkGetImageViewAddressNVX : PFN_vkGetImageViewAddressNVX;
         vkGetDeviceGroupSurfacePresentModes2EXT : PFN_vkGetDeviceGroupSurfacePresentModes2EXT;
@@ -511,9 +511,9 @@ Vulkan_All_Commands :: struct
         vkGetPipelineExecutableInternalRepresentationsKHR : PFN_vkGetPipelineExecutableInternalRepresentationsKHR;
         vkCmdSetLineStippleEXT : PFN_vkCmdSetLineStippleEXT;
         vkCreateAccelerationStructureKHR : PFN_vkCreateAccelerationStructureKHR;
-        vkCmdBuildAccelerationStructureKHR : PFN_vkCmdBuildAccelerationStructureKHR;
-        vkCmdBuildAccelerationStructureIndirectKHR : PFN_vkCmdBuildAccelerationStructureIndirectKHR;
-        vkBuildAccelerationStructureKHR : PFN_vkBuildAccelerationStructureKHR;
+        vkCmdBuildAccelerationStructuresKHR : PFN_vkCmdBuildAccelerationStructuresKHR;
+        vkCmdBuildAccelerationStructuresIndirectKHR : PFN_vkCmdBuildAccelerationStructuresIndirectKHR;
+        vkBuildAccelerationStructuresKHR : PFN_vkBuildAccelerationStructuresKHR;
         vkGetAccelerationStructureDeviceAddressKHR : PFN_vkGetAccelerationStructureDeviceAddressKHR;
         vkCreateDeferredOperationKHR : PFN_vkCreateDeferredOperationKHR;
         vkDestroyDeferredOperationKHR : PFN_vkDestroyDeferredOperationKHR;
@@ -543,6 +543,8 @@ Vulkan_All_Commands :: struct
         vkCmdCopyImageToBuffer2KHR : PFN_vkCmdCopyImageToBuffer2KHR;
         vkCmdResolveImage2KHR : PFN_vkCmdResolveImage2KHR;
         vkCmdSetFragmentShadingRateKHR : PFN_vkCmdSetFragmentShadingRateKHR;
+        vkCmdSetFragmentShadingRateEnumNV : PFN_vkCmdSetFragmentShadingRateEnumNV;
+        vkGetAccelerationStructureBuildSizesKHR : PFN_vkGetAccelerationStructureBuildSizesKHR;
         #if CURRENT_VULKAN_PLATFORM == .Windows
         {
             vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;
