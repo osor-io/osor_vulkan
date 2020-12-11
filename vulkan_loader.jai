@@ -131,6 +131,8 @@ Vulkan_All_Commands :: struct
         vkGetPhysicalDeviceExternalFenceProperties : PFN_vkGetPhysicalDeviceExternalFenceProperties;
         vkGetPhysicalDeviceExternalFencePropertiesKHR : PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR;
         vkReleaseDisplayEXT : PFN_vkReleaseDisplayEXT;
+        vkAcquireWinrtDisplayNV : PFN_vkAcquireWinrtDisplayNV;
+        vkGetWinrtDisplayNV : PFN_vkGetWinrtDisplayNV;
         vkGetPhysicalDeviceSurfaceCapabilities2EXT : PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT;
         vkEnumeratePhysicalDeviceGroups : PFN_vkEnumeratePhysicalDeviceGroups;
         vkEnumeratePhysicalDeviceGroupsKHR : PFN_vkEnumeratePhysicalDeviceGroupsKHR;

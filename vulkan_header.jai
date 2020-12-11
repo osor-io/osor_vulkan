@@ -60,7 +60,7 @@ VK_API_VERSION_1_2 :: #run VK_MAKE_VERSION(1, 2, 0);
 
 VK_NULL_HANDLE :: null;
 
-VK_HEADER_VERSION :: 162;
+VK_HEADER_VERSION :: 164;
 VK_HEADER_VERSION_COMPLETE :: #run VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION);
 VK_MAX_PHYSICAL_DEVICE_NAME_SIZE :: 256;
 VK_UUID_SIZE :: 16;
@@ -344,6 +344,10 @@ using VkDescriptorSetLayoutCreateFlagBits :: enum_flags u32 #specified
     // Added for extension VK_EXT_descriptor_indexing
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_descriptor_indexing.html)
     VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT_EXT :: VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
+
+    // Added for extension VK_VALVE_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE :: (1 << 2);
 }
 
 
@@ -580,6 +584,10 @@ using VkDescriptorType :: enum s32 #specified
     // Added for extension VK_NV_ray_tracing
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
     VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV :: 1000165000;
+
+    // Added for extension VK_VALVE_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+    VK_DESCRIPTOR_TYPE_MUTABLE_VALVE :: 1000351000;
 }
 
 
@@ -3007,6 +3015,11 @@ using VkStructureType :: enum s32 #specified
     // Added for extension VK_EXT_directfb_surface
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_directfb_surface.html)
     VK_STRUCTURE_TYPE_DIRECTFB_SURFACE_CREATE_INFO_EXT :: 1000346000;
+
+    // Added for extension VK_VALVE_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE :: 1000351000;
+    VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE :: 1000351002;
 }
 
 
@@ -3200,6 +3213,10 @@ using VkDescriptorPoolCreateFlagBits :: enum_flags u32 #specified
     // Added for extension VK_EXT_descriptor_indexing
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_descriptor_indexing.html)
     VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT_EXT :: VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+
+    // Added for extension VK_VALVE_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+    VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE :: (1 << 2);
 }
 
 
@@ -5017,6 +5034,7 @@ using VkVendorId :: enum s32 #specified
     VK_VENDOR_ID_KAZAN :: 0x10003; // Kazan Software Renderer
     VK_VENDOR_ID_CODEPLAY :: 0x10004; // Codeplay Software Ltd. vendor ID
     VK_VENDOR_ID_MESA :: 0x10005; // Mesa vendor ID
+    VK_VENDOR_ID_POCL :: 0x10006; // PoCL vendor ID
 }
 
 
@@ -14001,6 +14019,42 @@ VkAccelerationStructureBuildSizesInfoKHR :: struct
 }
 
 
+// Type VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE.html)
+// Referenced by VK_VALVE_mutable_descriptor_type
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE;
+    pNext : *void;
+    mutableDescriptorType : VkBool32;
+}
+
+
+// Type VkMutableDescriptorTypeListVALVE
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMutableDescriptorTypeListVALVE.html)
+// Referenced by VK_VALVE_mutable_descriptor_type
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+VkMutableDescriptorTypeListVALVE :: struct
+{
+    descriptorTypeCount : u32;
+    pDescriptorTypes : *VkDescriptorType;
+}
+
+
+// Type VkMutableDescriptorTypeCreateInfoVALVE
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMutableDescriptorTypeCreateInfoVALVE.html)
+// Referenced by VK_VALVE_mutable_descriptor_type
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+VkMutableDescriptorTypeCreateInfoVALVE :: struct // Can be in the pNext chain of "VkDescriptorSetLayoutCreateInfo,VkDescriptorPoolCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE;
+    pNext : *void;
+    mutableDescriptorTypeListCount : u32;
+    pMutableDescriptorTypeLists : *VkMutableDescriptorTypeListVALVE;
+}
+
+
 // Procedure Pointer Type PFN_vkInternalAllocationNotification
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/PFN_vkInternalAllocationNotification.html)
 PFN_vkInternalAllocationNotification :: #type (pUserData : *void,
@@ -14531,6 +14585,23 @@ PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR :: PFN_vkGetPhysicalDeviceExte
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_direct_mode_display.html)
 PFN_vkReleaseDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
                                   display : VkDisplayKHR) -> VkResult #c_call;
+
+
+// Command vkAcquireWinrtDisplayNV (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkAcquireWinrtDisplayNV.html)
+// Referenced by VK_NV_acquire_winrt_display
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_acquire_winrt_display.html)
+PFN_vkAcquireWinrtDisplayNV :: #type (physicalDevice : VkPhysicalDevice,
+                                      display : VkDisplayKHR) -> VkResult #c_call;
+
+
+// Command vkGetWinrtDisplayNV (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetWinrtDisplayNV.html)
+// Referenced by VK_NV_acquire_winrt_display
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_acquire_winrt_display.html)
+PFN_vkGetWinrtDisplayNV :: #type (physicalDevice : VkPhysicalDevice,
+                                  deviceRelativeId : u32,
+                                  pDisplay : *VkDisplayKHR) -> VkResult #c_call;
 
 
 // Command vkGetPhysicalDeviceSurfaceCapabilities2EXT (Instance Command)
@@ -20348,12 +20419,28 @@ VK_EXT_4444_FORMATS_SPEC_VERSION :: 1;
 VK_EXT_4444_FORMATS_EXTENSION_NAME :: "VK_EXT_4444_formats";
 
 
+// Device Extension VK_NV_acquire_winrt_display (346)
+// author NV, contact Jeff Juliano @jjuliano
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_acquire_winrt_display.html)
+VK_NV_acquire_winrt_display :: true;
+VK_NV_ACQUIRE_WINRT_DISPLAY_SPEC_VERSION :: 1;
+VK_NV_ACQUIRE_WINRT_DISPLAY_EXTENSION_NAME :: "VK_NV_acquire_winrt_display";
+
+
 // Instance Extension VK_EXT_directfb_surface (347)
 // author EXT, contact Nicolas Caramelli @caramelli
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_directfb_surface.html)
 VK_EXT_directfb_surface :: true;
 VK_EXT_DIRECTFB_SURFACE_SPEC_VERSION :: 1;
 VK_EXT_DIRECTFB_SURFACE_EXTENSION_NAME :: "VK_EXT_directfb_surface";
+
+
+// Device Extension VK_VALVE_mutable_descriptor_type (352)
+// author VALVE, contact Joshua Ashton @Joshua-Ashton,Hans-Kristian Arntzen @HansKristian-Work
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
+VK_VALVE_mutable_descriptor_type :: true;
+VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_SPEC_VERSION :: 1;
+VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME :: "VK_VALVE_mutable_descriptor_type";
 
 
 
