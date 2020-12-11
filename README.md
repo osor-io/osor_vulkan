@@ -1,4 +1,4 @@
-# A Vulkan Module for Jai
+# :volcano: A Vulkan Module for Jai
 
 Just a module to use Vulkan in Jai. Both the header and the loader are generated from vk.xml by the code in this repository.
 
