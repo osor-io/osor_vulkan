@@ -17753,7 +17753,7 @@ PFN_vkCreateAccelerationStructureKHR :: #type (device : VkDevice,
 PFN_vkCmdBuildAccelerationStructuresKHR :: #type (commandBuffer : VkCommandBuffer,
                                                   infoCount : u32,
                                                   pInfos : *VkAccelerationStructureBuildGeometryInfoKHR,
-                                                  ppBuildRangeInfos : *VkAccelerationStructureBuildRangeInfoKHR) #c_call;
+                                                  ppBuildRangeInfos : **VkAccelerationStructureBuildRangeInfoKHR) #c_call;
 
 
 // Command vkCmdBuildAccelerationStructuresIndirectKHR (Device Command)
