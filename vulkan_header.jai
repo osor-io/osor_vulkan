@@ -17753,7 +17753,7 @@ PFN_vkCreateAccelerationStructureKHR :: #type (device : VkDevice,
 PFN_vkCmdBuildAccelerationStructuresKHR :: #type (commandBuffer : VkCommandBuffer,
                                                   infoCount : u32,
                                                   pInfos : *VkAccelerationStructureBuildGeometryInfoKHR,
-                                                  ppBuildRangeInfos : *VkAccelerationStructureBuildRangeInfoKHR) #c_call;
+                                                  ppBuildRangeInfos : **VkAccelerationStructureBuildRangeInfoKHR) #c_call;
 
 
 // Command vkCmdBuildAccelerationStructuresIndirectKHR (Device Command)
@@ -17768,7 +17768,7 @@ PFN_vkCmdBuildAccelerationStructuresIndirectKHR :: #type (commandBuffer : VkComm
                                                           pInfos : *VkAccelerationStructureBuildGeometryInfoKHR,
                                                           pIndirectDeviceAddresses : *VkDeviceAddress,
                                                           pIndirectStrides : *u32,
-                                                          ppMaxPrimitiveCounts : *u32) #c_call;
+                                                          ppMaxPrimitiveCounts : **u32) #c_call;
 
 
 // Command vkBuildAccelerationStructuresKHR (Device Command)
@@ -17779,7 +17779,7 @@ PFN_vkBuildAccelerationStructuresKHR :: #type (device : VkDevice,
                                                deferredOperation : VkDeferredOperationKHR,
                                                infoCount : u32,
                                                pInfos : *VkAccelerationStructureBuildGeometryInfoKHR,
-                                               ppBuildRangeInfos : *VkAccelerationStructureBuildRangeInfoKHR) -> VkResult #c_call;
+                                               ppBuildRangeInfos : **VkAccelerationStructureBuildRangeInfoKHR) -> VkResult #c_call;
 
 
 // Command vkGetAccelerationStructureDeviceAddressKHR (Device Command)

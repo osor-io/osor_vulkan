@@ -835,7 +835,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 // Return Value
                 {
                     tokenizer : Tokenizer;
-                    init_tokenizer(*tokenizer, type.contents[contents_or_children.index]);
+                    return_value_string := type.contents[contents_or_children.index];
+                    init_tokenizer(*tokenizer, return_value_string);
                     defer free(*tokenizer);
                     tokenize_whole_string(*tokenizer, do_comments = false, ignore_whitespace = true);
                     tokens := tokenizer.tokens;
@@ -843,13 +844,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     assert(tokens[0].text == "typedef");
                     assert(tokens[1].type == Identifier);
                     procedure_instance.return_type.name = tokens[1].text;
-                    if tokens[2].type == Asterisk
+                    for 0..return_value_string.count-1
                     {
-                        index := 2;
-                        while tokens[index].type == Asterisk
+                        if return_value_string[it] == 
                         {
-                            procedure_instance.return_type.pointer_count += 1;
-                            index += 1;
+                            case #char "*"; procedure_instance.return_type.pointer_count += 1;
+                            case #char "("; break;
                         }
                     }
                 }
@@ -904,7 +904,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                         assert(node.contents.count == 1);
                         argument.type.name = strip_quotes_and_whitespace(node.contents[0]);
                     
-                        // After the <type> tag we can have pointers, the type and a comma maybe
+                        // After the <type> tag we can have pointers, the type, the name and a comma maybe
                         contents_or_children = type.all_contents_or_children[index_of_arguments];
                         index_of_arguments += 1;
                         assert(contents_or_children.type == string);
@@ -915,10 +915,35 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                         tokenize_whole_string(*tokenizer, do_comments = false, ignore_whitespace = true);
                         tokens := tokenizer.tokens;
                         index := 0;
-                        while tokens[index].type == Asterisk
+                        for 0..content.count-1
                         {
-                            argument.type.pointer_count += 1;
-                            index += 1;
+                            char := content[it];
+                            if char == 
+                            {
+                                case #char "*"; argument.type.pointer_count += 1;
+                                case #char ","; break;
+                                case #char ";"; break;
+                            }
+                        }
+                        // Go until the comma or semicolon since the name should be before it, if it's not
+                        // (because there's arrays or something) then we'll assert and we can look to do 
+                        // something better here.
+                        while true
+                        {
+                            if tokens[index].type == Comma
+                            {
+                                index -= 1;
+                                break;
+                            }
+                            else if tokens[index].type == Semicolon
+                            {
+                                index -= 2;
+                                break;
+                            }
+                            else
+                            {
+                                index += 1;
+                            }
                         }
                         assert(tokens[index].type == Identifier);
                         argument.name = tokens[index].text;
@@ -1432,12 +1457,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     defer free(*tokenizer);
                     tokenize_whole_string(*tokenizer, do_comments = false, ignore_whitespace = true);
                     tokens := tokenizer.tokens;
-                    index := 0;
-                    while tokens[index].type == Asterisk
+                    for tokens
                     {
-                        argument.type.pointer_count += 1;
-                        index += 1;
+                        if      it.type == Asterisk  argument.type.pointer_count += 1;
+                        else if it.type == Identifier
+                        {
+                            // If we find a "const" we just ignore it, if it's something else
+                            // there might be something needed we're not accounting for!!
+                            assert(it.text == "const");
+                        }
                     }
+
                     index_of_arguments += 1;
                 }
                 
