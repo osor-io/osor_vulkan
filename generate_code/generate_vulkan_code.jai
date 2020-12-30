@@ -47,13 +47,14 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     prelude_builder: String_Builder;
     init_string_builder(*prelude_builder);
+    append(*prelude_builder, VULKAN_PLATFORM_SELECTION_PRELUDE);
     print_to_builder(*prelude_builder, "% :: enum\n{\n", get_type_name(Vulkan_Platform));
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
         print_to_builder(*prelude_builder, "    %;\n", get_enum_name(platform));
     }
-    print_to_builder(*prelude_builder, "}\n\n\n");
+    print_to_builder(*prelude_builder, "}\n\n\n\n");
     append(*prelude_builder, VULKAN_GENERAL_PRELUDE);
     defer reset(*prelude_builder);
 
@@ -72,6 +73,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     Vulkan_Platform :: enum
     {
+        None;
         X11;
         Wayland;
         Windows;
@@ -87,14 +89,14 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     
     requires_strings_to_platform : Table(string, Vulkan_Platform);
     defer uninit(*requires_strings_to_platform);
-    table_add(*requires_strings_to_platform, "X11/Xlib.h",              Vulkan_Platform.X11);
-    table_add(*requires_strings_to_platform, "X11/extensions/Xrandr.h", Vulkan_Platform.X11);
-    table_add(*requires_strings_to_platform, "wayland-client.h",        Vulkan_Platform.Wayland);
-    table_add(*requires_strings_to_platform, "windows.h",               Vulkan_Platform.Windows);
-    table_add(*requires_strings_to_platform, "xcb/xcb.h",               Vulkan_Platform.XCB);
-    table_add(*requires_strings_to_platform, "zircon/types.h",          Vulkan_Platform.Zircon);
-    table_add(*requires_strings_to_platform, "ggp_c/vulkan_types.h",    Vulkan_Platform.GGP);
-    table_add(*requires_strings_to_platform, "directfb.h",              Vulkan_Platform.IDirectFB);
+    table_add(*requires_strings_to_platform, "X11/Xlib.h",              .X11);
+    table_add(*requires_strings_to_platform, "X11/extensions/Xrandr.h", .X11);
+    table_add(*requires_strings_to_platform, "wayland-client.h",        .Wayland);
+    table_add(*requires_strings_to_platform, "windows.h",               .Windows);
+    table_add(*requires_strings_to_platform, "xcb/xcb.h",               .XCB);
+    table_add(*requires_strings_to_platform, "zircon/types.h",          .Zircon);
+    table_add(*requires_strings_to_platform, "ggp_c/vulkan_types.h",    .GGP);
+    table_add(*requires_strings_to_platform, "directfb.h",              .IDirectFB);
 
 
 
@@ -132,9 +134,9 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         array_add(*names.names, name);
     }
 
-    add_platform_specific_name(*array_of_platform_specific_names, Vulkan_Platform.Android, "ANativeWindow");
-    add_platform_specific_name(*array_of_platform_specific_names, Vulkan_Platform.Android, "AHardwareBuffer");
-    add_platform_specific_name(*array_of_platform_specific_names, Vulkan_Platform.MacOS,   "CAMetalLayer");
+    add_platform_specific_name(*array_of_platform_specific_names, .Android, "ANativeWindow");
+    add_platform_specific_name(*array_of_platform_specific_names, .Android, "AHardwareBuffer");
+    add_platform_specific_name(*array_of_platform_specific_names, .MacOS,   "CAMetalLayer");
     //
     // @@HACK: Have to add these ones here by hand cause they don't follow their own
     // standard as to how to say that a type requires certain platform code :)
@@ -157,11 +159,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 if it == type
                 {
+                    assert(platform != .None);
                     return true, platform;
                 }
             }
         }
-        return false, xx -1;
+        return false, .None;
     }
     
 
@@ -195,7 +198,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             comment : string;
         }
         using comments_in_type : Comments_In_Type;
-        requires_platform : Vulkan_Platform = xx -1;
+        requires_platform := Vulkan_Platform.None;
         extensions_that_reference_this : [..] string;
     }
 
@@ -248,7 +251,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             array_counts : [..] string;
         }
         
-        requires_platform : Vulkan_Platform = xx -1;
+        requires_platform := Vulkan_Platform.None;
         
         extensions_that_reference_this : [..] string;
     }
@@ -578,10 +581,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                         member.type = strip_quotes_and_whitespace(type_of_member_node.contents[0]);
                         member.type = c_basic_type_to_jai(member.type);
 
+                        // If any of the members of the struct require a platform then the struct 
+                        // needs to inherit that requirement.
                         is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, member.type);
                         if is_platform_type
                         {
-                            assert(struct_instance.requires_platform == xx -1 || struct_instance.requires_platform == platform);
+                            assert(struct_instance.requires_platform == .None || struct_instance.requires_platform == platform);
                             struct_instance.requires_platform = platform;
                         }
 
@@ -972,10 +977,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     }
                 }
 
+                // If any of the arguments or the return type require a platform, then the procedure itself
+                // also requires that same platform.
                 is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, procedure_instance.return_type.name);
                 if is_platform_type
                 {
-                    assert(procedure_instance.requires_platform == xx -1 || procedure_instance.requires_platform == platform);
+                    assert(procedure_instance.requires_platform == .None || procedure_instance.requires_platform == platform);
                     procedure_instance.requires_platform = platform;
                 }
                 for * procedure_instance.arguments
@@ -983,7 +990,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, it.type.name);
                     if is_platform_type
                     {
-                        assert(procedure_instance.requires_platform == xx -1 || procedure_instance.requires_platform == platform);
+                        assert(procedure_instance.requires_platform == .None || procedure_instance.requires_platform == platform);
                         procedure_instance.requires_platform = platform;
                     }
                 }
@@ -1524,10 +1531,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 array_add(*command_instance.arguments, argument);
             }
 
+            // If the command's return type or arguments require a platform, then the command itself
+            // requires that platform too.
             is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, command_instance.return_type.name);
             if is_platform_type
             {
-                assert(command_instance.requires_platform == xx -1 || command_instance.requires_platform == platform);
+                assert(command_instance.requires_platform == .None || command_instance.requires_platform == platform);
                 command_instance.requires_platform = platform;
             }
             for * command_instance.arguments
@@ -1535,7 +1544,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, it.type.name);
                 if is_platform_type
                 {
-                    assert(command_instance.requires_platform == xx -1 || command_instance.requires_platform == platform);
+                    assert(command_instance.requires_platform == .None || command_instance.requires_platform == platform);
                     command_instance.requires_platform = platform;
                 }
             }
@@ -1843,7 +1852,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 {
                     non_aliased := find_non_aliased_instance(instances, instance.alias);
                     assert_and_error(non_aliased != null);
-                    assert_and_error(instance.requires_platform == xx -1);
+                    assert_and_error(instance.requires_platform == .None);
                     assert_and_error(!non_aliased.alias);
                     instance.requires_platform = non_aliased.requires_platform;
                 }
@@ -1868,7 +1877,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     // First we fix the aliased types to update them with the current platform requirements of the type they alias
     fix_platform_requirements_of_all_aliased_types();
 
-    // Then we iterate through the members of the structs to find out if because if their members they need to be a platform
+    // Then we iterate through the members of the structs to find out if because of their members they need to be a platform
     // specific type
     for * struct_instance : structs
     {
@@ -1899,6 +1908,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     }
                     else
                     {
+                        assert(platform == .None || platform == now_requires_platform);
                         add_platform_specific_name(array_of_platform_specific_names, now_requires_platform, struct_instance.name);
                         fixup_requirements_after_changing_type(structs, array_of_platform_specific_names, struct_instance.name, now_requires_platform);
                     }
@@ -1927,7 +1937,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         requires_platform, platform := get_type_platform_requirements(array_of_platform_specific_names, type_name);
         if requires_platform
         {
-            assert(instance.requires_platform == platform || instance.requires_platform == xx -1);
+            assert(instance.requires_platform == platform || instance.requires_platform == .None);
             instance.requires_platform = platform;
         }
     }
@@ -2149,7 +2159,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
     }
 
-    output_all_procedure_pointers :: (procedure_pointers : [] Procedure_Instance, builder : *String_Builder, platform : Vulkan_Platform = xx -1)
+    output_all_procedure_pointers :: (procedure_pointers : [] Procedure_Instance, builder : *String_Builder, platform := Vulkan_Platform.None)
     {
         for * procedure_pointer : procedure_pointers
         {
@@ -2277,7 +2287,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
-        print_to_builder(*types_builder, "#if CURRENT_VULKAN_PLATFORM == .%\n{\n\n", get_enum_name(platform));
+        if platform == .None  continue;
+        print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", get_enum_name(platform));
         output_all_structs(structs, *types_builder, platform);
         output_all_procedure_pointers(procedure_pointers, *types_builder, platform);
         output_all_commands(loader_commands, *types_builder, platform);
@@ -2290,7 +2301,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     }
     
     
-    output_all_structs :: (structs : [] Struct_Instance, builder : *String_Builder, platform : Vulkan_Platform = xx -1)
+    output_all_structs :: (structs : [] Struct_Instance, builder : *String_Builder, platform := Vulkan_Platform.None)
     {
         for * struct_instance : structs
         {
@@ -2531,7 +2542,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
     }
 
-    output_all_commands :: (command_instances : [] *Command_Instance, builder : *String_Builder, platform : Vulkan_Platform = xx -1)
+    output_all_commands :: (command_instances : [] *Command_Instance, builder : *String_Builder, platform := Vulkan_Platform.None)
     {
         for command_instance : command_instances
         {
@@ -2643,22 +2654,23 @@ load_vulkan_device_procedures :: (device: VkDevice)
             for get_enum_values(Vulkan_Platform)
             {
                 platform := cast(Vulkan_Platform) it;
+                if platform == .None  continue;
                 if !has_commands(commands, platform) continue;
                 if !did_first_if
                 {
                     did_first_if = true;
-                    write("        #if CURRENT_VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                    write("        #if VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
                 }
                 else
                 {
-                    write("        else #if CURRENT_VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                    write("        else #if VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
                 }
                 write_all_commands(commands, platform, "            ");
                 write("        }\n");
             }
         }
 
-        has_commands :: (commands : [] *Command_Instance, platform : Vulkan_Platform = xx -1) -> bool
+        has_commands :: (commands : [] *Command_Instance, platform := Vulkan_Platform.None) -> bool
         {
             for command : commands
                 if platform == command.requires_platform
@@ -2666,7 +2678,7 @@ load_vulkan_device_procedures :: (device: VkDevice)
             return false;
         }
 
-        write_all_commands :: (commands : [] *Command_Instance, platform : Vulkan_Platform = xx -1, before_each_line := "        ") #expand
+        write_all_commands :: (commands : [] *Command_Instance, platform := Vulkan_Platform.None, before_each_line := "        ") #expand
         {            
             for command : commands
             {
@@ -2742,10 +2754,11 @@ load_vulkan_device_procedures :: (device: VkDevice)
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
+        if platform == .None  continue;
         prelude_to_add := platform_preludes[platform];
         if prelude_to_add
         {
-            print_to_builder(*prelude_builder, "#if CURRENT_VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
+            print_to_builder(*prelude_builder, "#if VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
             append(*prelude_builder, prelude_to_add);
             print_to_builder(*prelude_builder, "} // %\n\n", get_enum_name(platform));
         }
@@ -2873,31 +2886,17 @@ load_vulkan_device_procedures :: (device: VkDevice)
     }
     
 
+VULKAN_PLATFORM_SELECTION_PRELUDE :: #string DONE
+#module_parameters(VULKAN_PLATFORM : Vulkan_Platform = DEFAULT_VULKAN_PLATFORM);
+
+#if      OS == .WINDOWS DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.Windows;
+else #if OS == .LINUX   DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.X11;
+else #if OS == .MACOS   DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
+else                    DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.None;
+
+DONE
+
 VULKAN_GENERAL_PRELUDE :: #string DONE
-
-#if OS == .WINDOWS
-{
-    CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.Windows;
-}
-else #if OS == .LINUX
-{
-    CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.X11;
-    //
-    // @@TODO
-    //
-    // I'm guessing X11 here for now, maybe people are using Wayland
-    // already? Not sure, for a more final version of this we should have a better
-    // way of figuring this out, or we should get the user to just tell us
-    // which platform they want.
-    //
-}
-else #if OS == .MACOS
-{
-    CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
-}
-
-
-
 VK_MAKE_VERSION :: (major: u32, minor: u32, patch: u32) -> u32
 {
     return (major << 22) | (minor << 12) | patch;

@@ -1,5 +1,13 @@
+#module_parameters(VULKAN_PLATFORM : Vulkan_Platform = DEFAULT_VULKAN_PLATFORM);
+
+#if      OS == .WINDOWS DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.Windows;
+else #if OS == .LINUX   DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.X11;
+else #if OS == .MACOS   DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
+else                    DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.None;
+
 Vulkan_Platform :: enum
 {
+    None;
     X11;
     Wayland;
     Windows;
@@ -9,29 +17,6 @@ Vulkan_Platform :: enum
     Android;
     MacOS;
     IDirectFB;
-}
-
-
-
-#if OS == .WINDOWS
-{
-    CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.Windows;
-}
-else #if OS == .LINUX
-{
-    CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.X11;
-    //
-    // @@TODO
-    //
-    // I'm guessing X11 here for now, maybe people are using Wayland
-    // already? Not sure, for a more final version of this we should have a better
-    // way of figuring this out, or we should get the user to just tell us
-    // which platform they want.
-    //
-}
-else #if OS == .MACOS
-{
-    CURRENT_VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
 }
 
 
@@ -90,19 +75,19 @@ VK_SHADER_UNUSED_KHR :u32: cast,trunc(u32) (~0);
 VK_SHADER_UNUSED_NV :: VK_SHADER_UNUSED_KHR;
 
 
-#if CURRENT_VULKAN_PLATFORM == .X11
+#if VULKAN_PLATFORM == .X11
 {
     #import "Linux";
     // @@TODO: We probably need more things here
 } // X11
 
-#if CURRENT_VULKAN_PLATFORM == .Wayland
+#if VULKAN_PLATFORM == .Wayland
 {
     #import "Linux";
     // @@TODO: We probably need more things here
 } // Wayland
 
-#if CURRENT_VULKAN_PLATFORM == .Windows
+#if VULKAN_PLATFORM == .Windows
 {
     #import "Windows";
 } // Windows
@@ -18117,7 +18102,7 @@ PFN_vkGetAccelerationStructureBuildSizesKHR :: #type (device : VkDevice,
                                                       pSizeInfo : *VkAccelerationStructureBuildSizesInfoKHR) #c_call;
 
 
-#if CURRENT_VULKAN_PLATFORM == .X11
+#if VULKAN_PLATFORM == .X11
 {
 
 // Type VkXlibSurfaceCreateInfoKHR
@@ -18174,7 +18159,7 @@ PFN_vkGetRandROutputDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .Wayland
+else #if VULKAN_PLATFORM == .Wayland
 {
 
 // Type VkWaylandSurfaceCreateInfoKHR
@@ -18211,7 +18196,7 @@ PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR :: #type (physicalDevice : 
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .Windows
+else #if VULKAN_PLATFORM == .Windows
 {
 
 // Type VkWin32SurfaceCreateInfoKHR
@@ -18428,7 +18413,7 @@ PFN_vkImportFenceWin32HandleKHR :: #type (device : VkDevice,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .XCB
+else #if VULKAN_PLATFORM == .XCB
 {
 
 // Type VkXcbSurfaceCreateInfoKHR
@@ -18466,7 +18451,7 @@ PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR :: #type (physicalDevice : VkPh
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .Zircon
+else #if VULKAN_PLATFORM == .Zircon
 {
 
 // Type VkImagePipeSurfaceCreateInfoFUCHSIA
@@ -18493,7 +18478,7 @@ PFN_vkCreateImagePipeSurfaceFUCHSIA :: #type (instance : VkInstance,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .GGP
+else #if VULKAN_PLATFORM == .GGP
 {
 
 // Type VkStreamDescriptorSurfaceCreateInfoGGP
@@ -18532,7 +18517,7 @@ PFN_vkCreateStreamDescriptorSurfaceGGP :: #type (instance : VkInstance,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .Android
+else #if VULKAN_PLATFORM == .Android
 {
 
 // Type VkAndroidSurfaceCreateInfoKHR
@@ -18589,7 +18574,7 @@ PFN_vkGetMemoryAndroidHardwareBufferANDROID :: #type (device : VkDevice,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .MacOS
+else #if VULKAN_PLATFORM == .MacOS
 {
 
 // Type VkMetalSurfaceCreateInfoEXT
@@ -18616,7 +18601,7 @@ PFN_vkCreateMetalSurfaceEXT :: #type (instance : VkInstance,
 
 
 }
-else #if CURRENT_VULKAN_PLATFORM == .IDirectFB
+else #if VULKAN_PLATFORM == .IDirectFB
 {
 
 // Type VkDirectFBSurfaceCreateInfoEXT

@@ -158,44 +158,44 @@ Vulkan_All_Commands :: struct
         vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV : PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV;
         vkGetPhysicalDeviceToolPropertiesEXT : PFN_vkGetPhysicalDeviceToolPropertiesEXT;
         vkGetPhysicalDeviceFragmentShadingRatesKHR : PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR;
-        #if CURRENT_VULKAN_PLATFORM == .X11
+        #if VULKAN_PLATFORM == .X11
         {
             vkCreateXlibSurfaceKHR : PFN_vkCreateXlibSurfaceKHR;
             vkGetPhysicalDeviceXlibPresentationSupportKHR : PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR;
             vkAcquireXlibDisplayEXT : PFN_vkAcquireXlibDisplayEXT;
             vkGetRandROutputDisplayEXT : PFN_vkGetRandROutputDisplayEXT;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .Wayland
+        else #if VULKAN_PLATFORM == .Wayland
         {
             vkCreateWaylandSurfaceKHR : PFN_vkCreateWaylandSurfaceKHR;
             vkGetPhysicalDeviceWaylandPresentationSupportKHR : PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .Windows
+        else #if VULKAN_PLATFORM == .Windows
         {
             vkCreateWin32SurfaceKHR : PFN_vkCreateWin32SurfaceKHR;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .XCB
+        else #if VULKAN_PLATFORM == .XCB
         {
             vkCreateXcbSurfaceKHR : PFN_vkCreateXcbSurfaceKHR;
             vkGetPhysicalDeviceXcbPresentationSupportKHR : PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .Zircon
+        else #if VULKAN_PLATFORM == .Zircon
         {
             vkCreateImagePipeSurfaceFUCHSIA : PFN_vkCreateImagePipeSurfaceFUCHSIA;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .GGP
+        else #if VULKAN_PLATFORM == .GGP
         {
             vkCreateStreamDescriptorSurfaceGGP : PFN_vkCreateStreamDescriptorSurfaceGGP;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .Android
+        else #if VULKAN_PLATFORM == .Android
         {
             vkCreateAndroidSurfaceKHR : PFN_vkCreateAndroidSurfaceKHR;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .MacOS
+        else #if VULKAN_PLATFORM == .MacOS
         {
             vkCreateMetalSurfaceEXT : PFN_vkCreateMetalSurfaceEXT;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .IDirectFB
+        else #if VULKAN_PLATFORM == .IDirectFB
         {
             vkCreateDirectFBSurfaceEXT : PFN_vkCreateDirectFBSurfaceEXT;
             vkGetPhysicalDeviceDirectFBPresentationSupportEXT : PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
@@ -547,7 +547,7 @@ Vulkan_All_Commands :: struct
         vkCmdSetFragmentShadingRateKHR : PFN_vkCmdSetFragmentShadingRateKHR;
         vkCmdSetFragmentShadingRateEnumNV : PFN_vkCmdSetFragmentShadingRateEnumNV;
         vkGetAccelerationStructureBuildSizesKHR : PFN_vkGetAccelerationStructureBuildSizesKHR;
-        #if CURRENT_VULKAN_PLATFORM == .Windows
+        #if VULKAN_PLATFORM == .Windows
         {
             vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;
             vkGetMemoryWin32HandleKHR : PFN_vkGetMemoryWin32HandleKHR;
@@ -557,7 +557,7 @@ Vulkan_All_Commands :: struct
             vkGetFenceWin32HandleKHR : PFN_vkGetFenceWin32HandleKHR;
             vkImportFenceWin32HandleKHR : PFN_vkImportFenceWin32HandleKHR;
         }
-        else #if CURRENT_VULKAN_PLATFORM == .Android
+        else #if VULKAN_PLATFORM == .Android
         {
             vkGetAndroidHardwareBufferPropertiesANDROID : PFN_vkGetAndroidHardwareBufferPropertiesANDROID;
             vkGetMemoryAndroidHardwareBufferANDROID : PFN_vkGetMemoryAndroidHardwareBufferANDROID;
