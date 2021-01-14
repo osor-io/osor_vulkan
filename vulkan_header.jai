@@ -14717,6 +14717,77 @@ PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT :: #type (physicalDevice : Vk
                                                              pTimeDomains : *VkTimeDomainEXT) -> VkResult #c_call;
 
 
+// Command vkSetDebugUtilsObjectNameEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkSetDebugUtilsObjectNameEXT.html)
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkSetDebugUtilsObjectNameEXT :: #type (device : VkDevice,
+                                           pNameInfo : *VkDebugUtilsObjectNameInfoEXT) -> VkResult #c_call;
+
+
+// Command vkSetDebugUtilsObjectTagEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkSetDebugUtilsObjectTagEXT.html)
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkSetDebugUtilsObjectTagEXT :: #type (device : VkDevice,
+                                          pTagInfo : *VkDebugUtilsObjectTagInfoEXT) -> VkResult #c_call;
+
+
+// Command vkQueueBeginDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueBeginDebugUtilsLabelEXT.html)
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkQueueBeginDebugUtilsLabelEXT :: #type (queue : VkQueue,
+                                             pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+
+
+// Command vkQueueEndDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueEndDebugUtilsLabelEXT.html)
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkQueueEndDebugUtilsLabelEXT :: #type (queue : VkQueue) #c_call;
+
+
+// Command vkQueueInsertDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueInsertDebugUtilsLabelEXT.html)
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkQueueInsertDebugUtilsLabelEXT :: #type (queue : VkQueue,
+                                              pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+
+
+// Command vkCmdBeginDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBeginDebugUtilsLabelEXT.html)
+// Can be submitted to a Graphics and Compute queues
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkCmdBeginDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
+                                           pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+
+
+// Command vkCmdEndDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdEndDebugUtilsLabelEXT.html)
+// Can be submitted to a Graphics and Compute queues
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkCmdEndDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer) #c_call;
+
+
+// Command vkCmdInsertDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdInsertDebugUtilsLabelEXT.html)
+// Can be submitted to a Graphics and Compute queues
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_debug_utils
+//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
+PFN_vkCmdInsertDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
+                                            pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+
+
 // Command vkCreateDebugUtilsMessengerEXT (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCreateDebugUtilsMessengerEXT.html)
 // Referenced by VK_EXT_debug_utils
@@ -16682,77 +16753,6 @@ PFN_vkGetCalibratedTimestampsEXT :: #type (device : VkDevice,
                                            pTimestampInfos : *VkCalibratedTimestampInfoEXT,
                                            pTimestamps : *u64,
                                            pMaxDeviation : *u64) -> VkResult #c_call;
-
-
-// Command vkSetDebugUtilsObjectNameEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkSetDebugUtilsObjectNameEXT.html)
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkSetDebugUtilsObjectNameEXT :: #type (device : VkDevice,
-                                           pNameInfo : *VkDebugUtilsObjectNameInfoEXT) -> VkResult #c_call;
-
-
-// Command vkSetDebugUtilsObjectTagEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkSetDebugUtilsObjectTagEXT.html)
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkSetDebugUtilsObjectTagEXT :: #type (device : VkDevice,
-                                          pTagInfo : *VkDebugUtilsObjectTagInfoEXT) -> VkResult #c_call;
-
-
-// Command vkQueueBeginDebugUtilsLabelEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueBeginDebugUtilsLabelEXT.html)
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkQueueBeginDebugUtilsLabelEXT :: #type (queue : VkQueue,
-                                             pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
-
-
-// Command vkQueueEndDebugUtilsLabelEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueEndDebugUtilsLabelEXT.html)
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkQueueEndDebugUtilsLabelEXT :: #type (queue : VkQueue) #c_call;
-
-
-// Command vkQueueInsertDebugUtilsLabelEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueInsertDebugUtilsLabelEXT.html)
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkQueueInsertDebugUtilsLabelEXT :: #type (queue : VkQueue,
-                                              pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
-
-
-// Command vkCmdBeginDebugUtilsLabelEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBeginDebugUtilsLabelEXT.html)
-// Can be submitted to a Graphics and Compute queues
-// Can be used both inside and outside a renderpass
-// Can be recorded to both a primary and secondary command buffer
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkCmdBeginDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
-                                           pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
-
-
-// Command vkCmdEndDebugUtilsLabelEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdEndDebugUtilsLabelEXT.html)
-// Can be submitted to a Graphics and Compute queues
-// Can be used both inside and outside a renderpass
-// Can be recorded to both a primary and secondary command buffer
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkCmdEndDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer) #c_call;
-
-
-// Command vkCmdInsertDebugUtilsLabelEXT (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdInsertDebugUtilsLabelEXT.html)
-// Can be submitted to a Graphics and Compute queues
-// Can be used both inside and outside a renderpass
-// Can be recorded to both a primary and secondary command buffer
-// Referenced by VK_EXT_debug_utils
-//  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkCmdInsertDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
-                                            pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
 
 
 // Command vkGetMemoryHostPointerPropertiesEXT (Device Command)

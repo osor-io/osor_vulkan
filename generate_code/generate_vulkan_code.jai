@@ -301,6 +301,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             None;
             Device;
             Instance;
+            Device_But_Referenced_From_Instance_Extension;
         }
 
         comment : string;
@@ -1978,11 +1979,19 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         //       -  vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV -> extension said device first argument indicates instance
         //       -  vkGetPhysicalDeviceToolPropertiesEXT                              -> extension said device first argument indicates instance
         //
-        // were the extension sais one thing and the first argument says another! Yayyyy!! Great job!
+        // were the extension said one thing and the first argument says another! Yayyyy!! Great job!
         //
         // So for this case I'm trying to evaluate how Volk from Zeux (https://github.com/zeux/volk/blob/master/generate.py) does this. Although
         // it looks to me when looking at the list that the first argument seems to be right? Not the extension type. So I'm going to go for that
         // for now and see where we end up.
+        //
+        //                                                                                              - Ruben Osorio, sometime/2020 
+        //
+        // Update to this mess: So it looks like the spec says that there can be device-level commands that are referenced by a instance level 
+        // extension. And these require you to load them with vkGetInstanceProcAddr and not vkGetDeviceProcAddr cause reasons. This means that
+        // essentially we'll move these to be like "instance commands" loaded with the rest of them.
+        //
+        //                                                                                              - Ruben Osorio, 13/01/2021
         // 
         //
         og_command := command_instance;
@@ -2006,7 +2015,10 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             if parent == "VkDevice"
             {
-                og_command.command_kind = Command_Instance.Command_Kind.Device;
+                if og_command.command_kind == Command_Instance.Command_Kind.Instance
+                    og_command.command_kind = Command_Instance.Command_Kind.Device_But_Referenced_From_Instance_Extension;
+                else
+                    og_command.command_kind = Command_Instance.Command_Kind.Device;
             }
             else if parent == "VkInstance"
             {
@@ -2015,6 +2027,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             else    
             {
                 og_command.command_kind = Command_Instance.Command_Kind.None;
+                assert(og_command.command_kind == Command_Instance.Command_Kind.None);
             }
 
         }
@@ -2030,7 +2043,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     for * command_instance : commands
     {
-        if command_instance.command_kind == Command_Instance.Command_Kind.Instance
+        if command_instance.command_kind == Command_Instance.Command_Kind.Instance ||
+           command_instance.command_kind == Command_Instance.Command_Kind.Device_But_Referenced_From_Instance_Extension
             array_add(*instance_commands, command_instance);
         else if command_instance.command_kind == Command_Instance.Command_Kind.Device
             array_add(*device_commands, command_instance);
@@ -2428,8 +2442,10 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     output_command_instance :: (builder : *String_Builder, command_instance : *Command_Instance)
     {
         command_kind_string : string;
-        if command_instance.command_kind ==
+        if #complete command_instance.command_kind == 
         {
+            case Command_Instance.Command_Kind.Device_But_Referenced_From_Instance_Extension;
+                command_kind_string = "Device Command, but referenced from Instance-Level Extension";
             case Command_Instance.Command_Kind.Instance;
                 command_kind_string = "Instance Command";
             case Command_Instance.Command_Kind.Device;
