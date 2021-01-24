@@ -178,6 +178,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
     }
 
+    Extension_Name_And_Is_Enabled :: struct
+    {
+        name : string;
+        enabled : bool;
+    }
+
     Struct_Instance :: struct
     {
         name   : string;
@@ -199,7 +205,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
         using comments_in_type : Comments_In_Type;
         requires_platform := Vulkan_Platform.None;
-        extensions_that_reference_this : [..] string;
+        extensions_that_reference_this : [..] Extension_Name_And_Is_Enabled;
     }
 
     Enum_Instance :: struct
@@ -230,7 +236,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
         using comments_in_type : Comments_In_Type;
         who_extended_this : [..] *Node;
-        extensions_that_reference_this : [..] string;
+        extensions_that_reference_this : [..] Extension_Name_And_Is_Enabled;
     }
 
     Procedure_Instance :: struct
@@ -253,7 +259,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         
         requires_platform := Vulkan_Platform.None;
         
-        extensions_that_reference_this : [..] string;
+        extensions_that_reference_this : [..] Extension_Name_And_Is_Enabled;
     }
     
     Command_Instance :: struct
@@ -499,6 +505,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             case Include;
             {
+                platform, found := table_find(requires_strings_to_platform, type_name);
+                assert(found || type_name == "vk_platform");
+                // Checking that we already matched the include to a platform earlier
+                // in case other types reference it and we need to put platform requirements
+                // on those.
+
                 array_add(*includes, type_name);
                 type_instance.index = includes.count - 1;
             }
@@ -1653,80 +1665,97 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         if found_extension_type     extension_instance.type = extension_type;
         if found_extension_author   extension_instance.author = extension_author;
         if found_extension_contact  extension_instance.contact = extension_contact;
+        if found_extension_supported && extension_supported == "disabled"  extension_instance.enabled = false;
+        //
+        // It appears that sometimes they will just put commands/types/enums in extensions that aren't defined in
+        // the API at all. So cross linking them is impossible. This happened in this commit: 
+        //
+        //     -  https://github.com/KhronosGroup/Vulkan-Headers/commit/684390cedbff90d4460b3ffe52d49582218e7750 
+        //
+        // Because of this, we need to do extra work here to parse the disabled extensions, see the things they reference and
+        // disable those if it makes sense. Yuck.
+        //
+        //                                                          - Ruben Osorio, 24/01/2021
 
-        all_enum_extends := find_all_nodes_with_name_and_attribute_recursive(extension_node, "enum", "extends");
-        defer array_reset(*all_enum_extends);
-        found_number, number_string := find_attribute_with_name_and_strip(extension_node, "number");
-        for enum_extend_node : all_enum_extends
+        if extension_instance.enabled 
         {
-            found_value,     value_string      := find_attribute_with_name_and_strip(enum_extend_node, "value");
-            found_offset,    offset_string     := find_attribute_with_name_and_strip(enum_extend_node, "offset");
-            found_alias,     alias_string      := find_attribute_with_name_and_strip(enum_extend_node, "alias");
-            found_bitpos,    bitpos_string     := find_attribute_with_name_and_strip(enum_extend_node, "bitpos");
-            found_dir,       dir_string        := find_attribute_with_name_and_strip(enum_extend_node, "dir");
-            found_extends,   extends_string    := find_attribute_with_name_and_strip(enum_extend_node, "extends");
-            found_extnumber, extnumber_string  := find_attribute_with_name_and_strip(enum_extend_node, "extnumber");
-            found_name,      name_string       := find_attribute_with_name_and_strip(enum_extend_node, "name");
-            found_comment,   comment_string    := find_attribute_with_name_and_strip(enum_extend_node, "comment");
+            all_enum_extends := find_all_nodes_with_name_and_attribute_recursive(extension_node, "enum", "extends");
+            defer array_reset(*all_enum_extends);
+            for enum_extend_node : all_enum_extends
+            {
+                found_value,     value_string      := find_attribute_with_name_and_strip(enum_extend_node, "value");
+                found_offset,    offset_string     := find_attribute_with_name_and_strip(enum_extend_node, "offset");
+                found_alias,     alias_string      := find_attribute_with_name_and_strip(enum_extend_node, "alias");
+                found_bitpos,    bitpos_string     := find_attribute_with_name_and_strip(enum_extend_node, "bitpos");
+                found_dir,       dir_string        := find_attribute_with_name_and_strip(enum_extend_node, "dir");
+                found_extends,   extends_string    := find_attribute_with_name_and_strip(enum_extend_node, "extends");
+                found_extnumber, extnumber_string  := find_attribute_with_name_and_strip(enum_extend_node, "extnumber");
+                found_name,      name_string       := find_attribute_with_name_and_strip(enum_extend_node, "name");
+                found_comment,   comment_string    := find_attribute_with_name_and_strip(enum_extend_node, "comment");
 
-            if !found_extnumber
-            {
-                assert(found_number);
-                extnumber_string = number_string;
-                found_extnumber = true;
-            }
+                if !found_extnumber
+                {
+                    assert(found_extension_number);
+                    extnumber_string = extension_number;
+                    found_extnumber = true;
+                }
 
-            if found_alias
-            {
-                assert(found_name);
-                assert(found_alias);
-                assert(found_extends);
-                assert(!found_dir);
-                extend_enum(node_that_owns_extension = extension_node,
-                            enum_name = extends_string, 
-                            value_name = name_string, 
-                            alias = alias_string,
-                            comment = comment_string);
-            }
-            else if found_bitpos
-            {
-                assert(found_name);
-                assert(found_bitpos);
-                assert(found_extends);
-                assert(!found_dir);
-                extend_enum_flags(node_that_owns_extension = extension_node,
-                                  enum_name = extends_string, 
-                                  value_name = name_string, 
-                                  bit_position = bitpos_string,
-                                  comment = comment_string);
-            }
-            else if found_value
-            {
-                assert(found_name);
-                assert(found_extends);
-                assert(found_value);
-                extend_enum(node_that_owns_extension = extension_node,
-                            enum_name = extends_string, 
-                            value_name = name_string, 
-                            value = value_string, 
-                            dir = dir_string,
-                            comment = comment_string);
-            }
-            else
-            {
-                assert(found_name);
-                assert(found_extnumber);
-                assert(found_extends);
-                assert(found_offset);
-                extend_enum(node_that_owns_extension = extension_node,
-                            enum_name = extends_string, 
-                            value_name = name_string, 
-                            extension_number = extnumber_string, 
-                            offset = offset_string, 
-                            dir = dir_string,
-                            comment = comment_string);
+                if found_alias
+                {
+                    assert(found_name);
+                    assert(found_alias);
+                    assert(found_extends);
+                    assert(!found_dir);
+                    extend_enum(node_that_owns_extension = extension_node,
+                                enum_name = extends_string, 
+                                value_name = name_string, 
+                                alias = alias_string,
+                                comment = comment_string);
+                }
+                else if found_bitpos
+                {
+                    assert(found_name);
+                    assert(found_bitpos);
+                    assert(found_extends);
+                    assert(!found_dir);
+                    extend_enum_flags(node_that_owns_extension = extension_node,
+                                      enum_name = extends_string, 
+                                      value_name = name_string, 
+                                      bit_position = bitpos_string,
+                                      comment = comment_string);
+                }
+                else if found_value
+                {
+                    assert(found_name);
+                    assert(found_extends);
+                    assert(found_value);
+                    extend_enum(node_that_owns_extension = extension_node,
+                                enum_name = extends_string, 
+                                value_name = name_string, 
+                                value = value_string, 
+                                dir = dir_string,
+                                comment = comment_string);
+                }
+                else
+                {
+                    assert(found_name);
+                    assert(found_extnumber);
+                    assert(found_extends);
+                    assert(found_offset);
+                    extend_enum(node_that_owns_extension = extension_node,
+                                enum_name = extends_string, 
+                                value_name = name_string, 
+                                extension_number = extnumber_string, 
+                                offset = offset_string, 
+                                dir = dir_string,
+                                comment = comment_string);
+                }
             }
         }
+
+        extension_and_enabled : Extension_Name_And_Is_Enabled;
+        extension_and_enabled.name = extension_instance.name;
+        extension_and_enabled.enabled = extension_instance.enabled;
 
         all_type_references := find_all_nodes_with_name_and_attribute_recursive(extension_node, "type", "name");
         defer array_reset(*all_type_references);
@@ -1735,17 +1764,18 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             found_name, name := find_attribute_with_name_and_strip(type_reference_node, "name");
             assert(found_name);
 
+
             for * struct_instance : structs
                 if struct_instance.name == name
-                    array_add(*struct_instance.extensions_that_reference_this, extension_name);
+                    array_add(*struct_instance.extensions_that_reference_this, extension_and_enabled);
 
             for * enum_instance : enums
                 if enum_instance.name == name
-                    array_add(*enum_instance.extensions_that_reference_this, extension_name);
+                    array_add(*enum_instance.extensions_that_reference_this, extension_and_enabled);
 
             for * procedure_pointer_instance : procedure_pointers
                 if procedure_pointer_instance.name == name
-                    array_add(*procedure_pointer_instance.extensions_that_reference_this, extension_name);
+                    array_add(*procedure_pointer_instance.extensions_that_reference_this, extension_and_enabled);
                     
         }
 
@@ -1762,12 +1792,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 if command_instance.name == name
                 {
                     found_command_instance = command_instance;
-                    array_add(*command_instance.extensions_that_reference_this, extension_name);
+                    array_add(*command_instance.extensions_that_reference_this, extension_and_enabled);
                 }
             }
-            assert(found_command_instance != null);
 
-            if found_extension_type
+            if !found_command_instance
+            {
+                assert(!extension_instance.enabled);
+                print("Disabled extension % is referencing command % which doesn't exist\n", extension_instance.name, name);
+            }
+
+            if found_extension_type && found_command_instance
             {
                 if extension_type == "device"
                     found_command_instance.command_kind = Command_Instance.Command_Kind.Device;
@@ -1778,15 +1813,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             }
         }
 
-
-
-        if found_extension_supported && extension_supported == "disabled"
-        {
-            extension_instance.enabled = false;
-        }
-
         all_enum_non_extends := find_all_nodes_with_name_and_not_attribute_recursive(extension_node, "enum", "extends");
-        defer array_reset(*all_enum_non_extends );
+        defer array_reset(*all_enum_non_extends);
 
         for enum_node : all_enum_non_extends
         {
@@ -2088,12 +2116,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     for * enum_instance : enums
     {
+        if all_extensions_that_reference_this_are_disabled(enum_instance.extensions_that_reference_this)  continue enum_instance;
         print_to_builder(*enums_builder, "// Enum %\n", enum_instance.name);
         print_address_of_manual_for_enum_comment(*enums_builder, enum_instance.name);
         print_extensions_that_reference(*enums_builder, enum_instance.extensions_that_reference_this);
         if enum_instance.alias
         {
             assert(enum_instance.values.count == 0);
+            for * alias : enums
+                if alias.name == enum_instance.alias
+                    if all_extensions_that_reference_this_are_disabled(alias.extensions_that_reference_this)  continue enum_instance;
+
             print_to_builder(*enums_builder, "% :: %;\n\n\n", enum_instance.name, enum_instance.alias);
             //
             // @@NOTE: Aliased enums cannot be have "using" because the values will already be pulled
@@ -2178,6 +2211,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         for * procedure_pointer : procedure_pointers
         {
             if procedure_pointer.requires_platform != platform continue;
+            if all_extensions_that_reference_this_are_disabled(procedure_pointer.extensions_that_reference_this)  continue procedure_pointer;
 
             assert(!procedure_pointer.alias); 
             // @@NOTE: Not handling aliases for these cause they just don't exist, shouldn't be hard to support
@@ -2265,9 +2299,19 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 print_to_builder(*types_builder, "% :: %;\n", it.name, it.alias);
         }
         append(*types_builder, "\n");
-        for * bitmasks
+        for * bitmask : bitmasks
         {
-            print_to_builder(*types_builder, "% :: %;\n", it.name, it.alias);
+            if bitmask.requires.count > 0
+            {
+                for * alias : enums
+                    if alias.name == bitmask.requires
+                        if all_extensions_that_reference_this_are_disabled(alias.extensions_that_reference_this)  
+                            continue bitmask;
+                // @@NOTE: Have to check here that the enum that we reference has not been disabled by an extension. Which
+                // kiiinda sucks :) This might pop up in some other places if they keep insisting in adding disabled extensions to
+                // the headers but still add a bunch of types, enums and commands.
+            }
+            print_to_builder(*types_builder, "% :: %;\n", bitmask.name, bitmask.alias);
         }
         append(*types_builder, "\n");
         for * handles
@@ -2320,13 +2364,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         for * struct_instance : structs
         {
             if struct_instance.requires_platform != platform continue;
-
+            if all_extensions_that_reference_this_are_disabled(struct_instance.extensions_that_reference_this)  continue struct_instance;
             print_to_builder(builder, "// Type %\n", struct_instance.name);
             print_address_of_manual_for_struct_comment(builder, struct_instance.name);
             print_extensions_that_reference(builder, struct_instance.extensions_that_reference_this);
 
             if struct_instance.alias
             {
+                for * alias : structs
+                    if alias.name == struct_instance.alias
+                        if all_extensions_that_reference_this_are_disabled(alias.extensions_that_reference_this)  continue struct_instance;
+
                 print_to_builder(builder, "% :: %;", struct_instance.name, struct_instance.alias);
                 if struct_instance.struct_extends
                     print_to_builder(builder, " // Can be in the pNext chain of %", struct_instance.struct_extends);
@@ -2563,6 +2611,13 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         for command_instance : command_instances
         {
             if command_instance.requires_platform != platform continue;
+            if all_extensions_that_reference_this_are_disabled(command_instance.extensions_that_reference_this)  continue command_instance;
+            if command_instance.alias
+            {
+                for alias : command_instances
+                    if alias.name == command_instance.alias
+                        if all_extensions_that_reference_this_are_disabled(alias.extensions_that_reference_this)  continue command_instance;
+            }
             output_command_instance(builder, command_instance);
         }
     }
@@ -2581,7 +2636,9 @@ entry-points to. You can also link against their own loader and that will give y
 the procedures directly, but this would have *some* overhead and we don't want that :)
 
 In this file there is global variables that will hold all the procedure pointers for
-each entry-point, and then there is the procedures you can call to fill them.
+each entry-point, and then there is the procedures you can call to fill them. If you want 
+to load the procedures into your own structures and not the global variables here, 
+you can pass in the data structure to fill in each of the load_vulkan_* procedures.
 
 Usage should be fairly straight-forward, there's 3 types of commands (for our purposes):
 
@@ -2606,34 +2663,37 @@ An Example in Windows would look something like this:
 */
 
 
-load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type)
+load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type, loader_commands : *Vulkan_Loader_Commands = null)
 {
-    info := type_info(type_of(_vulkan_loader_commands));
+    loader_commands = ifx loader_commands then loader_commands else *_vulkan_loader_commands;
+    info := type_info(type_of(<<loader_commands));
     for member: info.members 
     {
-        member_to_set := cast(**void)((cast(*u8)*_vulkan_loader_commands) + member.offset_in_bytes);
+        member_to_set := cast(**void)((cast(*u8)loader_commands) + member.offset_in_bytes);
         <<member_to_set = cast(*void) load(library_handle, member.name.data);
     }
 }
 
 
-load_vulkan_instance_procedures :: (instance : VkInstance)
+load_vulkan_instance_procedures :: (instance : VkInstance, instance_commands : *Vulkan_Instance_Commands = null)
 {
-    info := type_info(type_of(_vulkan_instance_commands));
+    instance_commands = ifx instance_commands then instance_commands else *_vulkan_instance_commands;
+    info := type_info(type_of(<<instance_commands));
     for member: info.members 
     {
-        member_to_set := cast(**void)((cast(*u8)*_vulkan_instance_commands) + member.offset_in_bytes);
+        member_to_set := cast(**void)((cast(*u8)instance_commands) + member.offset_in_bytes);
         <<member_to_set = cast(*void) vkGetInstanceProcAddr(instance, member.name.data);
     }
 }
 
 
-load_vulkan_device_procedures :: (device: VkDevice)
+load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_Device_Commands = null)
 {
-    info := type_info(type_of(_vulkan_device_commands));
+    device_commands = ifx device_commands then device_commands else *_vulkan_device_commands;
+    info := type_info(type_of(<<device_commands));
     for member: info.members 
     {
-        member_to_set := cast(**void)((cast(*u8)*_vulkan_device_commands) + member.offset_in_bytes);
+        member_to_set := cast(**void)((cast(*u8)device_commands) + member.offset_in_bytes);
         <<member_to_set = cast(*void) vkGetDeviceProcAddr(device, member.name.data);
     }
 }
@@ -2699,6 +2759,13 @@ load_vulkan_device_procedures :: (device: VkDevice)
             for command : commands
             {
                 if platform != command.requires_platform continue;
+                if all_extensions_that_reference_this_are_disabled(command.extensions_that_reference_this) continue;
+                if command.alias
+                {
+                    for alias : commands
+                        if alias.name == command.alias
+                            if all_extensions_that_reference_this_are_disabled(alias.extensions_that_reference_this)  continue command;
+                }
                 write_command(command, before_each_line);
             }
         }
@@ -2844,28 +2911,38 @@ load_vulkan_device_procedures :: (device: VkDevice)
     // # Some stuff help with the implementation of the generate procedure:
 
 
-    print_extensions_that_reference :: (builder : *String_Builder, extension_names : [] string)
+    print_extensions_that_reference :: (builder : *String_Builder, extensions_that_reference : [] Extension_Name_And_Is_Enabled)
     {
-        if extension_names.count > 0
+        if extensions_that_reference.count > 0
         {
             print_to_builder(builder, "// Referenced by ");
-            for extension_names
+            for extensions_that_reference
             {
                 if it_index == 0 
-                    print_to_builder(builder, "%", it);
+                    print_to_builder(builder, "%", it.name);
                 else
-                    print_to_builder(builder, ", %", it);
+                    print_to_builder(builder, ", %", it.name);
             }
             print_to_builder(builder, "\n");
             
             #if print_extension_address
             {
-                for extension_names
+                for extensions_that_reference
                 {
-                    print_address_of_manual_for_extension_comment(builder, it);
+                    print_address_of_manual_for_extension_comment(builder, it.name);
                 }
             }
         }
+    }
+
+    all_extensions_that_reference_this_are_disabled :: (extensions_that_reference : [] Extension_Name_And_Is_Enabled) -> bool
+    {
+        if extensions_that_reference.count > 0 
+        {
+            for extensions_that_reference  if it.enabled  return false;
+            return true;
+        }
+        return false;
     }
 
 

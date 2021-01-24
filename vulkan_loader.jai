@@ -5,7 +5,9 @@ entry-points to. You can also link against their own loader and that will give y
 the procedures directly, but this would have *some* overhead and we don't want that :)
 
 In this file there is global variables that will hold all the procedure pointers for
-each entry-point, and then there is the procedures you can call to fill them.
+each entry-point, and then there is the procedures you can call to fill them. If you want 
+to load the procedures into your own structures and not the global variables here, 
+you can pass in the data structure to fill in each of the load_vulkan_* procedures.
 
 Usage should be fairly straight-forward, there's 3 types of commands (for our purposes):
 
@@ -30,34 +32,37 @@ An Example in Windows would look something like this:
 */
 
 
-load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type)
+load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type, loader_commands : *Vulkan_Loader_Commands = null)
 {
-    info := type_info(type_of(_vulkan_loader_commands));
+    loader_commands = ifx loader_commands then loader_commands else *_vulkan_loader_commands;
+    info := type_info(type_of(<<loader_commands));
     for member: info.members 
     {
-        member_to_set := cast(**void)((cast(*u8)*_vulkan_loader_commands) + member.offset_in_bytes);
+        member_to_set := cast(**void)((cast(*u8)loader_commands) + member.offset_in_bytes);
         <<member_to_set = cast(*void) load(library_handle, member.name.data);
     }
 }
 
 
-load_vulkan_instance_procedures :: (instance : VkInstance)
+load_vulkan_instance_procedures :: (instance : VkInstance, instance_commands : *Vulkan_Instance_Commands = null)
 {
-    info := type_info(type_of(_vulkan_instance_commands));
+    instance_commands = ifx instance_commands then instance_commands else *_vulkan_instance_commands;
+    info := type_info(type_of(<<instance_commands));
     for member: info.members 
     {
-        member_to_set := cast(**void)((cast(*u8)*_vulkan_instance_commands) + member.offset_in_bytes);
+        member_to_set := cast(**void)((cast(*u8)instance_commands) + member.offset_in_bytes);
         <<member_to_set = cast(*void) vkGetInstanceProcAddr(instance, member.name.data);
     }
 }
 
 
-load_vulkan_device_procedures :: (device: VkDevice)
+load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_Device_Commands = null)
 {
-    info := type_info(type_of(_vulkan_device_commands));
+    device_commands = ifx device_commands then device_commands else *_vulkan_device_commands;
+    info := type_info(type_of(<<device_commands));
     for member: info.members 
     {
-        member_to_set := cast(**void)((cast(*u8)*_vulkan_device_commands) + member.offset_in_bytes);
+        member_to_set := cast(**void)((cast(*u8)device_commands) + member.offset_in_bytes);
         <<member_to_set = cast(*void) vkGetDeviceProcAddr(device, member.name.data);
     }
 }
@@ -411,10 +416,6 @@ Vulkan_All_Commands :: struct
         vkMergeValidationCachesEXT : PFN_vkMergeValidationCachesEXT;
         vkGetDescriptorSetLayoutSupport : PFN_vkGetDescriptorSetLayoutSupport;
         vkGetDescriptorSetLayoutSupportKHR : PFN_vkGetDescriptorSetLayoutSupportKHR;
-        vkGetSwapchainGrallocUsageANDROID : PFN_vkGetSwapchainGrallocUsageANDROID;
-        vkGetSwapchainGrallocUsage2ANDROID : PFN_vkGetSwapchainGrallocUsage2ANDROID;
-        vkAcquireImageANDROID : PFN_vkAcquireImageANDROID;
-        vkQueueSignalReleaseImageANDROID : PFN_vkQueueSignalReleaseImageANDROID;
         vkGetShaderInfoAMD : PFN_vkGetShaderInfoAMD;
         vkSetLocalDimmingAMD : PFN_vkSetLocalDimmingAMD;
         vkGetCalibratedTimestampsEXT : PFN_vkGetCalibratedTimestampsEXT;
