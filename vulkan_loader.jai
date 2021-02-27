@@ -548,6 +548,14 @@ Vulkan_All_Commands :: struct
         vkCmdSetFragmentShadingRateKHR : PFN_vkCmdSetFragmentShadingRateKHR;
         vkCmdSetFragmentShadingRateEnumNV : PFN_vkCmdSetFragmentShadingRateEnumNV;
         vkGetAccelerationStructureBuildSizesKHR : PFN_vkGetAccelerationStructureBuildSizesKHR;
+        vkCmdSetEvent2KHR : PFN_vkCmdSetEvent2KHR;
+        vkCmdResetEvent2KHR : PFN_vkCmdResetEvent2KHR;
+        vkCmdWaitEvents2KHR : PFN_vkCmdWaitEvents2KHR;
+        vkCmdPipelineBarrier2KHR : PFN_vkCmdPipelineBarrier2KHR;
+        vkQueueSubmit2KHR : PFN_vkQueueSubmit2KHR;
+        vkCmdWriteTimestamp2KHR : PFN_vkCmdWriteTimestamp2KHR;
+        vkCmdWriteBufferMarker2AMD : PFN_vkCmdWriteBufferMarker2AMD;
+        vkGetQueueCheckpointData2NV : PFN_vkGetQueueCheckpointData2NV;
         #if VULKAN_PLATFORM == .Windows
         {
             vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;

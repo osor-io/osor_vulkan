@@ -21,7 +21,7 @@
     }
 
     build_options := get_build_options();
-    build_options.output_type = Build_Output_Type.NO_OUTPUT;
+    build_options.output_type = .NO_OUTPUT;
     set_build_options(build_options);
     
     main_workspace := compiler_create_workspace();
@@ -30,12 +30,17 @@
         print("Couldn't create workspace to build the application!!!\n");
         exit(0);
     }
-    build_options.output_type = Build_Output_Type.EXECUTABLE;
+    build_options.output_type = .EXECUTABLE;
     build_options.output_executable_name = "vulkan_example";
     build_options.output_path = concatenate(#filepath, "run_tree/");
 	make_directory_if_it_does_not_exist(build_options.output_path);
-    path_of_my_modules := "../../"; // @@NOTE: Relative path to wherever this module is
-    array_add(*build_options.modules_search_path_array, path_of_my_modules);
+
+    new_import_path := string.[
+        "../../", // @@NOTE: Relative path to wherever this module is
+        "",  
+    ];
+    new_import_path[1] = build_options.import_path[0];
+    build_options.import_path = new_import_path;
 
     print("\n");
     
@@ -50,7 +55,7 @@
             message := compiler_wait_for_message();
             if !message  break;
 
-            if message.kind == Compiler_Message.Kind.COMPLETE 
+            if message.kind == .COMPLETE 
             {
                 success_building = true;
                 break;

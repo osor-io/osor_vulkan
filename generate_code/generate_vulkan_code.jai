@@ -211,6 +211,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     Enum_Instance :: struct
     {
         name   : string;
+        bitwidth := 32;
         alias  : string;
         is_bit_mask := false;
         values : [..] Value;
@@ -324,6 +325,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         name : string;
         alias : string;
         requires : string;
+        bitvalues : string;
     };
 
     Handle_Instance :: struct
@@ -777,6 +779,9 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 found_requires, requires_attribute := find_attribute_with_name_and_strip(type, "requires");
                 if found_requires
                     bitmask_instance.requires = requires_attribute;
+                found_bitvalues, bitvalues_attribute := find_attribute_with_name_and_strip(type, "bitvalues");
+                if found_bitvalues
+                    bitmask_instance.bitvalues = bitvalues_attribute;
 
                 if has_alias_attribute
                 {
@@ -1127,28 +1132,52 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         found_type, type := find_attribute_with_name_and_strip(enums_node, "type");
         assert(found_type);
 
+        found_bitwidth, bitwidth := find_attribute_with_name_and_strip(enums_node, "bitwidth");
+
         enum_instance : *Enum_Instance;
         for * enums
         {
             if it.name == name enum_instance = it;
         }
-        
-        if enum_instance == null
+    
+        #if 0 
         {
             //
-            // @@HACK: Oh ffs, they have some enums that are not defined in the
-            // types section so we have to patch them here... great job guys :)
+            // @@HACK: At one point they had some enums that were not
+            // defined in the types section, so we had to manually patch
+            // them in here, this doesn't seem to be the case anymore, but
+            // I'm leaving the code here in case it happens again.
             //
-            new_enum_instance := array_add(*enums);
-            new_enum_instance.name = name;
-            enum_instance = new_enum_instance;
+            //                            - Ruben Osorio, 26/02/2021
+            //
+            if enum_instance == null
+            {
+                print("This one wasn't there! %\n", name);
+                new_enum_instance := array_add(*enums);
+                new_enum_instance.name = name;
+                enum_instance = new_enum_instance;
+            }
         }
+
+        assert(enum_instance != null);
 
         if type == 
         {
             case "enum";
             case "bitmask"; enum_instance.is_bit_mask |= true;
             case; assert(false);
+        }
+
+        if found_bitwidth
+        {
+            if bitwidth == 
+            {
+                case "8";  enum_instance.bitwidth = 8;
+                case "16"; enum_instance.bitwidth = 16;
+                case "32"; enum_instance.bitwidth = 32;
+                case "64"; enum_instance.bitwidth = 64;
+                case; assert(false);
+            }
         }
 
         for * enum_node : enums_node.children
@@ -2087,10 +2116,10 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     for * bitmask : bitmasks
     {
         //
-        // If the bitmask requires an enum that also has FlagBits in the name
-        // then we alias the handle directly to the enum since it's going to be
-        // an enum flags. Which means that we can use them directly and not have
-        // to cast the bitmask type to the u32 type.
+        // If the bitmask requires or has a bitvalues field with an enum 
+        // that also has FlagBits in the name then we alias the handle directly 
+        // to the enum since it's going to be an enum flags. Which means that we 
+        // can use them directly and not have to cast the bitmask type to the u32 type.
         //
         if bitmask.requires
         {
@@ -2102,9 +2131,19 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 bitmask.alias = enum_instance.name;
             }
         }
+        else if bitmask.bitvalues
+        {
+            enum_instance := find_enum(*enums, bitmask.bitvalues);
+            has_flag_bits_in_name := contains(bitmask.bitvalues, "FlagBits");
+            assert((enum_instance != null) == has_flag_bits_in_name);
+            if enum_instance != null && has_flag_bits_in_name
+            {
+                bitmask.alias = enum_instance.name;
+            }
+        }
         else
         {
-            // If it doesn't have a requires attribute it seems to mean that
+            // If it doesn't have a requires/bitvalues attribute it seems to mean that
             // the value is just supposed to be zero just now since the enums
             // that would hold the flags (named with "FlagBits") are just empty
         }
@@ -2135,13 +2174,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
         else
         {
+            assert(enum_instance.bitwidth == 8  ||
+                   enum_instance.bitwidth == 16 ||
+                   enum_instance.bitwidth == 32 ||
+                   enum_instance.bitwidth == 64);
             if enum_instance.is_bit_mask
             {
-                print_to_builder(*enums_builder, "using % :: enum_flags u32 #specified \n", enum_instance.name);
+                print_to_builder(*enums_builder, "using % :: enum_flags u% #specified \n", enum_instance.name, enum_instance.bitwidth);
             }
             else
             {
-                print_to_builder(*enums_builder, "using % :: enum s32 #specified\n", enum_instance.name);
+                print_to_builder(*enums_builder, "using % :: enum s% #specified\n", enum_instance.name, enum_instance.bitwidth);
             }
             print_to_builder(*enums_builder, "{\n");
             if enum_instance.values.count == 0
@@ -2980,12 +3023,10 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     
 
 VULKAN_PLATFORM_SELECTION_PRELUDE :: #string DONE
-#module_parameters(VULKAN_PLATFORM : Vulkan_Platform = DEFAULT_VULKAN_PLATFORM);
-
-#if      OS == .WINDOWS DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.Windows;
-else #if OS == .LINUX   DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.X11;
-else #if OS == .MACOS   DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
-else                    DEFAULT_VULKAN_PLATFORM :: Vulkan_Platform.None;
+#if      OS == .WINDOWS VULKAN_PLATFORM :: Vulkan_Platform.Windows;
+else #if OS == .LINUX   VULKAN_PLATFORM :: Vulkan_Platform.X11;
+else #if OS == .MACOS   VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
+else                    VULKAN_PLATFORM :: Vulkan_Platform.None;
 
 DONE
 
