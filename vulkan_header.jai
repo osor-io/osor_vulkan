@@ -14239,82 +14239,82 @@ PFN_vkDeviceMemoryReportCallbackEXT :: #type (pCallbackData : *VkDeviceMemoryRep
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCreateInstance.html)
 PFN_vkCreateInstance :: #type (pCreateInfo : *VkInstanceCreateInfo,
                                pAllocator : *VkAllocationCallbacks,
-                               pInstance : *VkInstance) -> VkResult #c_call;
+                               pInstance : *VkInstance) -> VkResult #foreign;
 
 
 // Command vkGetInstanceProcAddr (Loader Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetInstanceProcAddr.html)
 PFN_vkGetInstanceProcAddr :: #type (instance : VkInstance,
-                                    pName : *u8) -> PFN_vkVoidFunction #c_call;
+                                    pName : *u8) -> PFN_vkVoidFunction #foreign;
 
 
 // Command vkEnumerateInstanceVersion (Loader Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkEnumerateInstanceVersion.html)
-PFN_vkEnumerateInstanceVersion :: #type (pApiVersion : *u32) -> VkResult #c_call;
+PFN_vkEnumerateInstanceVersion :: #type (pApiVersion : *u32) -> VkResult #foreign;
 
 
 // Command vkEnumerateInstanceLayerProperties (Loader Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkEnumerateInstanceLayerProperties.html)
 PFN_vkEnumerateInstanceLayerProperties :: #type (pPropertyCount : *u32,
-                                                 pProperties : *VkLayerProperties) -> VkResult #c_call;
+                                                 pProperties : *VkLayerProperties) -> VkResult #foreign;
 
 
 // Command vkEnumerateInstanceExtensionProperties (Loader Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkEnumerateInstanceExtensionProperties.html)
 PFN_vkEnumerateInstanceExtensionProperties :: #type (pLayerName : *u8,
                                                      pPropertyCount : *u32,
-                                                     pProperties : *VkExtensionProperties) -> VkResult #c_call;
+                                                     pProperties : *VkExtensionProperties) -> VkResult #foreign;
 
 
 // Command vkDestroyInstance (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyInstance.html)
 PFN_vkDestroyInstance :: #type (instance : VkInstance,
-                                pAllocator : *VkAllocationCallbacks) #c_call;
+                                pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkEnumeratePhysicalDevices (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkEnumeratePhysicalDevices.html)
 PFN_vkEnumeratePhysicalDevices :: #type (instance : VkInstance,
                                          pPhysicalDeviceCount : *u32,
-                                         pPhysicalDevices : *VkPhysicalDevice) -> VkResult #c_call;
+                                         pPhysicalDevices : *VkPhysicalDevice) -> VkResult #foreign;
 
 
 // Command vkGetDeviceProcAddr (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetDeviceProcAddr.html)
 PFN_vkGetDeviceProcAddr :: #type (device : VkDevice,
-                                  pName : *u8) -> PFN_vkVoidFunction #c_call;
+                                  pName : *u8) -> PFN_vkVoidFunction #foreign;
 
 
 // Command vkGetPhysicalDeviceProperties (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceProperties.html)
 PFN_vkGetPhysicalDeviceProperties :: #type (physicalDevice : VkPhysicalDevice,
-                                            pProperties : *VkPhysicalDeviceProperties) #c_call;
+                                            pProperties : *VkPhysicalDeviceProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceQueueFamilyProperties (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceQueueFamilyProperties.html)
 PFN_vkGetPhysicalDeviceQueueFamilyProperties :: #type (physicalDevice : VkPhysicalDevice,
                                                        pQueueFamilyPropertyCount : *u32,
-                                                       pQueueFamilyProperties : *VkQueueFamilyProperties) #c_call;
+                                                       pQueueFamilyProperties : *VkQueueFamilyProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceMemoryProperties (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceMemoryProperties.html)
 PFN_vkGetPhysicalDeviceMemoryProperties :: #type (physicalDevice : VkPhysicalDevice,
-                                                  pMemoryProperties : *VkPhysicalDeviceMemoryProperties) #c_call;
+                                                  pMemoryProperties : *VkPhysicalDeviceMemoryProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceFeatures (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceFeatures.html)
 PFN_vkGetPhysicalDeviceFeatures :: #type (physicalDevice : VkPhysicalDevice,
-                                          pFeatures : *VkPhysicalDeviceFeatures) #c_call;
+                                          pFeatures : *VkPhysicalDeviceFeatures) #foreign;
 
 
 // Command vkGetPhysicalDeviceFormatProperties (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceFormatProperties.html)
 PFN_vkGetPhysicalDeviceFormatProperties :: #type (physicalDevice : VkPhysicalDevice,
                                                   format : VkFormat,
-                                                  pFormatProperties : *VkFormatProperties) #c_call;
+                                                  pFormatProperties : *VkFormatProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceImageFormatProperties (Instance Command)
@@ -14325,7 +14325,7 @@ PFN_vkGetPhysicalDeviceImageFormatProperties :: #type (physicalDevice : VkPhysic
                                                        tiling : VkImageTiling,
                                                        usage : VkImageUsageFlags,
                                                        flags : VkImageCreateFlags,
-                                                       pImageFormatProperties : *VkImageFormatProperties) -> VkResult #c_call;
+                                                       pImageFormatProperties : *VkImageFormatProperties) -> VkResult #foreign;
 
 
 // Command vkCreateDevice (Instance Command)
@@ -14333,14 +14333,14 @@ PFN_vkGetPhysicalDeviceImageFormatProperties :: #type (physicalDevice : VkPhysic
 PFN_vkCreateDevice :: #type (physicalDevice : VkPhysicalDevice,
                              pCreateInfo : *VkDeviceCreateInfo,
                              pAllocator : *VkAllocationCallbacks,
-                             pDevice : *VkDevice) -> VkResult #c_call;
+                             pDevice : *VkDevice) -> VkResult #foreign;
 
 
 // Command vkEnumerateDeviceLayerProperties (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkEnumerateDeviceLayerProperties.html)
 PFN_vkEnumerateDeviceLayerProperties :: #type (physicalDevice : VkPhysicalDevice,
                                                pPropertyCount : *u32,
-                                               pProperties : *VkLayerProperties) -> VkResult #c_call;
+                                               pProperties : *VkLayerProperties) -> VkResult #foreign;
 
 
 // Command vkEnumerateDeviceExtensionProperties (Instance Command)
@@ -14348,7 +14348,7 @@ PFN_vkEnumerateDeviceLayerProperties :: #type (physicalDevice : VkPhysicalDevice
 PFN_vkEnumerateDeviceExtensionProperties :: #type (physicalDevice : VkPhysicalDevice,
                                                    pLayerName : *u8,
                                                    pPropertyCount : *u32,
-                                                   pProperties : *VkExtensionProperties) -> VkResult #c_call;
+                                                   pProperties : *VkExtensionProperties) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSparseImageFormatProperties (Instance Command)
@@ -14360,7 +14360,7 @@ PFN_vkGetPhysicalDeviceSparseImageFormatProperties :: #type (physicalDevice : Vk
                                                              usage : VkImageUsageFlags,
                                                              tiling : VkImageTiling,
                                                              pPropertyCount : *u32,
-                                                             pProperties : *VkSparseImageFormatProperties) #c_call;
+                                                             pProperties : *VkSparseImageFormatProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceDisplayPropertiesKHR (Instance Command)
@@ -14369,7 +14369,7 @@ PFN_vkGetPhysicalDeviceSparseImageFormatProperties :: #type (physicalDevice : Vk
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_display.html)
 PFN_vkGetPhysicalDeviceDisplayPropertiesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                       pPropertyCount : *u32,
-                                                      pProperties : *VkDisplayPropertiesKHR) -> VkResult #c_call;
+                                                      pProperties : *VkDisplayPropertiesKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceDisplayPlanePropertiesKHR (Instance Command)
@@ -14378,7 +14378,7 @@ PFN_vkGetPhysicalDeviceDisplayPropertiesKHR :: #type (physicalDevice : VkPhysica
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_display.html)
 PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                            pPropertyCount : *u32,
-                                                           pProperties : *VkDisplayPlanePropertiesKHR) -> VkResult #c_call;
+                                                           pProperties : *VkDisplayPlanePropertiesKHR) -> VkResult #foreign;
 
 
 // Command vkGetDisplayPlaneSupportedDisplaysKHR (Instance Command)
@@ -14388,7 +14388,7 @@ PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR :: #type (physicalDevice : VkPh
 PFN_vkGetDisplayPlaneSupportedDisplaysKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                     planeIndex : u32,
                                                     pDisplayCount : *u32,
-                                                    pDisplays : *VkDisplayKHR) -> VkResult #c_call;
+                                                    pDisplays : *VkDisplayKHR) -> VkResult #foreign;
 
 
 // Command vkGetDisplayModePropertiesKHR (Instance Command)
@@ -14398,7 +14398,7 @@ PFN_vkGetDisplayPlaneSupportedDisplaysKHR :: #type (physicalDevice : VkPhysicalD
 PFN_vkGetDisplayModePropertiesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                             display : VkDisplayKHR,
                                             pPropertyCount : *u32,
-                                            pProperties : *VkDisplayModePropertiesKHR) -> VkResult #c_call;
+                                            pProperties : *VkDisplayModePropertiesKHR) -> VkResult #foreign;
 
 
 // Command vkCreateDisplayModeKHR (Instance Command)
@@ -14409,7 +14409,7 @@ PFN_vkCreateDisplayModeKHR :: #type (physicalDevice : VkPhysicalDevice,
                                      display : VkDisplayKHR,
                                      pCreateInfo : *VkDisplayModeCreateInfoKHR,
                                      pAllocator : *VkAllocationCallbacks,
-                                     pMode : *VkDisplayModeKHR) -> VkResult #c_call;
+                                     pMode : *VkDisplayModeKHR) -> VkResult #foreign;
 
 
 // Command vkGetDisplayPlaneCapabilitiesKHR (Instance Command)
@@ -14419,7 +14419,7 @@ PFN_vkCreateDisplayModeKHR :: #type (physicalDevice : VkPhysicalDevice,
 PFN_vkGetDisplayPlaneCapabilitiesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                mode : VkDisplayModeKHR,
                                                planeIndex : u32,
-                                               pCapabilities : *VkDisplayPlaneCapabilitiesKHR) -> VkResult #c_call;
+                                               pCapabilities : *VkDisplayPlaneCapabilitiesKHR) -> VkResult #foreign;
 
 
 // Command vkCreateDisplayPlaneSurfaceKHR (Instance Command)
@@ -14429,7 +14429,7 @@ PFN_vkGetDisplayPlaneCapabilitiesKHR :: #type (physicalDevice : VkPhysicalDevice
 PFN_vkCreateDisplayPlaneSurfaceKHR :: #type (instance : VkInstance,
                                              pCreateInfo : *VkDisplaySurfaceCreateInfoKHR,
                                              pAllocator : *VkAllocationCallbacks,
-                                             pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                             pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkDestroySurfaceKHR (Instance Command)
@@ -14438,7 +14438,7 @@ PFN_vkCreateDisplayPlaneSurfaceKHR :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_surface.html)
 PFN_vkDestroySurfaceKHR :: #type (instance : VkInstance,
                                   surface : VkSurfaceKHR,
-                                  pAllocator : *VkAllocationCallbacks) #c_call;
+                                  pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfaceSupportKHR (Instance Command)
@@ -14448,7 +14448,7 @@ PFN_vkDestroySurfaceKHR :: #type (instance : VkInstance,
 PFN_vkGetPhysicalDeviceSurfaceSupportKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                    queueFamilyIndex : u32,
                                                    surface : VkSurfaceKHR,
-                                                   pSupported : *VkBool32) -> VkResult #c_call;
+                                                   pSupported : *VkBool32) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfaceCapabilitiesKHR (Instance Command)
@@ -14457,7 +14457,7 @@ PFN_vkGetPhysicalDeviceSurfaceSupportKHR :: #type (physicalDevice : VkPhysicalDe
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_surface.html)
 PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                         surface : VkSurfaceKHR,
-                                                        pSurfaceCapabilities : *VkSurfaceCapabilitiesKHR) -> VkResult #c_call;
+                                                        pSurfaceCapabilities : *VkSurfaceCapabilitiesKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfaceFormatsKHR (Instance Command)
@@ -14467,7 +14467,7 @@ PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR :: #type (physicalDevice : VkPhysi
 PFN_vkGetPhysicalDeviceSurfaceFormatsKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                    surface : VkSurfaceKHR,
                                                    pSurfaceFormatCount : *u32,
-                                                   pSurfaceFormats : *VkSurfaceFormatKHR) -> VkResult #c_call;
+                                                   pSurfaceFormats : *VkSurfaceFormatKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfacePresentModesKHR (Instance Command)
@@ -14477,7 +14477,7 @@ PFN_vkGetPhysicalDeviceSurfaceFormatsKHR :: #type (physicalDevice : VkPhysicalDe
 PFN_vkGetPhysicalDeviceSurfacePresentModesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                         surface : VkSurfaceKHR,
                                                         pPresentModeCount : *u32,
-                                                        pPresentModes : *VkPresentModeKHR) -> VkResult #c_call;
+                                                        pPresentModes : *VkPresentModeKHR) -> VkResult #foreign;
 
 
 // Command vkCreateViSurfaceNN (Instance Command)
@@ -14487,7 +14487,7 @@ PFN_vkGetPhysicalDeviceSurfacePresentModesKHR :: #type (physicalDevice : VkPhysi
 PFN_vkCreateViSurfaceNN :: #type (instance : VkInstance,
                                   pCreateInfo : *VkViSurfaceCreateInfoNN,
                                   pAllocator : *VkAllocationCallbacks,
-                                  pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                  pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceWin32PresentationSupportKHR (Instance Command)
@@ -14495,7 +14495,7 @@ PFN_vkCreateViSurfaceNN :: #type (instance : VkInstance,
 // Referenced by VK_KHR_win32_surface
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_win32_surface.html)
 PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR :: #type (physicalDevice : VkPhysicalDevice,
-                                                             queueFamilyIndex : u32) -> VkBool32 #c_call;
+                                                             queueFamilyIndex : u32) -> VkBool32 #foreign;
 
 
 // Command vkCreateDebugReportCallbackEXT (Instance Command)
@@ -14505,7 +14505,7 @@ PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR :: #type (physicalDevice : Vk
 PFN_vkCreateDebugReportCallbackEXT :: #type (instance : VkInstance,
                                              pCreateInfo : *VkDebugReportCallbackCreateInfoEXT,
                                              pAllocator : *VkAllocationCallbacks,
-                                             pCallback : *VkDebugReportCallbackEXT) -> VkResult #c_call;
+                                             pCallback : *VkDebugReportCallbackEXT) -> VkResult #foreign;
 
 
 // Command vkDestroyDebugReportCallbackEXT (Instance Command)
@@ -14514,7 +14514,7 @@ PFN_vkCreateDebugReportCallbackEXT :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_report.html)
 PFN_vkDestroyDebugReportCallbackEXT :: #type (instance : VkInstance,
                                               callback : VkDebugReportCallbackEXT,
-                                              pAllocator : *VkAllocationCallbacks) #c_call;
+                                              pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkDebugReportMessageEXT (Instance Command)
@@ -14528,7 +14528,7 @@ PFN_vkDebugReportMessageEXT :: #type (instance : VkInstance,
                                       location : u64,
                                       messageCode : s32,
                                       pLayerPrefix : *u8,
-                                      pMessage : *u8) #c_call;
+                                      pMessage : *u8) #foreign;
 
 
 // Command vkGetPhysicalDeviceExternalImageFormatPropertiesNV (Instance Command)
@@ -14542,13 +14542,13 @@ PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV :: #type (physicalDevice 
                                                                  usage : VkImageUsageFlags,
                                                                  flags : VkImageCreateFlags,
                                                                  externalHandleType : VkExternalMemoryHandleTypeFlagsNV,
-                                                                 pExternalImageFormatProperties : *VkExternalImageFormatPropertiesNV) -> VkResult #c_call;
+                                                                 pExternalImageFormatProperties : *VkExternalImageFormatPropertiesNV) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceFeatures2 (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceFeatures2.html)
 PFN_vkGetPhysicalDeviceFeatures2 :: #type (physicalDevice : VkPhysicalDevice,
-                                           pFeatures : *VkPhysicalDeviceFeatures2) #c_call;
+                                           pFeatures : *VkPhysicalDeviceFeatures2) #foreign;
 
 
 // Command vkGetPhysicalDeviceFeatures2KHR (Instance Command)
@@ -14561,7 +14561,7 @@ PFN_vkGetPhysicalDeviceFeatures2KHR :: PFN_vkGetPhysicalDeviceFeatures2;
 // Command vkGetPhysicalDeviceProperties2 (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceProperties2.html)
 PFN_vkGetPhysicalDeviceProperties2 :: #type (physicalDevice : VkPhysicalDevice,
-                                             pProperties : *VkPhysicalDeviceProperties2) #c_call;
+                                             pProperties : *VkPhysicalDeviceProperties2) #foreign;
 
 
 // Command vkGetPhysicalDeviceProperties2KHR (Instance Command)
@@ -14575,7 +14575,7 @@ PFN_vkGetPhysicalDeviceProperties2KHR :: PFN_vkGetPhysicalDeviceProperties2;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceFormatProperties2.html)
 PFN_vkGetPhysicalDeviceFormatProperties2 :: #type (physicalDevice : VkPhysicalDevice,
                                                    format : VkFormat,
-                                                   pFormatProperties : *VkFormatProperties2) #c_call;
+                                                   pFormatProperties : *VkFormatProperties2) #foreign;
 
 
 // Command vkGetPhysicalDeviceFormatProperties2KHR (Instance Command)
@@ -14589,7 +14589,7 @@ PFN_vkGetPhysicalDeviceFormatProperties2KHR :: PFN_vkGetPhysicalDeviceFormatProp
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceImageFormatProperties2.html)
 PFN_vkGetPhysicalDeviceImageFormatProperties2 :: #type (physicalDevice : VkPhysicalDevice,
                                                         pImageFormatInfo : *VkPhysicalDeviceImageFormatInfo2,
-                                                        pImageFormatProperties : *VkImageFormatProperties2) -> VkResult #c_call;
+                                                        pImageFormatProperties : *VkImageFormatProperties2) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceImageFormatProperties2KHR (Instance Command)
@@ -14603,7 +14603,7 @@ PFN_vkGetPhysicalDeviceImageFormatProperties2KHR :: PFN_vkGetPhysicalDeviceImage
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceQueueFamilyProperties2.html)
 PFN_vkGetPhysicalDeviceQueueFamilyProperties2 :: #type (physicalDevice : VkPhysicalDevice,
                                                         pQueueFamilyPropertyCount : *u32,
-                                                        pQueueFamilyProperties : *VkQueueFamilyProperties2) #c_call;
+                                                        pQueueFamilyProperties : *VkQueueFamilyProperties2) #foreign;
 
 
 // Command vkGetPhysicalDeviceQueueFamilyProperties2KHR (Instance Command)
@@ -14616,7 +14616,7 @@ PFN_vkGetPhysicalDeviceQueueFamilyProperties2KHR :: PFN_vkGetPhysicalDeviceQueue
 // Command vkGetPhysicalDeviceMemoryProperties2 (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceMemoryProperties2.html)
 PFN_vkGetPhysicalDeviceMemoryProperties2 :: #type (physicalDevice : VkPhysicalDevice,
-                                                   pMemoryProperties : *VkPhysicalDeviceMemoryProperties2) #c_call;
+                                                   pMemoryProperties : *VkPhysicalDeviceMemoryProperties2) #foreign;
 
 
 // Command vkGetPhysicalDeviceMemoryProperties2KHR (Instance Command)
@@ -14631,7 +14631,7 @@ PFN_vkGetPhysicalDeviceMemoryProperties2KHR :: PFN_vkGetPhysicalDeviceMemoryProp
 PFN_vkGetPhysicalDeviceSparseImageFormatProperties2 :: #type (physicalDevice : VkPhysicalDevice,
                                                               pFormatInfo : *VkPhysicalDeviceSparseImageFormatInfo2,
                                                               pPropertyCount : *u32,
-                                                              pProperties : *VkSparseImageFormatProperties2) #c_call;
+                                                              pProperties : *VkSparseImageFormatProperties2) #foreign;
 
 
 // Command vkGetPhysicalDeviceSparseImageFormatProperties2KHR (Instance Command)
@@ -14645,7 +14645,7 @@ PFN_vkGetPhysicalDeviceSparseImageFormatProperties2KHR :: PFN_vkGetPhysicalDevic
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceExternalBufferProperties.html)
 PFN_vkGetPhysicalDeviceExternalBufferProperties :: #type (physicalDevice : VkPhysicalDevice,
                                                           pExternalBufferInfo : *VkPhysicalDeviceExternalBufferInfo,
-                                                          pExternalBufferProperties : *VkExternalBufferProperties) #c_call;
+                                                          pExternalBufferProperties : *VkExternalBufferProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceExternalBufferPropertiesKHR (Instance Command)
@@ -14659,7 +14659,7 @@ PFN_vkGetPhysicalDeviceExternalBufferPropertiesKHR :: PFN_vkGetPhysicalDeviceExt
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceExternalSemaphoreProperties.html)
 PFN_vkGetPhysicalDeviceExternalSemaphoreProperties :: #type (physicalDevice : VkPhysicalDevice,
                                                              pExternalSemaphoreInfo : *VkPhysicalDeviceExternalSemaphoreInfo,
-                                                             pExternalSemaphoreProperties : *VkExternalSemaphoreProperties) #c_call;
+                                                             pExternalSemaphoreProperties : *VkExternalSemaphoreProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceExternalSemaphorePropertiesKHR (Instance Command)
@@ -14673,7 +14673,7 @@ PFN_vkGetPhysicalDeviceExternalSemaphorePropertiesKHR :: PFN_vkGetPhysicalDevice
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetPhysicalDeviceExternalFenceProperties.html)
 PFN_vkGetPhysicalDeviceExternalFenceProperties :: #type (physicalDevice : VkPhysicalDevice,
                                                          pExternalFenceInfo : *VkPhysicalDeviceExternalFenceInfo,
-                                                         pExternalFenceProperties : *VkExternalFenceProperties) #c_call;
+                                                         pExternalFenceProperties : *VkExternalFenceProperties) #foreign;
 
 
 // Command vkGetPhysicalDeviceExternalFencePropertiesKHR (Instance Command)
@@ -14688,7 +14688,7 @@ PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR :: PFN_vkGetPhysicalDeviceExte
 // Referenced by VK_EXT_direct_mode_display
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_direct_mode_display.html)
 PFN_vkReleaseDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
-                                  display : VkDisplayKHR) -> VkResult #c_call;
+                                  display : VkDisplayKHR) -> VkResult #foreign;
 
 
 // Command vkAcquireWinrtDisplayNV (Instance Command)
@@ -14696,7 +14696,7 @@ PFN_vkReleaseDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
 // Referenced by VK_NV_acquire_winrt_display
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_acquire_winrt_display.html)
 PFN_vkAcquireWinrtDisplayNV :: #type (physicalDevice : VkPhysicalDevice,
-                                      display : VkDisplayKHR) -> VkResult #c_call;
+                                      display : VkDisplayKHR) -> VkResult #foreign;
 
 
 // Command vkGetWinrtDisplayNV (Instance Command)
@@ -14705,7 +14705,7 @@ PFN_vkAcquireWinrtDisplayNV :: #type (physicalDevice : VkPhysicalDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_acquire_winrt_display.html)
 PFN_vkGetWinrtDisplayNV :: #type (physicalDevice : VkPhysicalDevice,
                                   deviceRelativeId : u32,
-                                  pDisplay : *VkDisplayKHR) -> VkResult #c_call;
+                                  pDisplay : *VkDisplayKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfaceCapabilities2EXT (Instance Command)
@@ -14714,14 +14714,14 @@ PFN_vkGetWinrtDisplayNV :: #type (physicalDevice : VkPhysicalDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_display_surface_counter.html)
 PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT :: #type (physicalDevice : VkPhysicalDevice,
                                                          surface : VkSurfaceKHR,
-                                                         pSurfaceCapabilities : *VkSurfaceCapabilities2EXT) -> VkResult #c_call;
+                                                         pSurfaceCapabilities : *VkSurfaceCapabilities2EXT) -> VkResult #foreign;
 
 
 // Command vkEnumeratePhysicalDeviceGroups (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkEnumeratePhysicalDeviceGroups.html)
 PFN_vkEnumeratePhysicalDeviceGroups :: #type (instance : VkInstance,
                                               pPhysicalDeviceGroupCount : *u32,
-                                              pPhysicalDeviceGroupProperties : *VkPhysicalDeviceGroupProperties) -> VkResult #c_call;
+                                              pPhysicalDeviceGroupProperties : *VkPhysicalDeviceGroupProperties) -> VkResult #foreign;
 
 
 // Command vkEnumeratePhysicalDeviceGroupsKHR (Instance Command)
@@ -14739,7 +14739,7 @@ PFN_vkEnumeratePhysicalDeviceGroupsKHR :: PFN_vkEnumeratePhysicalDeviceGroups;
 PFN_vkGetPhysicalDevicePresentRectanglesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                       surface : VkSurfaceKHR,
                                                       pRectCount : *u32,
-                                                      pRects : *VkRect2D) -> VkResult #c_call;
+                                                      pRects : *VkRect2D) -> VkResult #foreign;
 
 
 // Command vkCreateIOSSurfaceMVK (Instance Command)
@@ -14749,7 +14749,7 @@ PFN_vkGetPhysicalDevicePresentRectanglesKHR :: #type (physicalDevice : VkPhysica
 PFN_vkCreateIOSSurfaceMVK :: #type (instance : VkInstance,
                                     pCreateInfo : *VkIOSSurfaceCreateInfoMVK,
                                     pAllocator : *VkAllocationCallbacks,
-                                    pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                    pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkCreateMacOSSurfaceMVK (Instance Command)
@@ -14759,7 +14759,7 @@ PFN_vkCreateIOSSurfaceMVK :: #type (instance : VkInstance,
 PFN_vkCreateMacOSSurfaceMVK :: #type (instance : VkInstance,
                                       pCreateInfo : *VkMacOSSurfaceCreateInfoMVK,
                                       pAllocator : *VkAllocationCallbacks,
-                                      pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                      pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceMultisamplePropertiesEXT (Instance Command)
@@ -14768,7 +14768,7 @@ PFN_vkCreateMacOSSurfaceMVK :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_sample_locations.html)
 PFN_vkGetPhysicalDeviceMultisamplePropertiesEXT :: #type (physicalDevice : VkPhysicalDevice,
                                                           samples : VkSampleCountFlagBits,
-                                                          pMultisampleProperties : *VkMultisamplePropertiesEXT) #c_call;
+                                                          pMultisampleProperties : *VkMultisamplePropertiesEXT) #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfaceCapabilities2KHR (Instance Command)
@@ -14777,7 +14777,7 @@ PFN_vkGetPhysicalDeviceMultisamplePropertiesEXT :: #type (physicalDevice : VkPhy
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_get_surface_capabilities2.html)
 PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR :: #type (physicalDevice : VkPhysicalDevice,
                                                          pSurfaceInfo : *VkPhysicalDeviceSurfaceInfo2KHR,
-                                                         pSurfaceCapabilities : *VkSurfaceCapabilities2KHR) -> VkResult #c_call;
+                                                         pSurfaceCapabilities : *VkSurfaceCapabilities2KHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfaceFormats2KHR (Instance Command)
@@ -14787,7 +14787,7 @@ PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR :: #type (physicalDevice : VkPhys
 PFN_vkGetPhysicalDeviceSurfaceFormats2KHR :: #type (physicalDevice : VkPhysicalDevice,
                                                     pSurfaceInfo : *VkPhysicalDeviceSurfaceInfo2KHR,
                                                     pSurfaceFormatCount : *u32,
-                                                    pSurfaceFormats : *VkSurfaceFormat2KHR) -> VkResult #c_call;
+                                                    pSurfaceFormats : *VkSurfaceFormat2KHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceDisplayProperties2KHR (Instance Command)
@@ -14796,7 +14796,7 @@ PFN_vkGetPhysicalDeviceSurfaceFormats2KHR :: #type (physicalDevice : VkPhysicalD
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_get_display_properties2.html)
 PFN_vkGetPhysicalDeviceDisplayProperties2KHR :: #type (physicalDevice : VkPhysicalDevice,
                                                        pPropertyCount : *u32,
-                                                       pProperties : *VkDisplayProperties2KHR) -> VkResult #c_call;
+                                                       pProperties : *VkDisplayProperties2KHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceDisplayPlaneProperties2KHR (Instance Command)
@@ -14805,7 +14805,7 @@ PFN_vkGetPhysicalDeviceDisplayProperties2KHR :: #type (physicalDevice : VkPhysic
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_get_display_properties2.html)
 PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR :: #type (physicalDevice : VkPhysicalDevice,
                                                             pPropertyCount : *u32,
-                                                            pProperties : *VkDisplayPlaneProperties2KHR) -> VkResult #c_call;
+                                                            pProperties : *VkDisplayPlaneProperties2KHR) -> VkResult #foreign;
 
 
 // Command vkGetDisplayModeProperties2KHR (Instance Command)
@@ -14815,7 +14815,7 @@ PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR :: #type (physicalDevice : VkP
 PFN_vkGetDisplayModeProperties2KHR :: #type (physicalDevice : VkPhysicalDevice,
                                              display : VkDisplayKHR,
                                              pPropertyCount : *u32,
-                                             pProperties : *VkDisplayModeProperties2KHR) -> VkResult #c_call;
+                                             pProperties : *VkDisplayModeProperties2KHR) -> VkResult #foreign;
 
 
 // Command vkGetDisplayPlaneCapabilities2KHR (Instance Command)
@@ -14824,7 +14824,7 @@ PFN_vkGetDisplayModeProperties2KHR :: #type (physicalDevice : VkPhysicalDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_get_display_properties2.html)
 PFN_vkGetDisplayPlaneCapabilities2KHR :: #type (physicalDevice : VkPhysicalDevice,
                                                 pDisplayPlaneInfo : *VkDisplayPlaneInfo2KHR,
-                                                pCapabilities : *VkDisplayPlaneCapabilities2KHR) -> VkResult #c_call;
+                                                pCapabilities : *VkDisplayPlaneCapabilities2KHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceCalibrateableTimeDomainsEXT (Instance Command)
@@ -14833,7 +14833,7 @@ PFN_vkGetDisplayPlaneCapabilities2KHR :: #type (physicalDevice : VkPhysicalDevic
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_calibrated_timestamps.html)
 PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT :: #type (physicalDevice : VkPhysicalDevice,
                                                              pTimeDomainCount : *u32,
-                                                             pTimeDomains : *VkTimeDomainEXT) -> VkResult #c_call;
+                                                             pTimeDomains : *VkTimeDomainEXT) -> VkResult #foreign;
 
 
 // Command vkSetDebugUtilsObjectNameEXT (Device Command, but referenced from Instance-Level Extension)
@@ -14841,7 +14841,7 @@ PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT :: #type (physicalDevice : Vk
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
 PFN_vkSetDebugUtilsObjectNameEXT :: #type (device : VkDevice,
-                                           pNameInfo : *VkDebugUtilsObjectNameInfoEXT) -> VkResult #c_call;
+                                           pNameInfo : *VkDebugUtilsObjectNameInfoEXT) -> VkResult #foreign;
 
 
 // Command vkSetDebugUtilsObjectTagEXT (Device Command, but referenced from Instance-Level Extension)
@@ -14849,7 +14849,7 @@ PFN_vkSetDebugUtilsObjectNameEXT :: #type (device : VkDevice,
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
 PFN_vkSetDebugUtilsObjectTagEXT :: #type (device : VkDevice,
-                                          pTagInfo : *VkDebugUtilsObjectTagInfoEXT) -> VkResult #c_call;
+                                          pTagInfo : *VkDebugUtilsObjectTagInfoEXT) -> VkResult #foreign;
 
 
 // Command vkQueueBeginDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
@@ -14857,14 +14857,14 @@ PFN_vkSetDebugUtilsObjectTagEXT :: #type (device : VkDevice,
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
 PFN_vkQueueBeginDebugUtilsLabelEXT :: #type (queue : VkQueue,
-                                             pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+                                             pLabelInfo : *VkDebugUtilsLabelEXT) #foreign;
 
 
 // Command vkQueueEndDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueEndDebugUtilsLabelEXT.html)
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkQueueEndDebugUtilsLabelEXT :: #type (queue : VkQueue) #c_call;
+PFN_vkQueueEndDebugUtilsLabelEXT :: #type (queue : VkQueue) #foreign;
 
 
 // Command vkQueueInsertDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
@@ -14872,7 +14872,7 @@ PFN_vkQueueEndDebugUtilsLabelEXT :: #type (queue : VkQueue) #c_call;
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
 PFN_vkQueueInsertDebugUtilsLabelEXT :: #type (queue : VkQueue,
-                                              pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+                                              pLabelInfo : *VkDebugUtilsLabelEXT) #foreign;
 
 
 // Command vkCmdBeginDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
@@ -14883,7 +14883,7 @@ PFN_vkQueueInsertDebugUtilsLabelEXT :: #type (queue : VkQueue,
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
 PFN_vkCmdBeginDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
-                                           pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+                                           pLabelInfo : *VkDebugUtilsLabelEXT) #foreign;
 
 
 // Command vkCmdEndDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
@@ -14893,7 +14893,7 @@ PFN_vkCmdBeginDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
-PFN_vkCmdEndDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer) #c_call;
+PFN_vkCmdEndDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer) #foreign;
 
 
 // Command vkCmdInsertDebugUtilsLabelEXT (Device Command, but referenced from Instance-Level Extension)
@@ -14904,7 +14904,7 @@ PFN_vkCmdEndDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer) #c_cal
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
 PFN_vkCmdInsertDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
-                                            pLabelInfo : *VkDebugUtilsLabelEXT) #c_call;
+                                            pLabelInfo : *VkDebugUtilsLabelEXT) #foreign;
 
 
 // Command vkCreateDebugUtilsMessengerEXT (Instance Command)
@@ -14914,7 +14914,7 @@ PFN_vkCmdInsertDebugUtilsLabelEXT :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCreateDebugUtilsMessengerEXT :: #type (instance : VkInstance,
                                              pCreateInfo : *VkDebugUtilsMessengerCreateInfoEXT,
                                              pAllocator : *VkAllocationCallbacks,
-                                             pMessenger : *VkDebugUtilsMessengerEXT) -> VkResult #c_call;
+                                             pMessenger : *VkDebugUtilsMessengerEXT) -> VkResult #foreign;
 
 
 // Command vkDestroyDebugUtilsMessengerEXT (Instance Command)
@@ -14923,7 +14923,7 @@ PFN_vkCreateDebugUtilsMessengerEXT :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_utils.html)
 PFN_vkDestroyDebugUtilsMessengerEXT :: #type (instance : VkInstance,
                                               messenger : VkDebugUtilsMessengerEXT,
-                                              pAllocator : *VkAllocationCallbacks) #c_call;
+                                              pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkSubmitDebugUtilsMessageEXT (Instance Command)
@@ -14933,7 +14933,7 @@ PFN_vkDestroyDebugUtilsMessengerEXT :: #type (instance : VkInstance,
 PFN_vkSubmitDebugUtilsMessageEXT :: #type (instance : VkInstance,
                                            messageSeverity : VkDebugUtilsMessageSeverityFlagBitsEXT,
                                            messageTypes : VkDebugUtilsMessageTypeFlagsEXT,
-                                           pCallbackData : *VkDebugUtilsMessengerCallbackDataEXT) #c_call;
+                                           pCallbackData : *VkDebugUtilsMessengerCallbackDataEXT) #foreign;
 
 
 // Command vkGetPhysicalDeviceCooperativeMatrixPropertiesNV (Instance Command)
@@ -14942,7 +14942,7 @@ PFN_vkSubmitDebugUtilsMessageEXT :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_cooperative_matrix.html)
 PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV :: #type (physicalDevice : VkPhysicalDevice,
                                                                pPropertyCount : *u32,
-                                                               pProperties : *VkCooperativeMatrixPropertiesNV) -> VkResult #c_call;
+                                                               pProperties : *VkCooperativeMatrixPropertiesNV) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSurfacePresentModes2EXT (Instance Command)
@@ -14952,7 +14952,7 @@ PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV :: #type (physicalDevice : 
 PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT :: #type (physicalDevice : VkPhysicalDevice,
                                                          pSurfaceInfo : *VkPhysicalDeviceSurfaceInfo2KHR,
                                                          pPresentModeCount : *u32,
-                                                         pPresentModes : *VkPresentModeKHR) -> VkResult #c_call;
+                                                         pPresentModes : *VkPresentModeKHR) -> VkResult #foreign;
 
 
 // Command vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR (Instance Command)
@@ -14963,7 +14963,7 @@ PFN_vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR :: #type (ph
                                                                               queueFamilyIndex : u32,
                                                                               pCounterCount : *u32,
                                                                               pCounters : *VkPerformanceCounterKHR,
-                                                                              pCounterDescriptions : *VkPerformanceCounterDescriptionKHR) -> VkResult #c_call;
+                                                                              pCounterDescriptions : *VkPerformanceCounterDescriptionKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR (Instance Command)
@@ -14972,7 +14972,7 @@ PFN_vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR :: #type (ph
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_performance_query.html)
 PFN_vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                                       pPerformanceQueryCreateInfo : *VkQueryPoolPerformanceCreateInfoKHR,
-                                                                      pNumPasses : *u32) #c_call;
+                                                                      pNumPasses : *u32) #foreign;
 
 
 // Command vkCreateHeadlessSurfaceEXT (Instance Command)
@@ -14982,7 +14982,7 @@ PFN_vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR :: #type (physicalDe
 PFN_vkCreateHeadlessSurfaceEXT :: #type (instance : VkInstance,
                                          pCreateInfo : *VkHeadlessSurfaceCreateInfoEXT,
                                          pAllocator : *VkAllocationCallbacks,
-                                         pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                         pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV (Instance Command)
@@ -14991,7 +14991,7 @@ PFN_vkCreateHeadlessSurfaceEXT :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_coverage_reduction_mode.html)
 PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV :: #type (physicalDevice : VkPhysicalDevice,
                                                                                 pCombinationCount : *u32,
-                                                                                pCombinations : *VkFramebufferMixedSamplesCombinationNV) -> VkResult #c_call;
+                                                                                pCombinations : *VkFramebufferMixedSamplesCombinationNV) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceToolPropertiesEXT (Instance Command)
@@ -15000,7 +15000,7 @@ PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV :: #type (
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_tooling_info.html)
 PFN_vkGetPhysicalDeviceToolPropertiesEXT :: #type (physicalDevice : VkPhysicalDevice,
                                                    pToolCount : *u32,
-                                                   pToolProperties : *VkPhysicalDeviceToolPropertiesEXT) -> VkResult #c_call;
+                                                   pToolProperties : *VkPhysicalDeviceToolPropertiesEXT) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceFragmentShadingRatesKHR (Instance Command)
@@ -15009,13 +15009,13 @@ PFN_vkGetPhysicalDeviceToolPropertiesEXT :: #type (physicalDevice : VkPhysicalDe
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_fragment_shading_rate.html)
 PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                          pFragmentShadingRateCount : *u32,
-                                                         pFragmentShadingRates : *VkPhysicalDeviceFragmentShadingRateKHR) -> VkResult #c_call;
+                                                         pFragmentShadingRates : *VkPhysicalDeviceFragmentShadingRateKHR) -> VkResult #foreign;
 
 
 // Command vkDestroyDevice (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyDevice.html)
 PFN_vkDestroyDevice :: #type (device : VkDevice,
-                              pAllocator : *VkAllocationCallbacks) #c_call;
+                              pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetDeviceQueue (Device Command)
@@ -15023,7 +15023,7 @@ PFN_vkDestroyDevice :: #type (device : VkDevice,
 PFN_vkGetDeviceQueue :: #type (device : VkDevice,
                                queueFamilyIndex : u32,
                                queueIndex : u32,
-                               pQueue : *VkQueue) #c_call;
+                               pQueue : *VkQueue) #foreign;
 
 
 // Command vkQueueSubmit (Device Command)
@@ -15031,17 +15031,17 @@ PFN_vkGetDeviceQueue :: #type (device : VkDevice,
 PFN_vkQueueSubmit :: #type (queue : VkQueue,
                             submitCount : u32,
                             pSubmits : *VkSubmitInfo,
-                            fence : VkFence) -> VkResult #c_call;
+                            fence : VkFence) -> VkResult #foreign;
 
 
 // Command vkQueueWaitIdle (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkQueueWaitIdle.html)
-PFN_vkQueueWaitIdle :: #type (queue : VkQueue) -> VkResult #c_call;
+PFN_vkQueueWaitIdle :: #type (queue : VkQueue) -> VkResult #foreign;
 
 
 // Command vkDeviceWaitIdle (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDeviceWaitIdle.html)
-PFN_vkDeviceWaitIdle :: #type (device : VkDevice) -> VkResult #c_call;
+PFN_vkDeviceWaitIdle :: #type (device : VkDevice) -> VkResult #foreign;
 
 
 // Command vkAllocateMemory (Device Command)
@@ -15049,14 +15049,14 @@ PFN_vkDeviceWaitIdle :: #type (device : VkDevice) -> VkResult #c_call;
 PFN_vkAllocateMemory :: #type (device : VkDevice,
                                pAllocateInfo : *VkMemoryAllocateInfo,
                                pAllocator : *VkAllocationCallbacks,
-                               pMemory : *VkDeviceMemory) -> VkResult #c_call;
+                               pMemory : *VkDeviceMemory) -> VkResult #foreign;
 
 
 // Command vkFreeMemory (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkFreeMemory.html)
 PFN_vkFreeMemory :: #type (device : VkDevice,
                            memory : VkDeviceMemory,
-                           pAllocator : *VkAllocationCallbacks) #c_call;
+                           pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkMapMemory (Device Command)
@@ -15066,41 +15066,41 @@ PFN_vkMapMemory :: #type (device : VkDevice,
                           offset : VkDeviceSize,
                           size : VkDeviceSize,
                           flags : VkMemoryMapFlags,
-                          ppData : **void) -> VkResult #c_call;
+                          ppData : **void) -> VkResult #foreign;
 
 
 // Command vkUnmapMemory (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkUnmapMemory.html)
 PFN_vkUnmapMemory :: #type (device : VkDevice,
-                            memory : VkDeviceMemory) #c_call;
+                            memory : VkDeviceMemory) #foreign;
 
 
 // Command vkFlushMappedMemoryRanges (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkFlushMappedMemoryRanges.html)
 PFN_vkFlushMappedMemoryRanges :: #type (device : VkDevice,
                                         memoryRangeCount : u32,
-                                        pMemoryRanges : *VkMappedMemoryRange) -> VkResult #c_call;
+                                        pMemoryRanges : *VkMappedMemoryRange) -> VkResult #foreign;
 
 
 // Command vkInvalidateMappedMemoryRanges (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkInvalidateMappedMemoryRanges.html)
 PFN_vkInvalidateMappedMemoryRanges :: #type (device : VkDevice,
                                              memoryRangeCount : u32,
-                                             pMemoryRanges : *VkMappedMemoryRange) -> VkResult #c_call;
+                                             pMemoryRanges : *VkMappedMemoryRange) -> VkResult #foreign;
 
 
 // Command vkGetDeviceMemoryCommitment (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetDeviceMemoryCommitment.html)
 PFN_vkGetDeviceMemoryCommitment :: #type (device : VkDevice,
                                           memory : VkDeviceMemory,
-                                          pCommittedMemoryInBytes : *VkDeviceSize) #c_call;
+                                          pCommittedMemoryInBytes : *VkDeviceSize) #foreign;
 
 
 // Command vkGetBufferMemoryRequirements (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetBufferMemoryRequirements.html)
 PFN_vkGetBufferMemoryRequirements :: #type (device : VkDevice,
                                             buffer : VkBuffer,
-                                            pMemoryRequirements : *VkMemoryRequirements) #c_call;
+                                            pMemoryRequirements : *VkMemoryRequirements) #foreign;
 
 
 // Command vkBindBufferMemory (Device Command)
@@ -15108,14 +15108,14 @@ PFN_vkGetBufferMemoryRequirements :: #type (device : VkDevice,
 PFN_vkBindBufferMemory :: #type (device : VkDevice,
                                  buffer : VkBuffer,
                                  memory : VkDeviceMemory,
-                                 memoryOffset : VkDeviceSize) -> VkResult #c_call;
+                                 memoryOffset : VkDeviceSize) -> VkResult #foreign;
 
 
 // Command vkGetImageMemoryRequirements (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetImageMemoryRequirements.html)
 PFN_vkGetImageMemoryRequirements :: #type (device : VkDevice,
                                            image : VkImage,
-                                           pMemoryRequirements : *VkMemoryRequirements) #c_call;
+                                           pMemoryRequirements : *VkMemoryRequirements) #foreign;
 
 
 // Command vkBindImageMemory (Device Command)
@@ -15123,7 +15123,7 @@ PFN_vkGetImageMemoryRequirements :: #type (device : VkDevice,
 PFN_vkBindImageMemory :: #type (device : VkDevice,
                                 image : VkImage,
                                 memory : VkDeviceMemory,
-                                memoryOffset : VkDeviceSize) -> VkResult #c_call;
+                                memoryOffset : VkDeviceSize) -> VkResult #foreign;
 
 
 // Command vkGetImageSparseMemoryRequirements (Device Command)
@@ -15131,7 +15131,7 @@ PFN_vkBindImageMemory :: #type (device : VkDevice,
 PFN_vkGetImageSparseMemoryRequirements :: #type (device : VkDevice,
                                                  image : VkImage,
                                                  pSparseMemoryRequirementCount : *u32,
-                                                 pSparseMemoryRequirements : *VkSparseImageMemoryRequirements) #c_call;
+                                                 pSparseMemoryRequirements : *VkSparseImageMemoryRequirements) #foreign;
 
 
 // Command vkQueueBindSparse (Device Command)
@@ -15139,7 +15139,7 @@ PFN_vkGetImageSparseMemoryRequirements :: #type (device : VkDevice,
 PFN_vkQueueBindSparse :: #type (queue : VkQueue,
                                 bindInfoCount : u32,
                                 pBindInfo : *VkBindSparseInfo,
-                                fence : VkFence) -> VkResult #c_call;
+                                fence : VkFence) -> VkResult #foreign;
 
 
 // Command vkCreateFence (Device Command)
@@ -15147,27 +15147,27 @@ PFN_vkQueueBindSparse :: #type (queue : VkQueue,
 PFN_vkCreateFence :: #type (device : VkDevice,
                             pCreateInfo : *VkFenceCreateInfo,
                             pAllocator : *VkAllocationCallbacks,
-                            pFence : *VkFence) -> VkResult #c_call;
+                            pFence : *VkFence) -> VkResult #foreign;
 
 
 // Command vkDestroyFence (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyFence.html)
 PFN_vkDestroyFence :: #type (device : VkDevice,
                              fence : VkFence,
-                             pAllocator : *VkAllocationCallbacks) #c_call;
+                             pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkResetFences (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkResetFences.html)
 PFN_vkResetFences :: #type (device : VkDevice,
                             fenceCount : u32,
-                            pFences : *VkFence) -> VkResult #c_call;
+                            pFences : *VkFence) -> VkResult #foreign;
 
 
 // Command vkGetFenceStatus (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetFenceStatus.html)
 PFN_vkGetFenceStatus :: #type (device : VkDevice,
-                               fence : VkFence) -> VkResult #c_call;
+                               fence : VkFence) -> VkResult #foreign;
 
 
 // Command vkWaitForFences (Device Command)
@@ -15176,7 +15176,7 @@ PFN_vkWaitForFences :: #type (device : VkDevice,
                               fenceCount : u32,
                               pFences : *VkFence,
                               waitAll : VkBool32,
-                              timeout : u64) -> VkResult #c_call;
+                              timeout : u64) -> VkResult #foreign;
 
 
 // Command vkCreateSemaphore (Device Command)
@@ -15184,14 +15184,14 @@ PFN_vkWaitForFences :: #type (device : VkDevice,
 PFN_vkCreateSemaphore :: #type (device : VkDevice,
                                 pCreateInfo : *VkSemaphoreCreateInfo,
                                 pAllocator : *VkAllocationCallbacks,
-                                pSemaphore : *VkSemaphore) -> VkResult #c_call;
+                                pSemaphore : *VkSemaphore) -> VkResult #foreign;
 
 
 // Command vkDestroySemaphore (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroySemaphore.html)
 PFN_vkDestroySemaphore :: #type (device : VkDevice,
                                  semaphore : VkSemaphore,
-                                 pAllocator : *VkAllocationCallbacks) #c_call;
+                                 pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateEvent (Device Command)
@@ -15199,32 +15199,32 @@ PFN_vkDestroySemaphore :: #type (device : VkDevice,
 PFN_vkCreateEvent :: #type (device : VkDevice,
                             pCreateInfo : *VkEventCreateInfo,
                             pAllocator : *VkAllocationCallbacks,
-                            pEvent : *VkEvent) -> VkResult #c_call;
+                            pEvent : *VkEvent) -> VkResult #foreign;
 
 
 // Command vkDestroyEvent (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyEvent.html)
 PFN_vkDestroyEvent :: #type (device : VkDevice,
                              event : VkEvent,
-                             pAllocator : *VkAllocationCallbacks) #c_call;
+                             pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetEventStatus (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetEventStatus.html)
 PFN_vkGetEventStatus :: #type (device : VkDevice,
-                               event : VkEvent) -> VkResult #c_call;
+                               event : VkEvent) -> VkResult #foreign;
 
 
 // Command vkSetEvent (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkSetEvent.html)
 PFN_vkSetEvent :: #type (device : VkDevice,
-                         event : VkEvent) -> VkResult #c_call;
+                         event : VkEvent) -> VkResult #foreign;
 
 
 // Command vkResetEvent (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkResetEvent.html)
 PFN_vkResetEvent :: #type (device : VkDevice,
-                           event : VkEvent) -> VkResult #c_call;
+                           event : VkEvent) -> VkResult #foreign;
 
 
 // Command vkCreateQueryPool (Device Command)
@@ -15232,14 +15232,14 @@ PFN_vkResetEvent :: #type (device : VkDevice,
 PFN_vkCreateQueryPool :: #type (device : VkDevice,
                                 pCreateInfo : *VkQueryPoolCreateInfo,
                                 pAllocator : *VkAllocationCallbacks,
-                                pQueryPool : *VkQueryPool) -> VkResult #c_call;
+                                pQueryPool : *VkQueryPool) -> VkResult #foreign;
 
 
 // Command vkDestroyQueryPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyQueryPool.html)
 PFN_vkDestroyQueryPool :: #type (device : VkDevice,
                                  queryPool : VkQueryPool,
-                                 pAllocator : *VkAllocationCallbacks) #c_call;
+                                 pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetQueryPoolResults (Device Command)
@@ -15251,7 +15251,7 @@ PFN_vkGetQueryPoolResults :: #type (device : VkDevice,
                                     dataSize : u64,
                                     pData : *void,
                                     stride : VkDeviceSize,
-                                    flags : VkQueryResultFlags) -> VkResult #c_call;
+                                    flags : VkQueryResultFlags) -> VkResult #foreign;
 
 
 // Command vkResetQueryPool (Device Command)
@@ -15259,7 +15259,7 @@ PFN_vkGetQueryPoolResults :: #type (device : VkDevice,
 PFN_vkResetQueryPool :: #type (device : VkDevice,
                                queryPool : VkQueryPool,
                                firstQuery : u32,
-                               queryCount : u32) #c_call;
+                               queryCount : u32) #foreign;
 
 
 // Command vkResetQueryPoolEXT (Device Command)
@@ -15274,14 +15274,14 @@ PFN_vkResetQueryPoolEXT :: PFN_vkResetQueryPool;
 PFN_vkCreateBuffer :: #type (device : VkDevice,
                              pCreateInfo : *VkBufferCreateInfo,
                              pAllocator : *VkAllocationCallbacks,
-                             pBuffer : *VkBuffer) -> VkResult #c_call;
+                             pBuffer : *VkBuffer) -> VkResult #foreign;
 
 
 // Command vkDestroyBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyBuffer.html)
 PFN_vkDestroyBuffer :: #type (device : VkDevice,
                               buffer : VkBuffer,
-                              pAllocator : *VkAllocationCallbacks) #c_call;
+                              pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateBufferView (Device Command)
@@ -15289,14 +15289,14 @@ PFN_vkDestroyBuffer :: #type (device : VkDevice,
 PFN_vkCreateBufferView :: #type (device : VkDevice,
                                  pCreateInfo : *VkBufferViewCreateInfo,
                                  pAllocator : *VkAllocationCallbacks,
-                                 pView : *VkBufferView) -> VkResult #c_call;
+                                 pView : *VkBufferView) -> VkResult #foreign;
 
 
 // Command vkDestroyBufferView (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyBufferView.html)
 PFN_vkDestroyBufferView :: #type (device : VkDevice,
                                   bufferView : VkBufferView,
-                                  pAllocator : *VkAllocationCallbacks) #c_call;
+                                  pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateImage (Device Command)
@@ -15304,14 +15304,14 @@ PFN_vkDestroyBufferView :: #type (device : VkDevice,
 PFN_vkCreateImage :: #type (device : VkDevice,
                             pCreateInfo : *VkImageCreateInfo,
                             pAllocator : *VkAllocationCallbacks,
-                            pImage : *VkImage) -> VkResult #c_call;
+                            pImage : *VkImage) -> VkResult #foreign;
 
 
 // Command vkDestroyImage (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyImage.html)
 PFN_vkDestroyImage :: #type (device : VkDevice,
                              image : VkImage,
-                             pAllocator : *VkAllocationCallbacks) #c_call;
+                             pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetImageSubresourceLayout (Device Command)
@@ -15319,7 +15319,7 @@ PFN_vkDestroyImage :: #type (device : VkDevice,
 PFN_vkGetImageSubresourceLayout :: #type (device : VkDevice,
                                           image : VkImage,
                                           pSubresource : *VkImageSubresource,
-                                          pLayout : *VkSubresourceLayout) #c_call;
+                                          pLayout : *VkSubresourceLayout) #foreign;
 
 
 // Command vkCreateImageView (Device Command)
@@ -15327,14 +15327,14 @@ PFN_vkGetImageSubresourceLayout :: #type (device : VkDevice,
 PFN_vkCreateImageView :: #type (device : VkDevice,
                                 pCreateInfo : *VkImageViewCreateInfo,
                                 pAllocator : *VkAllocationCallbacks,
-                                pView : *VkImageView) -> VkResult #c_call;
+                                pView : *VkImageView) -> VkResult #foreign;
 
 
 // Command vkDestroyImageView (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyImageView.html)
 PFN_vkDestroyImageView :: #type (device : VkDevice,
                                  imageView : VkImageView,
-                                 pAllocator : *VkAllocationCallbacks) #c_call;
+                                 pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateShaderModule (Device Command)
@@ -15342,14 +15342,14 @@ PFN_vkDestroyImageView :: #type (device : VkDevice,
 PFN_vkCreateShaderModule :: #type (device : VkDevice,
                                    pCreateInfo : *VkShaderModuleCreateInfo,
                                    pAllocator : *VkAllocationCallbacks,
-                                   pShaderModule : *VkShaderModule) -> VkResult #c_call;
+                                   pShaderModule : *VkShaderModule) -> VkResult #foreign;
 
 
 // Command vkDestroyShaderModule (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyShaderModule.html)
 PFN_vkDestroyShaderModule :: #type (device : VkDevice,
                                     shaderModule : VkShaderModule,
-                                    pAllocator : *VkAllocationCallbacks) #c_call;
+                                    pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreatePipelineCache (Device Command)
@@ -15357,14 +15357,14 @@ PFN_vkDestroyShaderModule :: #type (device : VkDevice,
 PFN_vkCreatePipelineCache :: #type (device : VkDevice,
                                     pCreateInfo : *VkPipelineCacheCreateInfo,
                                     pAllocator : *VkAllocationCallbacks,
-                                    pPipelineCache : *VkPipelineCache) -> VkResult #c_call;
+                                    pPipelineCache : *VkPipelineCache) -> VkResult #foreign;
 
 
 // Command vkDestroyPipelineCache (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyPipelineCache.html)
 PFN_vkDestroyPipelineCache :: #type (device : VkDevice,
                                      pipelineCache : VkPipelineCache,
-                                     pAllocator : *VkAllocationCallbacks) #c_call;
+                                     pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetPipelineCacheData (Device Command)
@@ -15372,7 +15372,7 @@ PFN_vkDestroyPipelineCache :: #type (device : VkDevice,
 PFN_vkGetPipelineCacheData :: #type (device : VkDevice,
                                      pipelineCache : VkPipelineCache,
                                      pDataSize : *u64,
-                                     pData : *void) -> VkResult #c_call;
+                                     pData : *void) -> VkResult #foreign;
 
 
 // Command vkMergePipelineCaches (Device Command)
@@ -15380,7 +15380,7 @@ PFN_vkGetPipelineCacheData :: #type (device : VkDevice,
 PFN_vkMergePipelineCaches :: #type (device : VkDevice,
                                     dstCache : VkPipelineCache,
                                     srcCacheCount : u32,
-                                    pSrcCaches : *VkPipelineCache) -> VkResult #c_call;
+                                    pSrcCaches : *VkPipelineCache) -> VkResult #foreign;
 
 
 // Command vkCreateGraphicsPipelines (Device Command)
@@ -15390,7 +15390,7 @@ PFN_vkCreateGraphicsPipelines :: #type (device : VkDevice,
                                         createInfoCount : u32,
                                         pCreateInfos : *VkGraphicsPipelineCreateInfo,
                                         pAllocator : *VkAllocationCallbacks,
-                                        pPipelines : *VkPipeline) -> VkResult #c_call;
+                                        pPipelines : *VkPipeline) -> VkResult #foreign;
 
 
 // Command vkCreateComputePipelines (Device Command)
@@ -15400,14 +15400,14 @@ PFN_vkCreateComputePipelines :: #type (device : VkDevice,
                                        createInfoCount : u32,
                                        pCreateInfos : *VkComputePipelineCreateInfo,
                                        pAllocator : *VkAllocationCallbacks,
-                                       pPipelines : *VkPipeline) -> VkResult #c_call;
+                                       pPipelines : *VkPipeline) -> VkResult #foreign;
 
 
 // Command vkDestroyPipeline (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyPipeline.html)
 PFN_vkDestroyPipeline :: #type (device : VkDevice,
                                 pipeline : VkPipeline,
-                                pAllocator : *VkAllocationCallbacks) #c_call;
+                                pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreatePipelineLayout (Device Command)
@@ -15415,14 +15415,14 @@ PFN_vkDestroyPipeline :: #type (device : VkDevice,
 PFN_vkCreatePipelineLayout :: #type (device : VkDevice,
                                      pCreateInfo : *VkPipelineLayoutCreateInfo,
                                      pAllocator : *VkAllocationCallbacks,
-                                     pPipelineLayout : *VkPipelineLayout) -> VkResult #c_call;
+                                     pPipelineLayout : *VkPipelineLayout) -> VkResult #foreign;
 
 
 // Command vkDestroyPipelineLayout (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyPipelineLayout.html)
 PFN_vkDestroyPipelineLayout :: #type (device : VkDevice,
                                       pipelineLayout : VkPipelineLayout,
-                                      pAllocator : *VkAllocationCallbacks) #c_call;
+                                      pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateSampler (Device Command)
@@ -15430,14 +15430,14 @@ PFN_vkDestroyPipelineLayout :: #type (device : VkDevice,
 PFN_vkCreateSampler :: #type (device : VkDevice,
                               pCreateInfo : *VkSamplerCreateInfo,
                               pAllocator : *VkAllocationCallbacks,
-                              pSampler : *VkSampler) -> VkResult #c_call;
+                              pSampler : *VkSampler) -> VkResult #foreign;
 
 
 // Command vkDestroySampler (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroySampler.html)
 PFN_vkDestroySampler :: #type (device : VkDevice,
                                sampler : VkSampler,
-                               pAllocator : *VkAllocationCallbacks) #c_call;
+                               pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateDescriptorSetLayout (Device Command)
@@ -15445,14 +15445,14 @@ PFN_vkDestroySampler :: #type (device : VkDevice,
 PFN_vkCreateDescriptorSetLayout :: #type (device : VkDevice,
                                           pCreateInfo : *VkDescriptorSetLayoutCreateInfo,
                                           pAllocator : *VkAllocationCallbacks,
-                                          pSetLayout : *VkDescriptorSetLayout) -> VkResult #c_call;
+                                          pSetLayout : *VkDescriptorSetLayout) -> VkResult #foreign;
 
 
 // Command vkDestroyDescriptorSetLayout (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyDescriptorSetLayout.html)
 PFN_vkDestroyDescriptorSetLayout :: #type (device : VkDevice,
                                            descriptorSetLayout : VkDescriptorSetLayout,
-                                           pAllocator : *VkAllocationCallbacks) #c_call;
+                                           pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateDescriptorPool (Device Command)
@@ -15460,28 +15460,28 @@ PFN_vkDestroyDescriptorSetLayout :: #type (device : VkDevice,
 PFN_vkCreateDescriptorPool :: #type (device : VkDevice,
                                      pCreateInfo : *VkDescriptorPoolCreateInfo,
                                      pAllocator : *VkAllocationCallbacks,
-                                     pDescriptorPool : *VkDescriptorPool) -> VkResult #c_call;
+                                     pDescriptorPool : *VkDescriptorPool) -> VkResult #foreign;
 
 
 // Command vkDestroyDescriptorPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyDescriptorPool.html)
 PFN_vkDestroyDescriptorPool :: #type (device : VkDevice,
                                       descriptorPool : VkDescriptorPool,
-                                      pAllocator : *VkAllocationCallbacks) #c_call;
+                                      pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkResetDescriptorPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkResetDescriptorPool.html)
 PFN_vkResetDescriptorPool :: #type (device : VkDevice,
                                     descriptorPool : VkDescriptorPool,
-                                    flags : VkDescriptorPoolResetFlags) -> VkResult #c_call;
+                                    flags : VkDescriptorPoolResetFlags) -> VkResult #foreign;
 
 
 // Command vkAllocateDescriptorSets (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkAllocateDescriptorSets.html)
 PFN_vkAllocateDescriptorSets :: #type (device : VkDevice,
                                        pAllocateInfo : *VkDescriptorSetAllocateInfo,
-                                       pDescriptorSets : *VkDescriptorSet) -> VkResult #c_call;
+                                       pDescriptorSets : *VkDescriptorSet) -> VkResult #foreign;
 
 
 // Command vkFreeDescriptorSets (Device Command)
@@ -15489,7 +15489,7 @@ PFN_vkAllocateDescriptorSets :: #type (device : VkDevice,
 PFN_vkFreeDescriptorSets :: #type (device : VkDevice,
                                    descriptorPool : VkDescriptorPool,
                                    descriptorSetCount : u32,
-                                   pDescriptorSets : *VkDescriptorSet) -> VkResult #c_call;
+                                   pDescriptorSets : *VkDescriptorSet) -> VkResult #foreign;
 
 
 // Command vkUpdateDescriptorSets (Device Command)
@@ -15498,7 +15498,7 @@ PFN_vkUpdateDescriptorSets :: #type (device : VkDevice,
                                      descriptorWriteCount : u32,
                                      pDescriptorWrites : *VkWriteDescriptorSet,
                                      descriptorCopyCount : u32,
-                                     pDescriptorCopies : *VkCopyDescriptorSet) #c_call;
+                                     pDescriptorCopies : *VkCopyDescriptorSet) #foreign;
 
 
 // Command vkCreateFramebuffer (Device Command)
@@ -15506,14 +15506,14 @@ PFN_vkUpdateDescriptorSets :: #type (device : VkDevice,
 PFN_vkCreateFramebuffer :: #type (device : VkDevice,
                                   pCreateInfo : *VkFramebufferCreateInfo,
                                   pAllocator : *VkAllocationCallbacks,
-                                  pFramebuffer : *VkFramebuffer) -> VkResult #c_call;
+                                  pFramebuffer : *VkFramebuffer) -> VkResult #foreign;
 
 
 // Command vkDestroyFramebuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyFramebuffer.html)
 PFN_vkDestroyFramebuffer :: #type (device : VkDevice,
                                    framebuffer : VkFramebuffer,
-                                   pAllocator : *VkAllocationCallbacks) #c_call;
+                                   pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCreateRenderPass (Device Command)
@@ -15521,21 +15521,21 @@ PFN_vkDestroyFramebuffer :: #type (device : VkDevice,
 PFN_vkCreateRenderPass :: #type (device : VkDevice,
                                  pCreateInfo : *VkRenderPassCreateInfo,
                                  pAllocator : *VkAllocationCallbacks,
-                                 pRenderPass : *VkRenderPass) -> VkResult #c_call;
+                                 pRenderPass : *VkRenderPass) -> VkResult #foreign;
 
 
 // Command vkDestroyRenderPass (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyRenderPass.html)
 PFN_vkDestroyRenderPass :: #type (device : VkDevice,
                                   renderPass : VkRenderPass,
-                                  pAllocator : *VkAllocationCallbacks) #c_call;
+                                  pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetRenderAreaGranularity (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetRenderAreaGranularity.html)
 PFN_vkGetRenderAreaGranularity :: #type (device : VkDevice,
                                          renderPass : VkRenderPass,
-                                         pGranularity : *VkExtent2D) #c_call;
+                                         pGranularity : *VkExtent2D) #foreign;
 
 
 // Command vkCreateCommandPool (Device Command)
@@ -15543,28 +15543,28 @@ PFN_vkGetRenderAreaGranularity :: #type (device : VkDevice,
 PFN_vkCreateCommandPool :: #type (device : VkDevice,
                                   pCreateInfo : *VkCommandPoolCreateInfo,
                                   pAllocator : *VkAllocationCallbacks,
-                                  pCommandPool : *VkCommandPool) -> VkResult #c_call;
+                                  pCommandPool : *VkCommandPool) -> VkResult #foreign;
 
 
 // Command vkDestroyCommandPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyCommandPool.html)
 PFN_vkDestroyCommandPool :: #type (device : VkDevice,
                                    commandPool : VkCommandPool,
-                                   pAllocator : *VkAllocationCallbacks) #c_call;
+                                   pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkResetCommandPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkResetCommandPool.html)
 PFN_vkResetCommandPool :: #type (device : VkDevice,
                                  commandPool : VkCommandPool,
-                                 flags : VkCommandPoolResetFlags) -> VkResult #c_call;
+                                 flags : VkCommandPoolResetFlags) -> VkResult #foreign;
 
 
 // Command vkAllocateCommandBuffers (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkAllocateCommandBuffers.html)
 PFN_vkAllocateCommandBuffers :: #type (device : VkDevice,
                                        pAllocateInfo : *VkCommandBufferAllocateInfo,
-                                       pCommandBuffers : *VkCommandBuffer) -> VkResult #c_call;
+                                       pCommandBuffers : *VkCommandBuffer) -> VkResult #foreign;
 
 
 // Command vkFreeCommandBuffers (Device Command)
@@ -15572,24 +15572,24 @@ PFN_vkAllocateCommandBuffers :: #type (device : VkDevice,
 PFN_vkFreeCommandBuffers :: #type (device : VkDevice,
                                    commandPool : VkCommandPool,
                                    commandBufferCount : u32,
-                                   pCommandBuffers : *VkCommandBuffer) #c_call;
+                                   pCommandBuffers : *VkCommandBuffer) #foreign;
 
 
 // Command vkBeginCommandBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkBeginCommandBuffer.html)
 PFN_vkBeginCommandBuffer :: #type (commandBuffer : VkCommandBuffer,
-                                   pBeginInfo : *VkCommandBufferBeginInfo) -> VkResult #c_call;
+                                   pBeginInfo : *VkCommandBufferBeginInfo) -> VkResult #foreign;
 
 
 // Command vkEndCommandBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkEndCommandBuffer.html)
-PFN_vkEndCommandBuffer :: #type (commandBuffer : VkCommandBuffer) -> VkResult #c_call;
+PFN_vkEndCommandBuffer :: #type (commandBuffer : VkCommandBuffer) -> VkResult #foreign;
 
 
 // Command vkResetCommandBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkResetCommandBuffer.html)
 PFN_vkResetCommandBuffer :: #type (commandBuffer : VkCommandBuffer,
-                                   flags : VkCommandBufferResetFlags) -> VkResult #c_call;
+                                   flags : VkCommandBufferResetFlags) -> VkResult #foreign;
 
 
 // Command vkCmdBindPipeline (Device Command)
@@ -15599,7 +15599,7 @@ PFN_vkResetCommandBuffer :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdBindPipeline :: #type (commandBuffer : VkCommandBuffer,
                                 pipelineBindPoint : VkPipelineBindPoint,
-                                pipeline : VkPipeline) #c_call;
+                                pipeline : VkPipeline) #foreign;
 
 
 // Command vkCmdSetViewport (Device Command)
@@ -15610,7 +15610,7 @@ PFN_vkCmdBindPipeline :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdSetViewport :: #type (commandBuffer : VkCommandBuffer,
                                firstViewport : u32,
                                viewportCount : u32,
-                               pViewports : *VkViewport) #c_call;
+                               pViewports : *VkViewport) #foreign;
 
 
 // Command vkCmdSetScissor (Device Command)
@@ -15621,7 +15621,7 @@ PFN_vkCmdSetViewport :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdSetScissor :: #type (commandBuffer : VkCommandBuffer,
                               firstScissor : u32,
                               scissorCount : u32,
-                              pScissors : *VkRect2D) #c_call;
+                              pScissors : *VkRect2D) #foreign;
 
 
 // Command vkCmdSetLineWidth (Device Command)
@@ -15630,7 +15630,7 @@ PFN_vkCmdSetScissor :: #type (commandBuffer : VkCommandBuffer,
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetLineWidth :: #type (commandBuffer : VkCommandBuffer,
-                                lineWidth : float32) #c_call;
+                                lineWidth : float32) #foreign;
 
 
 // Command vkCmdSetDepthBias (Device Command)
@@ -15641,7 +15641,7 @@ PFN_vkCmdSetLineWidth :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdSetDepthBias :: #type (commandBuffer : VkCommandBuffer,
                                 depthBiasConstantFactor : float32,
                                 depthBiasClamp : float32,
-                                depthBiasSlopeFactor : float32) #c_call;
+                                depthBiasSlopeFactor : float32) #foreign;
 
 
 // Command vkCmdSetBlendConstants (Device Command)
@@ -15650,7 +15650,7 @@ PFN_vkCmdSetDepthBias :: #type (commandBuffer : VkCommandBuffer,
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetBlendConstants :: #type (commandBuffer : VkCommandBuffer,
-                                     blendConstants : [4] float32) #c_call;
+                                     blendConstants : [4] float32) #foreign;
 
 
 // Command vkCmdSetDepthBounds (Device Command)
@@ -15660,7 +15660,7 @@ PFN_vkCmdSetBlendConstants :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetDepthBounds :: #type (commandBuffer : VkCommandBuffer,
                                   minDepthBounds : float32,
-                                  maxDepthBounds : float32) #c_call;
+                                  maxDepthBounds : float32) #foreign;
 
 
 // Command vkCmdSetStencilCompareMask (Device Command)
@@ -15670,7 +15670,7 @@ PFN_vkCmdSetDepthBounds :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetStencilCompareMask :: #type (commandBuffer : VkCommandBuffer,
                                          faceMask : VkStencilFaceFlags,
-                                         compareMask : u32) #c_call;
+                                         compareMask : u32) #foreign;
 
 
 // Command vkCmdSetStencilWriteMask (Device Command)
@@ -15680,7 +15680,7 @@ PFN_vkCmdSetStencilCompareMask :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetStencilWriteMask :: #type (commandBuffer : VkCommandBuffer,
                                        faceMask : VkStencilFaceFlags,
-                                       writeMask : u32) #c_call;
+                                       writeMask : u32) #foreign;
 
 
 // Command vkCmdSetStencilReference (Device Command)
@@ -15690,7 +15690,7 @@ PFN_vkCmdSetStencilWriteMask :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetStencilReference :: #type (commandBuffer : VkCommandBuffer,
                                        faceMask : VkStencilFaceFlags,
-                                       reference : u32) #c_call;
+                                       reference : u32) #foreign;
 
 
 // Command vkCmdBindDescriptorSets (Device Command)
@@ -15705,7 +15705,7 @@ PFN_vkCmdBindDescriptorSets :: #type (commandBuffer : VkCommandBuffer,
                                       descriptorSetCount : u32,
                                       pDescriptorSets : *VkDescriptorSet,
                                       dynamicOffsetCount : u32,
-                                      pDynamicOffsets : *u32) #c_call;
+                                      pDynamicOffsets : *u32) #foreign;
 
 
 // Command vkCmdBindIndexBuffer (Device Command)
@@ -15716,7 +15716,7 @@ PFN_vkCmdBindDescriptorSets :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdBindIndexBuffer :: #type (commandBuffer : VkCommandBuffer,
                                    buffer : VkBuffer,
                                    offset : VkDeviceSize,
-                                   indexType : VkIndexType) #c_call;
+                                   indexType : VkIndexType) #foreign;
 
 
 // Command vkCmdBindVertexBuffers (Device Command)
@@ -15728,7 +15728,7 @@ PFN_vkCmdBindVertexBuffers :: #type (commandBuffer : VkCommandBuffer,
                                      firstBinding : u32,
                                      bindingCount : u32,
                                      pBuffers : *VkBuffer,
-                                     pOffsets : *VkDeviceSize) #c_call;
+                                     pOffsets : *VkDeviceSize) #foreign;
 
 
 // Command vkCmdDraw (Device Command)
@@ -15740,7 +15740,7 @@ PFN_vkCmdDraw :: #type (commandBuffer : VkCommandBuffer,
                         vertexCount : u32,
                         instanceCount : u32,
                         firstVertex : u32,
-                        firstInstance : u32) #c_call;
+                        firstInstance : u32) #foreign;
 
 
 // Command vkCmdDrawIndexed (Device Command)
@@ -15753,7 +15753,7 @@ PFN_vkCmdDrawIndexed :: #type (commandBuffer : VkCommandBuffer,
                                instanceCount : u32,
                                firstIndex : u32,
                                vertexOffset : s32,
-                               firstInstance : u32) #c_call;
+                               firstInstance : u32) #foreign;
 
 
 // Command vkCmdDrawIndirect (Device Command)
@@ -15765,7 +15765,7 @@ PFN_vkCmdDrawIndirect :: #type (commandBuffer : VkCommandBuffer,
                                 buffer : VkBuffer,
                                 offset : VkDeviceSize,
                                 drawCount : u32,
-                                stride : u32) #c_call;
+                                stride : u32) #foreign;
 
 
 // Command vkCmdDrawIndexedIndirect (Device Command)
@@ -15777,7 +15777,7 @@ PFN_vkCmdDrawIndexedIndirect :: #type (commandBuffer : VkCommandBuffer,
                                        buffer : VkBuffer,
                                        offset : VkDeviceSize,
                                        drawCount : u32,
-                                       stride : u32) #c_call;
+                                       stride : u32) #foreign;
 
 
 // Command vkCmdDispatch (Device Command)
@@ -15788,7 +15788,7 @@ PFN_vkCmdDrawIndexedIndirect :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdDispatch :: #type (commandBuffer : VkCommandBuffer,
                             groupCountX : u32,
                             groupCountY : u32,
-                            groupCountZ : u32) #c_call;
+                            groupCountZ : u32) #foreign;
 
 
 // Command vkCmdDispatchIndirect (Device Command)
@@ -15798,7 +15798,7 @@ PFN_vkCmdDispatch :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDispatchIndirect :: #type (commandBuffer : VkCommandBuffer,
                                     buffer : VkBuffer,
-                                    offset : VkDeviceSize) #c_call;
+                                    offset : VkDeviceSize) #foreign;
 
 
 // Command vkCmdCopyBuffer (Device Command)
@@ -15810,7 +15810,7 @@ PFN_vkCmdCopyBuffer :: #type (commandBuffer : VkCommandBuffer,
                               srcBuffer : VkBuffer,
                               dstBuffer : VkBuffer,
                               regionCount : u32,
-                              pRegions : *VkBufferCopy) #c_call;
+                              pRegions : *VkBufferCopy) #foreign;
 
 
 // Command vkCmdCopyImage (Device Command)
@@ -15824,7 +15824,7 @@ PFN_vkCmdCopyImage :: #type (commandBuffer : VkCommandBuffer,
                              dstImage : VkImage,
                              dstImageLayout : VkImageLayout,
                              regionCount : u32,
-                             pRegions : *VkImageCopy) #c_call;
+                             pRegions : *VkImageCopy) #foreign;
 
 
 // Command vkCmdBlitImage (Device Command)
@@ -15839,7 +15839,7 @@ PFN_vkCmdBlitImage :: #type (commandBuffer : VkCommandBuffer,
                              dstImageLayout : VkImageLayout,
                              regionCount : u32,
                              pRegions : *VkImageBlit,
-                             filter : VkFilter) #c_call;
+                             filter : VkFilter) #foreign;
 
 
 // Command vkCmdCopyBufferToImage (Device Command)
@@ -15852,7 +15852,7 @@ PFN_vkCmdCopyBufferToImage :: #type (commandBuffer : VkCommandBuffer,
                                      dstImage : VkImage,
                                      dstImageLayout : VkImageLayout,
                                      regionCount : u32,
-                                     pRegions : *VkBufferImageCopy) #c_call;
+                                     pRegions : *VkBufferImageCopy) #foreign;
 
 
 // Command vkCmdCopyImageToBuffer (Device Command)
@@ -15865,7 +15865,7 @@ PFN_vkCmdCopyImageToBuffer :: #type (commandBuffer : VkCommandBuffer,
                                      srcImageLayout : VkImageLayout,
                                      dstBuffer : VkBuffer,
                                      regionCount : u32,
-                                     pRegions : *VkBufferImageCopy) #c_call;
+                                     pRegions : *VkBufferImageCopy) #foreign;
 
 
 // Command vkCmdUpdateBuffer (Device Command)
@@ -15877,7 +15877,7 @@ PFN_vkCmdUpdateBuffer :: #type (commandBuffer : VkCommandBuffer,
                                 dstBuffer : VkBuffer,
                                 dstOffset : VkDeviceSize,
                                 dataSize : VkDeviceSize,
-                                pData : *void) #c_call;
+                                pData : *void) #foreign;
 
 
 // Command vkCmdFillBuffer (Device Command)
@@ -15889,7 +15889,7 @@ PFN_vkCmdFillBuffer :: #type (commandBuffer : VkCommandBuffer,
                               dstBuffer : VkBuffer,
                               dstOffset : VkDeviceSize,
                               size : VkDeviceSize,
-                              data : u32) #c_call;
+                              data : u32) #foreign;
 
 
 // Command vkCmdClearColorImage (Device Command)
@@ -15902,7 +15902,7 @@ PFN_vkCmdClearColorImage :: #type (commandBuffer : VkCommandBuffer,
                                    imageLayout : VkImageLayout,
                                    pColor : *VkClearColorValue,
                                    rangeCount : u32,
-                                   pRanges : *VkImageSubresourceRange) #c_call;
+                                   pRanges : *VkImageSubresourceRange) #foreign;
 
 
 // Command vkCmdClearDepthStencilImage (Device Command)
@@ -15915,7 +15915,7 @@ PFN_vkCmdClearDepthStencilImage :: #type (commandBuffer : VkCommandBuffer,
                                           imageLayout : VkImageLayout,
                                           pDepthStencil : *VkClearDepthStencilValue,
                                           rangeCount : u32,
-                                          pRanges : *VkImageSubresourceRange) #c_call;
+                                          pRanges : *VkImageSubresourceRange) #foreign;
 
 
 // Command vkCmdClearAttachments (Device Command)
@@ -15927,7 +15927,7 @@ PFN_vkCmdClearAttachments :: #type (commandBuffer : VkCommandBuffer,
                                     attachmentCount : u32,
                                     pAttachments : *VkClearAttachment,
                                     rectCount : u32,
-                                    pRects : *VkClearRect) #c_call;
+                                    pRects : *VkClearRect) #foreign;
 
 
 // Command vkCmdResolveImage (Device Command)
@@ -15941,7 +15941,7 @@ PFN_vkCmdResolveImage :: #type (commandBuffer : VkCommandBuffer,
                                 dstImage : VkImage,
                                 dstImageLayout : VkImageLayout,
                                 regionCount : u32,
-                                pRegions : *VkImageResolve) #c_call;
+                                pRegions : *VkImageResolve) #foreign;
 
 
 // Command vkCmdSetEvent (Device Command)
@@ -15951,7 +15951,7 @@ PFN_vkCmdResolveImage :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetEvent :: #type (commandBuffer : VkCommandBuffer,
                             event : VkEvent,
-                            stageMask : VkPipelineStageFlags) #c_call;
+                            stageMask : VkPipelineStageFlags) #foreign;
 
 
 // Command vkCmdResetEvent (Device Command)
@@ -15961,7 +15961,7 @@ PFN_vkCmdSetEvent :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdResetEvent :: #type (commandBuffer : VkCommandBuffer,
                               event : VkEvent,
-                              stageMask : VkPipelineStageFlags) #c_call;
+                              stageMask : VkPipelineStageFlags) #foreign;
 
 
 // Command vkCmdWaitEvents (Device Command)
@@ -15979,7 +15979,7 @@ PFN_vkCmdWaitEvents :: #type (commandBuffer : VkCommandBuffer,
                               bufferMemoryBarrierCount : u32,
                               pBufferMemoryBarriers : *VkBufferMemoryBarrier,
                               imageMemoryBarrierCount : u32,
-                              pImageMemoryBarriers : *VkImageMemoryBarrier) #c_call;
+                              pImageMemoryBarriers : *VkImageMemoryBarrier) #foreign;
 
 
 // Command vkCmdPipelineBarrier (Device Command)
@@ -15996,7 +15996,7 @@ PFN_vkCmdPipelineBarrier :: #type (commandBuffer : VkCommandBuffer,
                                    bufferMemoryBarrierCount : u32,
                                    pBufferMemoryBarriers : *VkBufferMemoryBarrier,
                                    imageMemoryBarrierCount : u32,
-                                   pImageMemoryBarriers : *VkImageMemoryBarrier) #c_call;
+                                   pImageMemoryBarriers : *VkImageMemoryBarrier) #foreign;
 
 
 // Command vkCmdBeginQuery (Device Command)
@@ -16007,7 +16007,7 @@ PFN_vkCmdPipelineBarrier :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdBeginQuery :: #type (commandBuffer : VkCommandBuffer,
                               queryPool : VkQueryPool,
                               query : u32,
-                              flags : VkQueryControlFlags) #c_call;
+                              flags : VkQueryControlFlags) #foreign;
 
 
 // Command vkCmdEndQuery (Device Command)
@@ -16017,7 +16017,7 @@ PFN_vkCmdBeginQuery :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdEndQuery :: #type (commandBuffer : VkCommandBuffer,
                             queryPool : VkQueryPool,
-                            query : u32) #c_call;
+                            query : u32) #foreign;
 
 
 // Command vkCmdBeginConditionalRenderingEXT (Device Command)
@@ -16028,7 +16028,7 @@ PFN_vkCmdEndQuery :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_conditional_rendering
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_conditional_rendering.html)
 PFN_vkCmdBeginConditionalRenderingEXT :: #type (commandBuffer : VkCommandBuffer,
-                                                pConditionalRenderingBegin : *VkConditionalRenderingBeginInfoEXT) #c_call;
+                                                pConditionalRenderingBegin : *VkConditionalRenderingBeginInfoEXT) #foreign;
 
 
 // Command vkCmdEndConditionalRenderingEXT (Device Command)
@@ -16038,7 +16038,7 @@ PFN_vkCmdBeginConditionalRenderingEXT :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_conditional_rendering
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_conditional_rendering.html)
-PFN_vkCmdEndConditionalRenderingEXT :: #type (commandBuffer : VkCommandBuffer) #c_call;
+PFN_vkCmdEndConditionalRenderingEXT :: #type (commandBuffer : VkCommandBuffer) #foreign;
 
 
 // Command vkCmdResetQueryPool (Device Command)
@@ -16049,7 +16049,7 @@ PFN_vkCmdEndConditionalRenderingEXT :: #type (commandBuffer : VkCommandBuffer) #
 PFN_vkCmdResetQueryPool :: #type (commandBuffer : VkCommandBuffer,
                                   queryPool : VkQueryPool,
                                   firstQuery : u32,
-                                  queryCount : u32) #c_call;
+                                  queryCount : u32) #foreign;
 
 
 // Command vkCmdWriteTimestamp (Device Command)
@@ -16060,7 +16060,7 @@ PFN_vkCmdResetQueryPool :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdWriteTimestamp :: #type (commandBuffer : VkCommandBuffer,
                                   pipelineStage : VkPipelineStageFlagBits,
                                   queryPool : VkQueryPool,
-                                  query : u32) #c_call;
+                                  query : u32) #foreign;
 
 
 // Command vkCmdCopyQueryPoolResults (Device Command)
@@ -16075,7 +16075,7 @@ PFN_vkCmdCopyQueryPoolResults :: #type (commandBuffer : VkCommandBuffer,
                                         dstBuffer : VkBuffer,
                                         dstOffset : VkDeviceSize,
                                         stride : VkDeviceSize,
-                                        flags : VkQueryResultFlags) #c_call;
+                                        flags : VkQueryResultFlags) #foreign;
 
 
 // Command vkCmdPushConstants (Device Command)
@@ -16088,7 +16088,7 @@ PFN_vkCmdPushConstants :: #type (commandBuffer : VkCommandBuffer,
                                  stageFlags : VkShaderStageFlags,
                                  offset : u32,
                                  size : u32,
-                                 pValues : *void) #c_call;
+                                 pValues : *void) #foreign;
 
 
 // Command vkCmdBeginRenderPass (Device Command)
@@ -16098,7 +16098,7 @@ PFN_vkCmdPushConstants :: #type (commandBuffer : VkCommandBuffer,
 // Has to be recorded to a primary command buffer
 PFN_vkCmdBeginRenderPass :: #type (commandBuffer : VkCommandBuffer,
                                    pRenderPassBegin : *VkRenderPassBeginInfo,
-                                   contents : VkSubpassContents) #c_call;
+                                   contents : VkSubpassContents) #foreign;
 
 
 // Command vkCmdNextSubpass (Device Command)
@@ -16107,7 +16107,7 @@ PFN_vkCmdBeginRenderPass :: #type (commandBuffer : VkCommandBuffer,
 // Has to be used inside a rendepass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdNextSubpass :: #type (commandBuffer : VkCommandBuffer,
-                               contents : VkSubpassContents) #c_call;
+                               contents : VkSubpassContents) #foreign;
 
 
 // Command vkCmdEndRenderPass (Device Command)
@@ -16115,7 +16115,7 @@ PFN_vkCmdNextSubpass :: #type (commandBuffer : VkCommandBuffer,
 // Can be submitted to a Graphics queue
 // Has to be used inside a rendepass
 // Has to be recorded to a primary command buffer
-PFN_vkCmdEndRenderPass :: #type (commandBuffer : VkCommandBuffer) #c_call;
+PFN_vkCmdEndRenderPass :: #type (commandBuffer : VkCommandBuffer) #foreign;
 
 
 // Command vkCmdExecuteCommands (Device Command)
@@ -16125,7 +16125,7 @@ PFN_vkCmdEndRenderPass :: #type (commandBuffer : VkCommandBuffer) #c_call;
 // Has to be recorded to a primary command buffer
 PFN_vkCmdExecuteCommands :: #type (commandBuffer : VkCommandBuffer,
                                    commandBufferCount : u32,
-                                   pCommandBuffers : *VkCommandBuffer) #c_call;
+                                   pCommandBuffers : *VkCommandBuffer) #foreign;
 
 
 // Command vkCreateSharedSwapchainsKHR (Device Command)
@@ -16136,7 +16136,7 @@ PFN_vkCreateSharedSwapchainsKHR :: #type (device : VkDevice,
                                           swapchainCount : u32,
                                           pCreateInfos : *VkSwapchainCreateInfoKHR,
                                           pAllocator : *VkAllocationCallbacks,
-                                          pSwapchains : *VkSwapchainKHR) -> VkResult #c_call;
+                                          pSwapchains : *VkSwapchainKHR) -> VkResult #foreign;
 
 
 // Command vkCreateSwapchainKHR (Device Command)
@@ -16146,7 +16146,7 @@ PFN_vkCreateSharedSwapchainsKHR :: #type (device : VkDevice,
 PFN_vkCreateSwapchainKHR :: #type (device : VkDevice,
                                    pCreateInfo : *VkSwapchainCreateInfoKHR,
                                    pAllocator : *VkAllocationCallbacks,
-                                   pSwapchain : *VkSwapchainKHR) -> VkResult #c_call;
+                                   pSwapchain : *VkSwapchainKHR) -> VkResult #foreign;
 
 
 // Command vkDestroySwapchainKHR (Device Command)
@@ -16155,7 +16155,7 @@ PFN_vkCreateSwapchainKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_swapchain.html)
 PFN_vkDestroySwapchainKHR :: #type (device : VkDevice,
                                     swapchain : VkSwapchainKHR,
-                                    pAllocator : *VkAllocationCallbacks) #c_call;
+                                    pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetSwapchainImagesKHR (Device Command)
@@ -16165,7 +16165,7 @@ PFN_vkDestroySwapchainKHR :: #type (device : VkDevice,
 PFN_vkGetSwapchainImagesKHR :: #type (device : VkDevice,
                                       swapchain : VkSwapchainKHR,
                                       pSwapchainImageCount : *u32,
-                                      pSwapchainImages : *VkImage) -> VkResult #c_call;
+                                      pSwapchainImages : *VkImage) -> VkResult #foreign;
 
 
 // Command vkAcquireNextImageKHR (Device Command)
@@ -16177,7 +16177,7 @@ PFN_vkAcquireNextImageKHR :: #type (device : VkDevice,
                                     timeout : u64,
                                     semaphore : VkSemaphore,
                                     fence : VkFence,
-                                    pImageIndex : *u32) -> VkResult #c_call;
+                                    pImageIndex : *u32) -> VkResult #foreign;
 
 
 // Command vkQueuePresentKHR (Device Command)
@@ -16185,7 +16185,7 @@ PFN_vkAcquireNextImageKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_swapchain
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_swapchain.html)
 PFN_vkQueuePresentKHR :: #type (queue : VkQueue,
-                                pPresentInfo : *VkPresentInfoKHR) -> VkResult #c_call;
+                                pPresentInfo : *VkPresentInfoKHR) -> VkResult #foreign;
 
 
 // Command vkDebugMarkerSetObjectNameEXT (Device Command)
@@ -16193,7 +16193,7 @@ PFN_vkQueuePresentKHR :: #type (queue : VkQueue,
 // Referenced by VK_EXT_debug_marker
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_marker.html)
 PFN_vkDebugMarkerSetObjectNameEXT :: #type (device : VkDevice,
-                                            pNameInfo : *VkDebugMarkerObjectNameInfoEXT) -> VkResult #c_call;
+                                            pNameInfo : *VkDebugMarkerObjectNameInfoEXT) -> VkResult #foreign;
 
 
 // Command vkDebugMarkerSetObjectTagEXT (Device Command)
@@ -16201,7 +16201,7 @@ PFN_vkDebugMarkerSetObjectNameEXT :: #type (device : VkDevice,
 // Referenced by VK_EXT_debug_marker
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_marker.html)
 PFN_vkDebugMarkerSetObjectTagEXT :: #type (device : VkDevice,
-                                           pTagInfo : *VkDebugMarkerObjectTagInfoEXT) -> VkResult #c_call;
+                                           pTagInfo : *VkDebugMarkerObjectTagInfoEXT) -> VkResult #foreign;
 
 
 // Command vkCmdDebugMarkerBeginEXT (Device Command)
@@ -16212,7 +16212,7 @@ PFN_vkDebugMarkerSetObjectTagEXT :: #type (device : VkDevice,
 // Referenced by VK_EXT_debug_marker
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_marker.html)
 PFN_vkCmdDebugMarkerBeginEXT :: #type (commandBuffer : VkCommandBuffer,
-                                       pMarkerInfo : *VkDebugMarkerMarkerInfoEXT) #c_call;
+                                       pMarkerInfo : *VkDebugMarkerMarkerInfoEXT) #foreign;
 
 
 // Command vkCmdDebugMarkerEndEXT (Device Command)
@@ -16222,7 +16222,7 @@ PFN_vkCmdDebugMarkerBeginEXT :: #type (commandBuffer : VkCommandBuffer,
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_debug_marker
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_marker.html)
-PFN_vkCmdDebugMarkerEndEXT :: #type (commandBuffer : VkCommandBuffer) #c_call;
+PFN_vkCmdDebugMarkerEndEXT :: #type (commandBuffer : VkCommandBuffer) #foreign;
 
 
 // Command vkCmdDebugMarkerInsertEXT (Device Command)
@@ -16233,7 +16233,7 @@ PFN_vkCmdDebugMarkerEndEXT :: #type (commandBuffer : VkCommandBuffer) #c_call;
 // Referenced by VK_EXT_debug_marker
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_debug_marker.html)
 PFN_vkCmdDebugMarkerInsertEXT :: #type (commandBuffer : VkCommandBuffer,
-                                        pMarkerInfo : *VkDebugMarkerMarkerInfoEXT) #c_call;
+                                        pMarkerInfo : *VkDebugMarkerMarkerInfoEXT) #foreign;
 
 
 // Command vkCmdExecuteGeneratedCommandsNV (Device Command)
@@ -16245,7 +16245,7 @@ PFN_vkCmdDebugMarkerInsertEXT :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
 PFN_vkCmdExecuteGeneratedCommandsNV :: #type (commandBuffer : VkCommandBuffer,
                                               isPreprocessed : VkBool32,
-                                              pGeneratedCommandsInfo : *VkGeneratedCommandsInfoNV) #c_call;
+                                              pGeneratedCommandsInfo : *VkGeneratedCommandsInfoNV) #foreign;
 
 
 // Command vkCmdPreprocessGeneratedCommandsNV (Device Command)
@@ -16256,7 +16256,7 @@ PFN_vkCmdExecuteGeneratedCommandsNV :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_NV_device_generated_commands
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
 PFN_vkCmdPreprocessGeneratedCommandsNV :: #type (commandBuffer : VkCommandBuffer,
-                                                 pGeneratedCommandsInfo : *VkGeneratedCommandsInfoNV) #c_call;
+                                                 pGeneratedCommandsInfo : *VkGeneratedCommandsInfoNV) #foreign;
 
 
 // Command vkCmdBindPipelineShaderGroupNV (Device Command)
@@ -16269,7 +16269,7 @@ PFN_vkCmdPreprocessGeneratedCommandsNV :: #type (commandBuffer : VkCommandBuffer
 PFN_vkCmdBindPipelineShaderGroupNV :: #type (commandBuffer : VkCommandBuffer,
                                              pipelineBindPoint : VkPipelineBindPoint,
                                              pipeline : VkPipeline,
-                                             groupIndex : u32) #c_call;
+                                             groupIndex : u32) #foreign;
 
 
 // Command vkGetGeneratedCommandsMemoryRequirementsNV (Device Command)
@@ -16278,7 +16278,7 @@ PFN_vkCmdBindPipelineShaderGroupNV :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
 PFN_vkGetGeneratedCommandsMemoryRequirementsNV :: #type (device : VkDevice,
                                                          pInfo : *VkGeneratedCommandsMemoryRequirementsInfoNV,
-                                                         pMemoryRequirements : *VkMemoryRequirements2) #c_call;
+                                                         pMemoryRequirements : *VkMemoryRequirements2) #foreign;
 
 
 // Command vkCreateIndirectCommandsLayoutNV (Device Command)
@@ -16288,7 +16288,7 @@ PFN_vkGetGeneratedCommandsMemoryRequirementsNV :: #type (device : VkDevice,
 PFN_vkCreateIndirectCommandsLayoutNV :: #type (device : VkDevice,
                                                pCreateInfo : *VkIndirectCommandsLayoutCreateInfoNV,
                                                pAllocator : *VkAllocationCallbacks,
-                                               pIndirectCommandsLayout : *VkIndirectCommandsLayoutNV) -> VkResult #c_call;
+                                               pIndirectCommandsLayout : *VkIndirectCommandsLayoutNV) -> VkResult #foreign;
 
 
 // Command vkDestroyIndirectCommandsLayoutNV (Device Command)
@@ -16297,7 +16297,7 @@ PFN_vkCreateIndirectCommandsLayoutNV :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
 PFN_vkDestroyIndirectCommandsLayoutNV :: #type (device : VkDevice,
                                                 indirectCommandsLayout : VkIndirectCommandsLayoutNV,
-                                                pAllocator : *VkAllocationCallbacks) #c_call;
+                                                pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkCmdPushDescriptorSetKHR (Device Command)
@@ -16312,14 +16312,14 @@ PFN_vkCmdPushDescriptorSetKHR :: #type (commandBuffer : VkCommandBuffer,
                                         layout : VkPipelineLayout,
                                         set : u32,
                                         descriptorWriteCount : u32,
-                                        pDescriptorWrites : *VkWriteDescriptorSet) #c_call;
+                                        pDescriptorWrites : *VkWriteDescriptorSet) #foreign;
 
 
 // Command vkTrimCommandPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkTrimCommandPool.html)
 PFN_vkTrimCommandPool :: #type (device : VkDevice,
                                 commandPool : VkCommandPool,
-                                flags : VkCommandPoolTrimFlags) #c_call;
+                                flags : VkCommandPoolTrimFlags) #foreign;
 
 
 // Command vkTrimCommandPoolKHR (Device Command)
@@ -16335,7 +16335,7 @@ PFN_vkTrimCommandPoolKHR :: PFN_vkTrimCommandPool;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_memory_fd.html)
 PFN_vkGetMemoryFdKHR :: #type (device : VkDevice,
                                pGetFdInfo : *VkMemoryGetFdInfoKHR,
-                               pFd : *s32) -> VkResult #c_call;
+                               pFd : *s32) -> VkResult #foreign;
 
 
 // Command vkGetMemoryFdPropertiesKHR (Device Command)
@@ -16345,7 +16345,7 @@ PFN_vkGetMemoryFdKHR :: #type (device : VkDevice,
 PFN_vkGetMemoryFdPropertiesKHR :: #type (device : VkDevice,
                                          handleType : VkExternalMemoryHandleTypeFlagBits,
                                          fd : s32,
-                                         pMemoryFdProperties : *VkMemoryFdPropertiesKHR) -> VkResult #c_call;
+                                         pMemoryFdProperties : *VkMemoryFdPropertiesKHR) -> VkResult #foreign;
 
 
 // Command vkGetSemaphoreFdKHR (Device Command)
@@ -16354,7 +16354,7 @@ PFN_vkGetMemoryFdPropertiesKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_semaphore_fd.html)
 PFN_vkGetSemaphoreFdKHR :: #type (device : VkDevice,
                                   pGetFdInfo : *VkSemaphoreGetFdInfoKHR,
-                                  pFd : *s32) -> VkResult #c_call;
+                                  pFd : *s32) -> VkResult #foreign;
 
 
 // Command vkImportSemaphoreFdKHR (Device Command)
@@ -16362,7 +16362,7 @@ PFN_vkGetSemaphoreFdKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_external_semaphore_fd
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_semaphore_fd.html)
 PFN_vkImportSemaphoreFdKHR :: #type (device : VkDevice,
-                                     pImportSemaphoreFdInfo : *VkImportSemaphoreFdInfoKHR) -> VkResult #c_call;
+                                     pImportSemaphoreFdInfo : *VkImportSemaphoreFdInfoKHR) -> VkResult #foreign;
 
 
 // Command vkGetFenceFdKHR (Device Command)
@@ -16371,7 +16371,7 @@ PFN_vkImportSemaphoreFdKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_fence_fd.html)
 PFN_vkGetFenceFdKHR :: #type (device : VkDevice,
                               pGetFdInfo : *VkFenceGetFdInfoKHR,
-                              pFd : *s32) -> VkResult #c_call;
+                              pFd : *s32) -> VkResult #foreign;
 
 
 // Command vkImportFenceFdKHR (Device Command)
@@ -16379,7 +16379,7 @@ PFN_vkGetFenceFdKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_external_fence_fd
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_fence_fd.html)
 PFN_vkImportFenceFdKHR :: #type (device : VkDevice,
-                                 pImportFenceFdInfo : *VkImportFenceFdInfoKHR) -> VkResult #c_call;
+                                 pImportFenceFdInfo : *VkImportFenceFdInfoKHR) -> VkResult #foreign;
 
 
 // Command vkDisplayPowerControlEXT (Device Command)
@@ -16388,7 +16388,7 @@ PFN_vkImportFenceFdKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_display_control.html)
 PFN_vkDisplayPowerControlEXT :: #type (device : VkDevice,
                                        display : VkDisplayKHR,
-                                       pDisplayPowerInfo : *VkDisplayPowerInfoEXT) -> VkResult #c_call;
+                                       pDisplayPowerInfo : *VkDisplayPowerInfoEXT) -> VkResult #foreign;
 
 
 // Command vkRegisterDeviceEventEXT (Device Command)
@@ -16398,7 +16398,7 @@ PFN_vkDisplayPowerControlEXT :: #type (device : VkDevice,
 PFN_vkRegisterDeviceEventEXT :: #type (device : VkDevice,
                                        pDeviceEventInfo : *VkDeviceEventInfoEXT,
                                        pAllocator : *VkAllocationCallbacks,
-                                       pFence : *VkFence) -> VkResult #c_call;
+                                       pFence : *VkFence) -> VkResult #foreign;
 
 
 // Command vkRegisterDisplayEventEXT (Device Command)
@@ -16409,7 +16409,7 @@ PFN_vkRegisterDisplayEventEXT :: #type (device : VkDevice,
                                         display : VkDisplayKHR,
                                         pDisplayEventInfo : *VkDisplayEventInfoEXT,
                                         pAllocator : *VkAllocationCallbacks,
-                                        pFence : *VkFence) -> VkResult #c_call;
+                                        pFence : *VkFence) -> VkResult #foreign;
 
 
 // Command vkGetSwapchainCounterEXT (Device Command)
@@ -16419,7 +16419,7 @@ PFN_vkRegisterDisplayEventEXT :: #type (device : VkDevice,
 PFN_vkGetSwapchainCounterEXT :: #type (device : VkDevice,
                                        swapchain : VkSwapchainKHR,
                                        counter : VkSurfaceCounterFlagBitsEXT,
-                                       pCounterValue : *u64) -> VkResult #c_call;
+                                       pCounterValue : *u64) -> VkResult #foreign;
 
 
 // Command vkGetDeviceGroupPeerMemoryFeatures (Device Command)
@@ -16428,7 +16428,7 @@ PFN_vkGetDeviceGroupPeerMemoryFeatures :: #type (device : VkDevice,
                                                  heapIndex : u32,
                                                  localDeviceIndex : u32,
                                                  remoteDeviceIndex : u32,
-                                                 pPeerMemoryFeatures : *VkPeerMemoryFeatureFlags) #c_call;
+                                                 pPeerMemoryFeatures : *VkPeerMemoryFeatureFlags) #foreign;
 
 
 // Command vkGetDeviceGroupPeerMemoryFeaturesKHR (Device Command)
@@ -16442,7 +16442,7 @@ PFN_vkGetDeviceGroupPeerMemoryFeaturesKHR :: PFN_vkGetDeviceGroupPeerMemoryFeatu
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkBindBufferMemory2.html)
 PFN_vkBindBufferMemory2 :: #type (device : VkDevice,
                                   bindInfoCount : u32,
-                                  pBindInfos : *VkBindBufferMemoryInfo) -> VkResult #c_call;
+                                  pBindInfos : *VkBindBufferMemoryInfo) -> VkResult #foreign;
 
 
 // Command vkBindBufferMemory2KHR (Device Command)
@@ -16456,7 +16456,7 @@ PFN_vkBindBufferMemory2KHR :: PFN_vkBindBufferMemory2;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkBindImageMemory2.html)
 PFN_vkBindImageMemory2 :: #type (device : VkDevice,
                                  bindInfoCount : u32,
-                                 pBindInfos : *VkBindImageMemoryInfo) -> VkResult #c_call;
+                                 pBindInfos : *VkBindImageMemoryInfo) -> VkResult #foreign;
 
 
 // Command vkBindImageMemory2KHR (Device Command)
@@ -16472,7 +16472,7 @@ PFN_vkBindImageMemory2KHR :: PFN_vkBindImageMemory2;
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetDeviceMask :: #type (commandBuffer : VkCommandBuffer,
-                                 deviceMask : u32) #c_call;
+                                 deviceMask : u32) #foreign;
 
 
 // Command vkCmdSetDeviceMaskKHR (Device Command)
@@ -16488,7 +16488,7 @@ PFN_vkCmdSetDeviceMaskKHR :: PFN_vkCmdSetDeviceMask;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_swapchain.html)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_device_group.html)
 PFN_vkGetDeviceGroupPresentCapabilitiesKHR :: #type (device : VkDevice,
-                                                     pDeviceGroupPresentCapabilities : *VkDeviceGroupPresentCapabilitiesKHR) -> VkResult #c_call;
+                                                     pDeviceGroupPresentCapabilities : *VkDeviceGroupPresentCapabilitiesKHR) -> VkResult #foreign;
 
 
 // Command vkGetDeviceGroupSurfacePresentModesKHR (Device Command)
@@ -16498,7 +16498,7 @@ PFN_vkGetDeviceGroupPresentCapabilitiesKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_device_group.html)
 PFN_vkGetDeviceGroupSurfacePresentModesKHR :: #type (device : VkDevice,
                                                      surface : VkSurfaceKHR,
-                                                     pModes : *VkDeviceGroupPresentModeFlagsKHR) -> VkResult #c_call;
+                                                     pModes : *VkDeviceGroupPresentModeFlagsKHR) -> VkResult #foreign;
 
 
 // Command vkAcquireNextImage2KHR (Device Command)
@@ -16508,7 +16508,7 @@ PFN_vkGetDeviceGroupSurfacePresentModesKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_device_group.html)
 PFN_vkAcquireNextImage2KHR :: #type (device : VkDevice,
                                      pAcquireInfo : *VkAcquireNextImageInfoKHR,
-                                     pImageIndex : *u32) -> VkResult #c_call;
+                                     pImageIndex : *u32) -> VkResult #foreign;
 
 
 // Command vkCmdDispatchBase (Device Command)
@@ -16522,7 +16522,7 @@ PFN_vkCmdDispatchBase :: #type (commandBuffer : VkCommandBuffer,
                                 baseGroupZ : u32,
                                 groupCountX : u32,
                                 groupCountY : u32,
-                                groupCountZ : u32) #c_call;
+                                groupCountZ : u32) #foreign;
 
 
 // Command vkCmdDispatchBaseKHR (Device Command)
@@ -16537,7 +16537,7 @@ PFN_vkCmdDispatchBaseKHR :: PFN_vkCmdDispatchBase;
 PFN_vkCreateDescriptorUpdateTemplate :: #type (device : VkDevice,
                                                pCreateInfo : *VkDescriptorUpdateTemplateCreateInfo,
                                                pAllocator : *VkAllocationCallbacks,
-                                               pDescriptorUpdateTemplate : *VkDescriptorUpdateTemplate) -> VkResult #c_call;
+                                               pDescriptorUpdateTemplate : *VkDescriptorUpdateTemplate) -> VkResult #foreign;
 
 
 // Command vkCreateDescriptorUpdateTemplateKHR (Device Command)
@@ -16551,7 +16551,7 @@ PFN_vkCreateDescriptorUpdateTemplateKHR :: PFN_vkCreateDescriptorUpdateTemplate;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroyDescriptorUpdateTemplate.html)
 PFN_vkDestroyDescriptorUpdateTemplate :: #type (device : VkDevice,
                                                 descriptorUpdateTemplate : VkDescriptorUpdateTemplate,
-                                                pAllocator : *VkAllocationCallbacks) #c_call;
+                                                pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkDestroyDescriptorUpdateTemplateKHR (Device Command)
@@ -16566,7 +16566,7 @@ PFN_vkDestroyDescriptorUpdateTemplateKHR :: PFN_vkDestroyDescriptorUpdateTemplat
 PFN_vkUpdateDescriptorSetWithTemplate :: #type (device : VkDevice,
                                                 descriptorSet : VkDescriptorSet,
                                                 descriptorUpdateTemplate : VkDescriptorUpdateTemplate,
-                                                pData : *void) #c_call;
+                                                pData : *void) #foreign;
 
 
 // Command vkUpdateDescriptorSetWithTemplateKHR (Device Command)
@@ -16589,7 +16589,7 @@ PFN_vkCmdPushDescriptorSetWithTemplateKHR :: #type (commandBuffer : VkCommandBuf
                                                     descriptorUpdateTemplate : VkDescriptorUpdateTemplate,
                                                     layout : VkPipelineLayout,
                                                     set : u32,
-                                                    pData : *void) #c_call;
+                                                    pData : *void) #foreign;
 
 
 // Command vkSetHdrMetadataEXT (Device Command)
@@ -16599,7 +16599,7 @@ PFN_vkCmdPushDescriptorSetWithTemplateKHR :: #type (commandBuffer : VkCommandBuf
 PFN_vkSetHdrMetadataEXT :: #type (device : VkDevice,
                                   swapchainCount : u32,
                                   pSwapchains : *VkSwapchainKHR,
-                                  pMetadata : *VkHdrMetadataEXT) #c_call;
+                                  pMetadata : *VkHdrMetadataEXT) #foreign;
 
 
 // Command vkGetSwapchainStatusKHR (Device Command)
@@ -16607,7 +16607,7 @@ PFN_vkSetHdrMetadataEXT :: #type (device : VkDevice,
 // Referenced by VK_KHR_shared_presentable_image
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_shared_presentable_image.html)
 PFN_vkGetSwapchainStatusKHR :: #type (device : VkDevice,
-                                      swapchain : VkSwapchainKHR) -> VkResult #c_call;
+                                      swapchain : VkSwapchainKHR) -> VkResult #foreign;
 
 
 // Command vkGetRefreshCycleDurationGOOGLE (Device Command)
@@ -16616,7 +16616,7 @@ PFN_vkGetSwapchainStatusKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_GOOGLE_display_timing.html)
 PFN_vkGetRefreshCycleDurationGOOGLE :: #type (device : VkDevice,
                                               swapchain : VkSwapchainKHR,
-                                              pDisplayTimingProperties : *VkRefreshCycleDurationGOOGLE) -> VkResult #c_call;
+                                              pDisplayTimingProperties : *VkRefreshCycleDurationGOOGLE) -> VkResult #foreign;
 
 
 // Command vkGetPastPresentationTimingGOOGLE (Device Command)
@@ -16626,7 +16626,7 @@ PFN_vkGetRefreshCycleDurationGOOGLE :: #type (device : VkDevice,
 PFN_vkGetPastPresentationTimingGOOGLE :: #type (device : VkDevice,
                                                 swapchain : VkSwapchainKHR,
                                                 pPresentationTimingCount : *u32,
-                                                pPresentationTimings : *VkPastPresentationTimingGOOGLE) -> VkResult #c_call;
+                                                pPresentationTimings : *VkPastPresentationTimingGOOGLE) -> VkResult #foreign;
 
 
 // Command vkCmdSetViewportWScalingNV (Device Command)
@@ -16639,7 +16639,7 @@ PFN_vkGetPastPresentationTimingGOOGLE :: #type (device : VkDevice,
 PFN_vkCmdSetViewportWScalingNV :: #type (commandBuffer : VkCommandBuffer,
                                          firstViewport : u32,
                                          viewportCount : u32,
-                                         pViewportWScalings : *VkViewportWScalingNV) #c_call;
+                                         pViewportWScalings : *VkViewportWScalingNV) #foreign;
 
 
 // Command vkCmdSetDiscardRectangleEXT (Device Command)
@@ -16652,7 +16652,7 @@ PFN_vkCmdSetViewportWScalingNV :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdSetDiscardRectangleEXT :: #type (commandBuffer : VkCommandBuffer,
                                           firstDiscardRectangle : u32,
                                           discardRectangleCount : u32,
-                                          pDiscardRectangles : *VkRect2D) #c_call;
+                                          pDiscardRectangles : *VkRect2D) #foreign;
 
 
 // Command vkCmdSetSampleLocationsEXT (Device Command)
@@ -16663,14 +16663,14 @@ PFN_vkCmdSetDiscardRectangleEXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_sample_locations
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_sample_locations.html)
 PFN_vkCmdSetSampleLocationsEXT :: #type (commandBuffer : VkCommandBuffer,
-                                         pSampleLocationsInfo : *VkSampleLocationsInfoEXT) #c_call;
+                                         pSampleLocationsInfo : *VkSampleLocationsInfoEXT) #foreign;
 
 
 // Command vkGetBufferMemoryRequirements2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetBufferMemoryRequirements2.html)
 PFN_vkGetBufferMemoryRequirements2 :: #type (device : VkDevice,
                                              pInfo : *VkBufferMemoryRequirementsInfo2,
-                                             pMemoryRequirements : *VkMemoryRequirements2) #c_call;
+                                             pMemoryRequirements : *VkMemoryRequirements2) #foreign;
 
 
 // Command vkGetBufferMemoryRequirements2KHR (Device Command)
@@ -16684,7 +16684,7 @@ PFN_vkGetBufferMemoryRequirements2KHR :: PFN_vkGetBufferMemoryRequirements2;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetImageMemoryRequirements2.html)
 PFN_vkGetImageMemoryRequirements2 :: #type (device : VkDevice,
                                             pInfo : *VkImageMemoryRequirementsInfo2,
-                                            pMemoryRequirements : *VkMemoryRequirements2) #c_call;
+                                            pMemoryRequirements : *VkMemoryRequirements2) #foreign;
 
 
 // Command vkGetImageMemoryRequirements2KHR (Device Command)
@@ -16699,7 +16699,7 @@ PFN_vkGetImageMemoryRequirements2KHR :: PFN_vkGetImageMemoryRequirements2;
 PFN_vkGetImageSparseMemoryRequirements2 :: #type (device : VkDevice,
                                                   pInfo : *VkImageSparseMemoryRequirementsInfo2,
                                                   pSparseMemoryRequirementCount : *u32,
-                                                  pSparseMemoryRequirements : *VkSparseImageMemoryRequirements2) #c_call;
+                                                  pSparseMemoryRequirements : *VkSparseImageMemoryRequirements2) #foreign;
 
 
 // Command vkGetImageSparseMemoryRequirements2KHR (Device Command)
@@ -16714,7 +16714,7 @@ PFN_vkGetImageSparseMemoryRequirements2KHR :: PFN_vkGetImageSparseMemoryRequirem
 PFN_vkCreateSamplerYcbcrConversion :: #type (device : VkDevice,
                                              pCreateInfo : *VkSamplerYcbcrConversionCreateInfo,
                                              pAllocator : *VkAllocationCallbacks,
-                                             pYcbcrConversion : *VkSamplerYcbcrConversion) -> VkResult #c_call;
+                                             pYcbcrConversion : *VkSamplerYcbcrConversion) -> VkResult #foreign;
 
 
 // Command vkCreateSamplerYcbcrConversionKHR (Device Command)
@@ -16728,7 +16728,7 @@ PFN_vkCreateSamplerYcbcrConversionKHR :: PFN_vkCreateSamplerYcbcrConversion;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkDestroySamplerYcbcrConversion.html)
 PFN_vkDestroySamplerYcbcrConversion :: #type (device : VkDevice,
                                               ycbcrConversion : VkSamplerYcbcrConversion,
-                                              pAllocator : *VkAllocationCallbacks) #c_call;
+                                              pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkDestroySamplerYcbcrConversionKHR (Device Command)
@@ -16742,7 +16742,7 @@ PFN_vkDestroySamplerYcbcrConversionKHR :: PFN_vkDestroySamplerYcbcrConversion;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetDeviceQueue2.html)
 PFN_vkGetDeviceQueue2 :: #type (device : VkDevice,
                                 pQueueInfo : *VkDeviceQueueInfo2,
-                                pQueue : *VkQueue) #c_call;
+                                pQueue : *VkQueue) #foreign;
 
 
 // Command vkCreateValidationCacheEXT (Device Command)
@@ -16752,7 +16752,7 @@ PFN_vkGetDeviceQueue2 :: #type (device : VkDevice,
 PFN_vkCreateValidationCacheEXT :: #type (device : VkDevice,
                                          pCreateInfo : *VkValidationCacheCreateInfoEXT,
                                          pAllocator : *VkAllocationCallbacks,
-                                         pValidationCache : *VkValidationCacheEXT) -> VkResult #c_call;
+                                         pValidationCache : *VkValidationCacheEXT) -> VkResult #foreign;
 
 
 // Command vkDestroyValidationCacheEXT (Device Command)
@@ -16761,7 +16761,7 @@ PFN_vkCreateValidationCacheEXT :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_validation_cache.html)
 PFN_vkDestroyValidationCacheEXT :: #type (device : VkDevice,
                                           validationCache : VkValidationCacheEXT,
-                                          pAllocator : *VkAllocationCallbacks) #c_call;
+                                          pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetValidationCacheDataEXT (Device Command)
@@ -16771,7 +16771,7 @@ PFN_vkDestroyValidationCacheEXT :: #type (device : VkDevice,
 PFN_vkGetValidationCacheDataEXT :: #type (device : VkDevice,
                                           validationCache : VkValidationCacheEXT,
                                           pDataSize : *u64,
-                                          pData : *void) -> VkResult #c_call;
+                                          pData : *void) -> VkResult #foreign;
 
 
 // Command vkMergeValidationCachesEXT (Device Command)
@@ -16781,14 +16781,14 @@ PFN_vkGetValidationCacheDataEXT :: #type (device : VkDevice,
 PFN_vkMergeValidationCachesEXT :: #type (device : VkDevice,
                                          dstCache : VkValidationCacheEXT,
                                          srcCacheCount : u32,
-                                         pSrcCaches : *VkValidationCacheEXT) -> VkResult #c_call;
+                                         pSrcCaches : *VkValidationCacheEXT) -> VkResult #foreign;
 
 
 // Command vkGetDescriptorSetLayoutSupport (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetDescriptorSetLayoutSupport.html)
 PFN_vkGetDescriptorSetLayoutSupport :: #type (device : VkDevice,
                                               pCreateInfo : *VkDescriptorSetLayoutCreateInfo,
-                                              pSupport : *VkDescriptorSetLayoutSupport) #c_call;
+                                              pSupport : *VkDescriptorSetLayoutSupport) #foreign;
 
 
 // Command vkGetDescriptorSetLayoutSupportKHR (Device Command)
@@ -16807,7 +16807,7 @@ PFN_vkGetShaderInfoAMD :: #type (device : VkDevice,
                                  shaderStage : VkShaderStageFlagBits,
                                  infoType : VkShaderInfoTypeAMD,
                                  pInfoSize : *u64,
-                                 pInfo : *void) -> VkResult #c_call;
+                                 pInfo : *void) -> VkResult #foreign;
 
 
 // Command vkSetLocalDimmingAMD (Device Command)
@@ -16816,7 +16816,7 @@ PFN_vkGetShaderInfoAMD :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_AMD_display_native_hdr.html)
 PFN_vkSetLocalDimmingAMD :: #type (device : VkDevice,
                                    swapChain : VkSwapchainKHR,
-                                   localDimmingEnable : VkBool32) #c_call;
+                                   localDimmingEnable : VkBool32) #foreign;
 
 
 // Command vkGetCalibratedTimestampsEXT (Device Command)
@@ -16827,7 +16827,7 @@ PFN_vkGetCalibratedTimestampsEXT :: #type (device : VkDevice,
                                            timestampCount : u32,
                                            pTimestampInfos : *VkCalibratedTimestampInfoEXT,
                                            pTimestamps : *u64,
-                                           pMaxDeviation : *u64) -> VkResult #c_call;
+                                           pMaxDeviation : *u64) -> VkResult #foreign;
 
 
 // Command vkGetMemoryHostPointerPropertiesEXT (Device Command)
@@ -16837,7 +16837,7 @@ PFN_vkGetCalibratedTimestampsEXT :: #type (device : VkDevice,
 PFN_vkGetMemoryHostPointerPropertiesEXT :: #type (device : VkDevice,
                                                   handleType : VkExternalMemoryHandleTypeFlagBits,
                                                   pHostPointer : *void,
-                                                  pMemoryHostPointerProperties : *VkMemoryHostPointerPropertiesEXT) -> VkResult #c_call;
+                                                  pMemoryHostPointerProperties : *VkMemoryHostPointerPropertiesEXT) -> VkResult #foreign;
 
 
 // Command vkCmdWriteBufferMarkerAMD (Device Command)
@@ -16851,7 +16851,7 @@ PFN_vkCmdWriteBufferMarkerAMD :: #type (commandBuffer : VkCommandBuffer,
                                         pipelineStage : VkPipelineStageFlagBits,
                                         dstBuffer : VkBuffer,
                                         dstOffset : VkDeviceSize,
-                                        marker : u32) #c_call;
+                                        marker : u32) #foreign;
 
 
 // Command vkCreateRenderPass2 (Device Command)
@@ -16859,7 +16859,7 @@ PFN_vkCmdWriteBufferMarkerAMD :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCreateRenderPass2 :: #type (device : VkDevice,
                                   pCreateInfo : *VkRenderPassCreateInfo2,
                                   pAllocator : *VkAllocationCallbacks,
-                                  pRenderPass : *VkRenderPass) -> VkResult #c_call;
+                                  pRenderPass : *VkRenderPass) -> VkResult #foreign;
 
 
 // Command vkCreateRenderPass2KHR (Device Command)
@@ -16876,7 +16876,7 @@ PFN_vkCreateRenderPass2KHR :: PFN_vkCreateRenderPass2;
 // Has to be recorded to a primary command buffer
 PFN_vkCmdBeginRenderPass2 :: #type (commandBuffer : VkCommandBuffer,
                                     pRenderPassBegin : *VkRenderPassBeginInfo,
-                                    pSubpassBeginInfo : *VkSubpassBeginInfo) #c_call;
+                                    pSubpassBeginInfo : *VkSubpassBeginInfo) #foreign;
 
 
 // Command vkCmdBeginRenderPass2KHR (Device Command)
@@ -16893,7 +16893,7 @@ PFN_vkCmdBeginRenderPass2KHR :: PFN_vkCmdBeginRenderPass2;
 // Has to be recorded to a primary command buffer
 PFN_vkCmdNextSubpass2 :: #type (commandBuffer : VkCommandBuffer,
                                 pSubpassBeginInfo : *VkSubpassBeginInfo,
-                                pSubpassEndInfo : *VkSubpassEndInfo) #c_call;
+                                pSubpassEndInfo : *VkSubpassEndInfo) #foreign;
 
 
 // Command vkCmdNextSubpass2KHR (Device Command)
@@ -16909,7 +16909,7 @@ PFN_vkCmdNextSubpass2KHR :: PFN_vkCmdNextSubpass2;
 // Has to be used inside a rendepass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdEndRenderPass2 :: #type (commandBuffer : VkCommandBuffer,
-                                  pSubpassEndInfo : *VkSubpassEndInfo) #c_call;
+                                  pSubpassEndInfo : *VkSubpassEndInfo) #foreign;
 
 
 // Command vkCmdEndRenderPass2KHR (Device Command)
@@ -16923,7 +16923,7 @@ PFN_vkCmdEndRenderPass2KHR :: PFN_vkCmdEndRenderPass2;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetSemaphoreCounterValue.html)
 PFN_vkGetSemaphoreCounterValue :: #type (device : VkDevice,
                                          semaphore : VkSemaphore,
-                                         pValue : *u64) -> VkResult #c_call;
+                                         pValue : *u64) -> VkResult #foreign;
 
 
 // Command vkGetSemaphoreCounterValueKHR (Device Command)
@@ -16937,7 +16937,7 @@ PFN_vkGetSemaphoreCounterValueKHR :: PFN_vkGetSemaphoreCounterValue;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkWaitSemaphores.html)
 PFN_vkWaitSemaphores :: #type (device : VkDevice,
                                pWaitInfo : *VkSemaphoreWaitInfo,
-                               timeout : u64) -> VkResult #c_call;
+                               timeout : u64) -> VkResult #foreign;
 
 
 // Command vkWaitSemaphoresKHR (Device Command)
@@ -16950,7 +16950,7 @@ PFN_vkWaitSemaphoresKHR :: PFN_vkWaitSemaphores;
 // Command vkSignalSemaphore (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkSignalSemaphore.html)
 PFN_vkSignalSemaphore :: #type (device : VkDevice,
-                                pSignalInfo : *VkSemaphoreSignalInfo) -> VkResult #c_call;
+                                pSignalInfo : *VkSemaphoreSignalInfo) -> VkResult #foreign;
 
 
 // Command vkSignalSemaphoreKHR (Device Command)
@@ -16971,7 +16971,7 @@ PFN_vkCmdDrawIndirectCount :: #type (commandBuffer : VkCommandBuffer,
                                      countBuffer : VkBuffer,
                                      countBufferOffset : VkDeviceSize,
                                      maxDrawCount : u32,
-                                     stride : u32) #c_call;
+                                     stride : u32) #foreign;
 
 
 // Command vkCmdDrawIndirectCountKHR (Device Command)
@@ -16999,7 +16999,7 @@ PFN_vkCmdDrawIndexedIndirectCount :: #type (commandBuffer : VkCommandBuffer,
                                             countBuffer : VkBuffer,
                                             countBufferOffset : VkDeviceSize,
                                             maxDrawCount : u32,
-                                            stride : u32) #c_call;
+                                            stride : u32) #foreign;
 
 
 // Command vkCmdDrawIndexedIndirectCountKHR (Device Command)
@@ -17024,7 +17024,7 @@ PFN_vkCmdDrawIndexedIndirectCountAMD :: PFN_vkCmdDrawIndexedIndirectCount;
 // Referenced by VK_NV_device_diagnostic_checkpoints
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_diagnostic_checkpoints.html)
 PFN_vkCmdSetCheckpointNV :: #type (commandBuffer : VkCommandBuffer,
-                                   pCheckpointMarker : *void) #c_call;
+                                   pCheckpointMarker : *void) #foreign;
 
 
 // Command vkGetQueueCheckpointDataNV (Device Command)
@@ -17033,7 +17033,7 @@ PFN_vkCmdSetCheckpointNV :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_diagnostic_checkpoints.html)
 PFN_vkGetQueueCheckpointDataNV :: #type (queue : VkQueue,
                                          pCheckpointDataCount : *u32,
-                                         pCheckpointData : *VkCheckpointDataNV) #c_call;
+                                         pCheckpointData : *VkCheckpointDataNV) #foreign;
 
 
 // Command vkCmdBindTransformFeedbackBuffersEXT (Device Command)
@@ -17048,7 +17048,7 @@ PFN_vkCmdBindTransformFeedbackBuffersEXT :: #type (commandBuffer : VkCommandBuff
                                                    bindingCount : u32,
                                                    pBuffers : *VkBuffer,
                                                    pOffsets : *VkDeviceSize,
-                                                   pSizes : *VkDeviceSize) #c_call;
+                                                   pSizes : *VkDeviceSize) #foreign;
 
 
 // Command vkCmdBeginTransformFeedbackEXT (Device Command)
@@ -17062,7 +17062,7 @@ PFN_vkCmdBeginTransformFeedbackEXT :: #type (commandBuffer : VkCommandBuffer,
                                              firstCounterBuffer : u32,
                                              counterBufferCount : u32,
                                              pCounterBuffers : *VkBuffer,
-                                             pCounterBufferOffsets : *VkDeviceSize) #c_call;
+                                             pCounterBufferOffsets : *VkDeviceSize) #foreign;
 
 
 // Command vkCmdEndTransformFeedbackEXT (Device Command)
@@ -17076,7 +17076,7 @@ PFN_vkCmdEndTransformFeedbackEXT :: #type (commandBuffer : VkCommandBuffer,
                                            firstCounterBuffer : u32,
                                            counterBufferCount : u32,
                                            pCounterBuffers : *VkBuffer,
-                                           pCounterBufferOffsets : *VkDeviceSize) #c_call;
+                                           pCounterBufferOffsets : *VkDeviceSize) #foreign;
 
 
 // Command vkCmdBeginQueryIndexedEXT (Device Command)
@@ -17090,7 +17090,7 @@ PFN_vkCmdBeginQueryIndexedEXT :: #type (commandBuffer : VkCommandBuffer,
                                         queryPool : VkQueryPool,
                                         query : u32,
                                         flags : VkQueryControlFlags,
-                                        index : u32) #c_call;
+                                        index : u32) #foreign;
 
 
 // Command vkCmdEndQueryIndexedEXT (Device Command)
@@ -17103,7 +17103,7 @@ PFN_vkCmdBeginQueryIndexedEXT :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdEndQueryIndexedEXT :: #type (commandBuffer : VkCommandBuffer,
                                       queryPool : VkQueryPool,
                                       query : u32,
-                                      index : u32) #c_call;
+                                      index : u32) #foreign;
 
 
 // Command vkCmdDrawIndirectByteCountEXT (Device Command)
@@ -17119,7 +17119,7 @@ PFN_vkCmdDrawIndirectByteCountEXT :: #type (commandBuffer : VkCommandBuffer,
                                             counterBuffer : VkBuffer,
                                             counterBufferOffset : VkDeviceSize,
                                             counterOffset : u32,
-                                            vertexStride : u32) #c_call;
+                                            vertexStride : u32) #foreign;
 
 
 // Command vkCmdSetExclusiveScissorNV (Device Command)
@@ -17132,7 +17132,7 @@ PFN_vkCmdDrawIndirectByteCountEXT :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdSetExclusiveScissorNV :: #type (commandBuffer : VkCommandBuffer,
                                          firstExclusiveScissor : u32,
                                          exclusiveScissorCount : u32,
-                                         pExclusiveScissors : *VkRect2D) #c_call;
+                                         pExclusiveScissors : *VkRect2D) #foreign;
 
 
 // Command vkCmdBindShadingRateImageNV (Device Command)
@@ -17144,7 +17144,7 @@ PFN_vkCmdSetExclusiveScissorNV :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_shading_rate_image.html)
 PFN_vkCmdBindShadingRateImageNV :: #type (commandBuffer : VkCommandBuffer,
                                           imageView : VkImageView,
-                                          imageLayout : VkImageLayout) #c_call;
+                                          imageLayout : VkImageLayout) #foreign;
 
 
 // Command vkCmdSetViewportShadingRatePaletteNV (Device Command)
@@ -17157,7 +17157,7 @@ PFN_vkCmdBindShadingRateImageNV :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdSetViewportShadingRatePaletteNV :: #type (commandBuffer : VkCommandBuffer,
                                                    firstViewport : u32,
                                                    viewportCount : u32,
-                                                   pShadingRatePalettes : *VkShadingRatePaletteNV) #c_call;
+                                                   pShadingRatePalettes : *VkShadingRatePaletteNV) #foreign;
 
 
 // Command vkCmdSetCoarseSampleOrderNV (Device Command)
@@ -17170,7 +17170,7 @@ PFN_vkCmdSetViewportShadingRatePaletteNV :: #type (commandBuffer : VkCommandBuff
 PFN_vkCmdSetCoarseSampleOrderNV :: #type (commandBuffer : VkCommandBuffer,
                                           sampleOrderType : VkCoarseSampleOrderTypeNV,
                                           customSampleOrderCount : u32,
-                                          pCustomSampleOrders : *VkCoarseSampleOrderCustomNV) #c_call;
+                                          pCustomSampleOrders : *VkCoarseSampleOrderCustomNV) #foreign;
 
 
 // Command vkCmdDrawMeshTasksNV (Device Command)
@@ -17182,7 +17182,7 @@ PFN_vkCmdSetCoarseSampleOrderNV :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_mesh_shader.html)
 PFN_vkCmdDrawMeshTasksNV :: #type (commandBuffer : VkCommandBuffer,
                                    taskCount : u32,
-                                   firstTask : u32) #c_call;
+                                   firstTask : u32) #foreign;
 
 
 // Command vkCmdDrawMeshTasksIndirectNV (Device Command)
@@ -17196,7 +17196,7 @@ PFN_vkCmdDrawMeshTasksIndirectNV :: #type (commandBuffer : VkCommandBuffer,
                                            buffer : VkBuffer,
                                            offset : VkDeviceSize,
                                            drawCount : u32,
-                                           stride : u32) #c_call;
+                                           stride : u32) #foreign;
 
 
 // Command vkCmdDrawMeshTasksIndirectCountNV (Device Command)
@@ -17212,7 +17212,7 @@ PFN_vkCmdDrawMeshTasksIndirectCountNV :: #type (commandBuffer : VkCommandBuffer,
                                                 countBuffer : VkBuffer,
                                                 countBufferOffset : VkDeviceSize,
                                                 maxDrawCount : u32,
-                                                stride : u32) #c_call;
+                                                stride : u32) #foreign;
 
 
 // Command vkCompileDeferredNV (Device Command)
@@ -17221,7 +17221,7 @@ PFN_vkCmdDrawMeshTasksIndirectCountNV :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
 PFN_vkCompileDeferredNV :: #type (device : VkDevice,
                                   pipeline : VkPipeline,
-                                  shader : u32) -> VkResult #c_call;
+                                  shader : u32) -> VkResult #foreign;
 
 
 // Command vkCreateAccelerationStructureNV (Device Command)
@@ -17231,7 +17231,7 @@ PFN_vkCompileDeferredNV :: #type (device : VkDevice,
 PFN_vkCreateAccelerationStructureNV :: #type (device : VkDevice,
                                               pCreateInfo : *VkAccelerationStructureCreateInfoNV,
                                               pAllocator : *VkAllocationCallbacks,
-                                              pAccelerationStructure : *VkAccelerationStructureNV) -> VkResult #c_call;
+                                              pAccelerationStructure : *VkAccelerationStructureNV) -> VkResult #foreign;
 
 
 // Command vkDestroyAccelerationStructureKHR (Device Command)
@@ -17240,7 +17240,7 @@ PFN_vkCreateAccelerationStructureNV :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkDestroyAccelerationStructureKHR :: #type (device : VkDevice,
                                                 accelerationStructure : VkAccelerationStructureKHR,
-                                                pAllocator : *VkAllocationCallbacks) #c_call;
+                                                pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkDestroyAccelerationStructureNV (Device Command)
@@ -17249,7 +17249,7 @@ PFN_vkDestroyAccelerationStructureKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
 PFN_vkDestroyAccelerationStructureNV :: #type (device : VkDevice,
                                                accelerationStructure : VkAccelerationStructureNV,
-                                               pAllocator : *VkAllocationCallbacks) #c_call;
+                                               pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetAccelerationStructureMemoryRequirementsNV (Device Command)
@@ -17258,7 +17258,7 @@ PFN_vkDestroyAccelerationStructureNV :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
 PFN_vkGetAccelerationStructureMemoryRequirementsNV :: #type (device : VkDevice,
                                                              pInfo : *VkAccelerationStructureMemoryRequirementsInfoNV,
-                                                             pMemoryRequirements : *VkMemoryRequirements2KHR) #c_call;
+                                                             pMemoryRequirements : *VkMemoryRequirements2KHR) #foreign;
 
 
 // Command vkBindAccelerationStructureMemoryNV (Device Command)
@@ -17267,7 +17267,7 @@ PFN_vkGetAccelerationStructureMemoryRequirementsNV :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
 PFN_vkBindAccelerationStructureMemoryNV :: #type (device : VkDevice,
                                                   bindInfoCount : u32,
-                                                  pBindInfos : *VkBindAccelerationStructureMemoryInfoNV) -> VkResult #c_call;
+                                                  pBindInfos : *VkBindAccelerationStructureMemoryInfoNV) -> VkResult #foreign;
 
 
 // Command vkCmdCopyAccelerationStructureNV (Device Command)
@@ -17280,7 +17280,7 @@ PFN_vkBindAccelerationStructureMemoryNV :: #type (device : VkDevice,
 PFN_vkCmdCopyAccelerationStructureNV :: #type (commandBuffer : VkCommandBuffer,
                                                dst : VkAccelerationStructureNV,
                                                src : VkAccelerationStructureNV,
-                                               mode : VkCopyAccelerationStructureModeKHR) #c_call;
+                                               mode : VkCopyAccelerationStructureModeKHR) #foreign;
 
 
 // Command vkCmdCopyAccelerationStructureKHR (Device Command)
@@ -17291,7 +17291,7 @@ PFN_vkCmdCopyAccelerationStructureNV :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkCmdCopyAccelerationStructureKHR :: #type (commandBuffer : VkCommandBuffer,
-                                                pInfo : *VkCopyAccelerationStructureInfoKHR) #c_call;
+                                                pInfo : *VkCopyAccelerationStructureInfoKHR) #foreign;
 
 
 // Command vkCopyAccelerationStructureKHR (Device Command)
@@ -17300,7 +17300,7 @@ PFN_vkCmdCopyAccelerationStructureKHR :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkCopyAccelerationStructureKHR :: #type (device : VkDevice,
                                              deferredOperation : VkDeferredOperationKHR,
-                                             pInfo : *VkCopyAccelerationStructureInfoKHR) -> VkResult #c_call;
+                                             pInfo : *VkCopyAccelerationStructureInfoKHR) -> VkResult #foreign;
 
 
 // Command vkCmdCopyAccelerationStructureToMemoryKHR (Device Command)
@@ -17311,7 +17311,7 @@ PFN_vkCopyAccelerationStructureKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkCmdCopyAccelerationStructureToMemoryKHR :: #type (commandBuffer : VkCommandBuffer,
-                                                        pInfo : *VkCopyAccelerationStructureToMemoryInfoKHR) #c_call;
+                                                        pInfo : *VkCopyAccelerationStructureToMemoryInfoKHR) #foreign;
 
 
 // Command vkCopyAccelerationStructureToMemoryKHR (Device Command)
@@ -17320,7 +17320,7 @@ PFN_vkCmdCopyAccelerationStructureToMemoryKHR :: #type (commandBuffer : VkComman
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkCopyAccelerationStructureToMemoryKHR :: #type (device : VkDevice,
                                                      deferredOperation : VkDeferredOperationKHR,
-                                                     pInfo : *VkCopyAccelerationStructureToMemoryInfoKHR) -> VkResult #c_call;
+                                                     pInfo : *VkCopyAccelerationStructureToMemoryInfoKHR) -> VkResult #foreign;
 
 
 // Command vkCmdCopyMemoryToAccelerationStructureKHR (Device Command)
@@ -17331,7 +17331,7 @@ PFN_vkCopyAccelerationStructureToMemoryKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkCmdCopyMemoryToAccelerationStructureKHR :: #type (commandBuffer : VkCommandBuffer,
-                                                        pInfo : *VkCopyMemoryToAccelerationStructureInfoKHR) #c_call;
+                                                        pInfo : *VkCopyMemoryToAccelerationStructureInfoKHR) #foreign;
 
 
 // Command vkCopyMemoryToAccelerationStructureKHR (Device Command)
@@ -17340,7 +17340,7 @@ PFN_vkCmdCopyMemoryToAccelerationStructureKHR :: #type (commandBuffer : VkComman
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkCopyMemoryToAccelerationStructureKHR :: #type (device : VkDevice,
                                                      deferredOperation : VkDeferredOperationKHR,
-                                                     pInfo : *VkCopyMemoryToAccelerationStructureInfoKHR) -> VkResult #c_call;
+                                                     pInfo : *VkCopyMemoryToAccelerationStructureInfoKHR) -> VkResult #foreign;
 
 
 // Command vkCmdWriteAccelerationStructuresPropertiesKHR (Device Command)
@@ -17355,7 +17355,7 @@ PFN_vkCmdWriteAccelerationStructuresPropertiesKHR :: #type (commandBuffer : VkCo
                                                             pAccelerationStructures : *VkAccelerationStructureKHR,
                                                             queryType : VkQueryType,
                                                             queryPool : VkQueryPool,
-                                                            firstQuery : u32) #c_call;
+                                                            firstQuery : u32) #foreign;
 
 
 // Command vkCmdWriteAccelerationStructuresPropertiesNV (Device Command)
@@ -17370,7 +17370,7 @@ PFN_vkCmdWriteAccelerationStructuresPropertiesNV :: #type (commandBuffer : VkCom
                                                            pAccelerationStructures : *VkAccelerationStructureNV,
                                                            queryType : VkQueryType,
                                                            queryPool : VkQueryPool,
-                                                           firstQuery : u32) #c_call;
+                                                           firstQuery : u32) #foreign;
 
 
 // Command vkCmdBuildAccelerationStructureNV (Device Command)
@@ -17388,7 +17388,7 @@ PFN_vkCmdBuildAccelerationStructureNV :: #type (commandBuffer : VkCommandBuffer,
                                                 dst : VkAccelerationStructureNV,
                                                 src : VkAccelerationStructureNV,
                                                 scratch : VkBuffer,
-                                                scratchOffset : VkDeviceSize) #c_call;
+                                                scratchOffset : VkDeviceSize) #foreign;
 
 
 // Command vkWriteAccelerationStructuresPropertiesKHR (Device Command)
@@ -17401,7 +17401,7 @@ PFN_vkWriteAccelerationStructuresPropertiesKHR :: #type (device : VkDevice,
                                                          queryType : VkQueryType,
                                                          dataSize : u64,
                                                          pData : *void,
-                                                         stride : u64) -> VkResult #c_call;
+                                                         stride : u64) -> VkResult #foreign;
 
 
 // Command vkCmdTraceRaysKHR (Device Command)
@@ -17418,7 +17418,7 @@ PFN_vkCmdTraceRaysKHR :: #type (commandBuffer : VkCommandBuffer,
                                 pCallableShaderBindingTable : *VkStridedDeviceAddressRegionKHR,
                                 width : u32,
                                 height : u32,
-                                depth : u32) #c_call;
+                                depth : u32) #foreign;
 
 
 // Command vkCmdTraceRaysNV (Device Command)
@@ -17442,7 +17442,7 @@ PFN_vkCmdTraceRaysNV :: #type (commandBuffer : VkCommandBuffer,
                                callableShaderBindingStride : VkDeviceSize,
                                width : u32,
                                height : u32,
-                               depth : u32) #c_call;
+                               depth : u32) #foreign;
 
 
 // Command vkGetRayTracingShaderGroupHandlesKHR (Device Command)
@@ -17454,7 +17454,7 @@ PFN_vkGetRayTracingShaderGroupHandlesKHR :: #type (device : VkDevice,
                                                    firstGroup : u32,
                                                    groupCount : u32,
                                                    dataSize : u64,
-                                                   pData : *void) -> VkResult #c_call;
+                                                   pData : *void) -> VkResult #foreign;
 
 
 // Command vkGetRayTracingShaderGroupHandlesNV (Device Command)
@@ -17473,7 +17473,7 @@ PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR :: #type (device : VkDevic
                                                                 firstGroup : u32,
                                                                 groupCount : u32,
                                                                 dataSize : u64,
-                                                                pData : *void) -> VkResult #c_call;
+                                                                pData : *void) -> VkResult #foreign;
 
 
 // Command vkGetAccelerationStructureHandleNV (Device Command)
@@ -17483,7 +17483,7 @@ PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR :: #type (device : VkDevic
 PFN_vkGetAccelerationStructureHandleNV :: #type (device : VkDevice,
                                                  accelerationStructure : VkAccelerationStructureNV,
                                                  dataSize : u64,
-                                                 pData : *void) -> VkResult #c_call;
+                                                 pData : *void) -> VkResult #foreign;
 
 
 // Command vkCreateRayTracingPipelinesNV (Device Command)
@@ -17495,7 +17495,7 @@ PFN_vkCreateRayTracingPipelinesNV :: #type (device : VkDevice,
                                             createInfoCount : u32,
                                             pCreateInfos : *VkRayTracingPipelineCreateInfoNV,
                                             pAllocator : *VkAllocationCallbacks,
-                                            pPipelines : *VkPipeline) -> VkResult #c_call;
+                                            pPipelines : *VkPipeline) -> VkResult #foreign;
 
 
 // Command vkCreateRayTracingPipelinesKHR (Device Command)
@@ -17508,7 +17508,7 @@ PFN_vkCreateRayTracingPipelinesKHR :: #type (device : VkDevice,
                                              createInfoCount : u32,
                                              pCreateInfos : *VkRayTracingPipelineCreateInfoKHR,
                                              pAllocator : *VkAllocationCallbacks,
-                                             pPipelines : *VkPipeline) -> VkResult #c_call;
+                                             pPipelines : *VkPipeline) -> VkResult #foreign;
 
 
 // Command vkCmdTraceRaysIndirectKHR (Device Command)
@@ -17523,7 +17523,7 @@ PFN_vkCmdTraceRaysIndirectKHR :: #type (commandBuffer : VkCommandBuffer,
                                         pMissShaderBindingTable : *VkStridedDeviceAddressRegionKHR,
                                         pHitShaderBindingTable : *VkStridedDeviceAddressRegionKHR,
                                         pCallableShaderBindingTable : *VkStridedDeviceAddressRegionKHR,
-                                        indirectDeviceAddress : VkDeviceAddress) #c_call;
+                                        indirectDeviceAddress : VkDeviceAddress) #foreign;
 
 
 // Command vkGetDeviceAccelerationStructureCompatibilityKHR (Device Command)
@@ -17532,7 +17532,7 @@ PFN_vkCmdTraceRaysIndirectKHR :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkGetDeviceAccelerationStructureCompatibilityKHR :: #type (device : VkDevice,
                                                                pVersionInfo : *VkAccelerationStructureVersionInfoKHR,
-                                                               pCompatibility : *VkAccelerationStructureCompatibilityKHR) #c_call;
+                                                               pCompatibility : *VkAccelerationStructureCompatibilityKHR) #foreign;
 
 
 // Command vkGetRayTracingShaderGroupStackSizeKHR (Device Command)
@@ -17542,7 +17542,7 @@ PFN_vkGetDeviceAccelerationStructureCompatibilityKHR :: #type (device : VkDevice
 PFN_vkGetRayTracingShaderGroupStackSizeKHR :: #type (device : VkDevice,
                                                      pipeline : VkPipeline,
                                                      group : u32,
-                                                     groupShader : VkShaderGroupShaderKHR) -> VkDeviceSize #c_call;
+                                                     groupShader : VkShaderGroupShaderKHR) -> VkDeviceSize #foreign;
 
 
 // Command vkCmdSetRayTracingPipelineStackSizeKHR (Device Command)
@@ -17553,7 +17553,7 @@ PFN_vkGetRayTracingShaderGroupStackSizeKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_ray_tracing_pipeline
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)
 PFN_vkCmdSetRayTracingPipelineStackSizeKHR :: #type (commandBuffer : VkCommandBuffer,
-                                                     pipelineStackSize : u32) #c_call;
+                                                     pipelineStackSize : u32) #foreign;
 
 
 // Command vkGetImageViewHandleNVX (Device Command)
@@ -17561,7 +17561,7 @@ PFN_vkCmdSetRayTracingPipelineStackSizeKHR :: #type (commandBuffer : VkCommandBu
 // Referenced by VK_NVX_image_view_handle
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NVX_image_view_handle.html)
 PFN_vkGetImageViewHandleNVX :: #type (device : VkDevice,
-                                      pInfo : *VkImageViewHandleInfoNVX) -> u32 #c_call;
+                                      pInfo : *VkImageViewHandleInfoNVX) -> u32 #foreign;
 
 
 // Command vkGetImageViewAddressNVX (Device Command)
@@ -17570,7 +17570,7 @@ PFN_vkGetImageViewHandleNVX :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NVX_image_view_handle.html)
 PFN_vkGetImageViewAddressNVX :: #type (device : VkDevice,
                                        imageView : VkImageView,
-                                       pProperties : *VkImageViewAddressPropertiesNVX) -> VkResult #c_call;
+                                       pProperties : *VkImageViewAddressPropertiesNVX) -> VkResult #foreign;
 
 
 // Command vkGetDeviceGroupSurfacePresentModes2EXT (Device Command)
@@ -17580,7 +17580,7 @@ PFN_vkGetImageViewAddressNVX :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_full_screen_exclusive.html)
 PFN_vkGetDeviceGroupSurfacePresentModes2EXT :: #type (device : VkDevice,
                                                       pSurfaceInfo : *VkPhysicalDeviceSurfaceInfo2KHR,
-                                                      pModes : *VkDeviceGroupPresentModeFlagsKHR) -> VkResult #c_call;
+                                                      pModes : *VkDeviceGroupPresentModeFlagsKHR) -> VkResult #foreign;
 
 
 // Command vkAcquireFullScreenExclusiveModeEXT (Device Command)
@@ -17588,7 +17588,7 @@ PFN_vkGetDeviceGroupSurfacePresentModes2EXT :: #type (device : VkDevice,
 // Referenced by VK_EXT_full_screen_exclusive
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_full_screen_exclusive.html)
 PFN_vkAcquireFullScreenExclusiveModeEXT :: #type (device : VkDevice,
-                                                  swapchain : VkSwapchainKHR) -> VkResult #c_call;
+                                                  swapchain : VkSwapchainKHR) -> VkResult #foreign;
 
 
 // Command vkReleaseFullScreenExclusiveModeEXT (Device Command)
@@ -17596,7 +17596,7 @@ PFN_vkAcquireFullScreenExclusiveModeEXT :: #type (device : VkDevice,
 // Referenced by VK_EXT_full_screen_exclusive
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_full_screen_exclusive.html)
 PFN_vkReleaseFullScreenExclusiveModeEXT :: #type (device : VkDevice,
-                                                  swapchain : VkSwapchainKHR) -> VkResult #c_call;
+                                                  swapchain : VkSwapchainKHR) -> VkResult #foreign;
 
 
 // Command vkAcquireProfilingLockKHR (Device Command)
@@ -17604,14 +17604,14 @@ PFN_vkReleaseFullScreenExclusiveModeEXT :: #type (device : VkDevice,
 // Referenced by VK_KHR_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_performance_query.html)
 PFN_vkAcquireProfilingLockKHR :: #type (device : VkDevice,
-                                        pInfo : *VkAcquireProfilingLockInfoKHR) -> VkResult #c_call;
+                                        pInfo : *VkAcquireProfilingLockInfoKHR) -> VkResult #foreign;
 
 
 // Command vkReleaseProfilingLockKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkReleaseProfilingLockKHR.html)
 // Referenced by VK_KHR_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_performance_query.html)
-PFN_vkReleaseProfilingLockKHR :: #type (device : VkDevice) #c_call;
+PFN_vkReleaseProfilingLockKHR :: #type (device : VkDevice) #foreign;
 
 
 // Command vkGetImageDrmFormatModifierPropertiesEXT (Device Command)
@@ -17620,13 +17620,13 @@ PFN_vkReleaseProfilingLockKHR :: #type (device : VkDevice) #c_call;
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_image_drm_format_modifier.html)
 PFN_vkGetImageDrmFormatModifierPropertiesEXT :: #type (device : VkDevice,
                                                        image : VkImage,
-                                                       pProperties : *VkImageDrmFormatModifierPropertiesEXT) -> VkResult #c_call;
+                                                       pProperties : *VkImageDrmFormatModifierPropertiesEXT) -> VkResult #foreign;
 
 
 // Command vkGetBufferOpaqueCaptureAddress (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetBufferOpaqueCaptureAddress.html)
 PFN_vkGetBufferOpaqueCaptureAddress :: #type (device : VkDevice,
-                                              pInfo : *VkBufferDeviceAddressInfo) -> u64 #c_call;
+                                              pInfo : *VkBufferDeviceAddressInfo) -> u64 #foreign;
 
 
 // Command vkGetBufferOpaqueCaptureAddressKHR (Device Command)
@@ -17639,7 +17639,7 @@ PFN_vkGetBufferOpaqueCaptureAddressKHR :: PFN_vkGetBufferOpaqueCaptureAddress;
 // Command vkGetBufferDeviceAddress (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetBufferDeviceAddress.html)
 PFN_vkGetBufferDeviceAddress :: #type (device : VkDevice,
-                                       pInfo : *VkBufferDeviceAddressInfo) -> VkDeviceAddress #c_call;
+                                       pInfo : *VkBufferDeviceAddressInfo) -> VkDeviceAddress #foreign;
 
 
 // Command vkGetBufferDeviceAddressKHR (Device Command)
@@ -17661,14 +17661,14 @@ PFN_vkGetBufferDeviceAddressEXT :: PFN_vkGetBufferDeviceAddress;
 // Referenced by VK_INTEL_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkInitializePerformanceApiINTEL :: #type (device : VkDevice,
-                                              pInitializeInfo : *VkInitializePerformanceApiInfoINTEL) -> VkResult #c_call;
+                                              pInitializeInfo : *VkInitializePerformanceApiInfoINTEL) -> VkResult #foreign;
 
 
 // Command vkUninitializePerformanceApiINTEL (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkUninitializePerformanceApiINTEL.html)
 // Referenced by VK_INTEL_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
-PFN_vkUninitializePerformanceApiINTEL :: #type (device : VkDevice) #c_call;
+PFN_vkUninitializePerformanceApiINTEL :: #type (device : VkDevice) #foreign;
 
 
 // Command vkCmdSetPerformanceMarkerINTEL (Device Command)
@@ -17679,7 +17679,7 @@ PFN_vkUninitializePerformanceApiINTEL :: #type (device : VkDevice) #c_call;
 // Referenced by VK_INTEL_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkCmdSetPerformanceMarkerINTEL :: #type (commandBuffer : VkCommandBuffer,
-                                             pMarkerInfo : *VkPerformanceMarkerInfoINTEL) -> VkResult #c_call;
+                                             pMarkerInfo : *VkPerformanceMarkerInfoINTEL) -> VkResult #foreign;
 
 
 // Command vkCmdSetPerformanceStreamMarkerINTEL (Device Command)
@@ -17690,7 +17690,7 @@ PFN_vkCmdSetPerformanceMarkerINTEL :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_INTEL_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkCmdSetPerformanceStreamMarkerINTEL :: #type (commandBuffer : VkCommandBuffer,
-                                                   pMarkerInfo : *VkPerformanceStreamMarkerInfoINTEL) -> VkResult #c_call;
+                                                   pMarkerInfo : *VkPerformanceStreamMarkerInfoINTEL) -> VkResult #foreign;
 
 
 // Command vkCmdSetPerformanceOverrideINTEL (Device Command)
@@ -17701,7 +17701,7 @@ PFN_vkCmdSetPerformanceStreamMarkerINTEL :: #type (commandBuffer : VkCommandBuff
 // Referenced by VK_INTEL_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkCmdSetPerformanceOverrideINTEL :: #type (commandBuffer : VkCommandBuffer,
-                                               pOverrideInfo : *VkPerformanceOverrideInfoINTEL) -> VkResult #c_call;
+                                               pOverrideInfo : *VkPerformanceOverrideInfoINTEL) -> VkResult #foreign;
 
 
 // Command vkAcquirePerformanceConfigurationINTEL (Device Command)
@@ -17710,7 +17710,7 @@ PFN_vkCmdSetPerformanceOverrideINTEL :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkAcquirePerformanceConfigurationINTEL :: #type (device : VkDevice,
                                                      pAcquireInfo : *VkPerformanceConfigurationAcquireInfoINTEL,
-                                                     pConfiguration : *VkPerformanceConfigurationINTEL) -> VkResult #c_call;
+                                                     pConfiguration : *VkPerformanceConfigurationINTEL) -> VkResult #foreign;
 
 
 // Command vkReleasePerformanceConfigurationINTEL (Device Command)
@@ -17718,7 +17718,7 @@ PFN_vkAcquirePerformanceConfigurationINTEL :: #type (device : VkDevice,
 // Referenced by VK_INTEL_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkReleasePerformanceConfigurationINTEL :: #type (device : VkDevice,
-                                                     configuration : VkPerformanceConfigurationINTEL) -> VkResult #c_call;
+                                                     configuration : VkPerformanceConfigurationINTEL) -> VkResult #foreign;
 
 
 // Command vkQueueSetPerformanceConfigurationINTEL (Device Command)
@@ -17726,7 +17726,7 @@ PFN_vkReleasePerformanceConfigurationINTEL :: #type (device : VkDevice,
 // Referenced by VK_INTEL_performance_query
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkQueueSetPerformanceConfigurationINTEL :: #type (queue : VkQueue,
-                                                      configuration : VkPerformanceConfigurationINTEL) -> VkResult #c_call;
+                                                      configuration : VkPerformanceConfigurationINTEL) -> VkResult #foreign;
 
 
 // Command vkGetPerformanceParameterINTEL (Device Command)
@@ -17735,13 +17735,13 @@ PFN_vkQueueSetPerformanceConfigurationINTEL :: #type (queue : VkQueue,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_INTEL_performance_query.html)
 PFN_vkGetPerformanceParameterINTEL :: #type (device : VkDevice,
                                              parameter : VkPerformanceParameterTypeINTEL,
-                                             pValue : *VkPerformanceValueINTEL) -> VkResult #c_call;
+                                             pValue : *VkPerformanceValueINTEL) -> VkResult #foreign;
 
 
 // Command vkGetDeviceMemoryOpaqueCaptureAddress (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetDeviceMemoryOpaqueCaptureAddress.html)
 PFN_vkGetDeviceMemoryOpaqueCaptureAddress :: #type (device : VkDevice,
-                                                    pInfo : *VkDeviceMemoryOpaqueCaptureAddressInfo) -> u64 #c_call;
+                                                    pInfo : *VkDeviceMemoryOpaqueCaptureAddressInfo) -> u64 #foreign;
 
 
 // Command vkGetDeviceMemoryOpaqueCaptureAddressKHR (Device Command)
@@ -17758,7 +17758,7 @@ PFN_vkGetDeviceMemoryOpaqueCaptureAddressKHR :: PFN_vkGetDeviceMemoryOpaqueCaptu
 PFN_vkGetPipelineExecutablePropertiesKHR :: #type (device : VkDevice,
                                                    pPipelineInfo : *VkPipelineInfoKHR,
                                                    pExecutableCount : *u32,
-                                                   pProperties : *VkPipelineExecutablePropertiesKHR) -> VkResult #c_call;
+                                                   pProperties : *VkPipelineExecutablePropertiesKHR) -> VkResult #foreign;
 
 
 // Command vkGetPipelineExecutableStatisticsKHR (Device Command)
@@ -17768,7 +17768,7 @@ PFN_vkGetPipelineExecutablePropertiesKHR :: #type (device : VkDevice,
 PFN_vkGetPipelineExecutableStatisticsKHR :: #type (device : VkDevice,
                                                    pExecutableInfo : *VkPipelineExecutableInfoKHR,
                                                    pStatisticCount : *u32,
-                                                   pStatistics : *VkPipelineExecutableStatisticKHR) -> VkResult #c_call;
+                                                   pStatistics : *VkPipelineExecutableStatisticKHR) -> VkResult #foreign;
 
 
 // Command vkGetPipelineExecutableInternalRepresentationsKHR (Device Command)
@@ -17778,7 +17778,7 @@ PFN_vkGetPipelineExecutableStatisticsKHR :: #type (device : VkDevice,
 PFN_vkGetPipelineExecutableInternalRepresentationsKHR :: #type (device : VkDevice,
                                                                 pExecutableInfo : *VkPipelineExecutableInfoKHR,
                                                                 pInternalRepresentationCount : *u32,
-                                                                pInternalRepresentations : *VkPipelineExecutableInternalRepresentationKHR) -> VkResult #c_call;
+                                                                pInternalRepresentations : *VkPipelineExecutableInternalRepresentationKHR) -> VkResult #foreign;
 
 
 // Command vkCmdSetLineStippleEXT (Device Command)
@@ -17790,7 +17790,7 @@ PFN_vkGetPipelineExecutableInternalRepresentationsKHR :: #type (device : VkDevic
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_line_rasterization.html)
 PFN_vkCmdSetLineStippleEXT :: #type (commandBuffer : VkCommandBuffer,
                                      lineStippleFactor : u32,
-                                     lineStipplePattern : u16) #c_call;
+                                     lineStipplePattern : u16) #foreign;
 
 
 // Command vkCreateAccelerationStructureKHR (Device Command)
@@ -17800,7 +17800,7 @@ PFN_vkCmdSetLineStippleEXT :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCreateAccelerationStructureKHR :: #type (device : VkDevice,
                                                pCreateInfo : *VkAccelerationStructureCreateInfoKHR,
                                                pAllocator : *VkAllocationCallbacks,
-                                               pAccelerationStructure : *VkAccelerationStructureKHR) -> VkResult #c_call;
+                                               pAccelerationStructure : *VkAccelerationStructureKHR) -> VkResult #foreign;
 
 
 // Command vkCmdBuildAccelerationStructuresKHR (Device Command)
@@ -17813,7 +17813,7 @@ PFN_vkCreateAccelerationStructureKHR :: #type (device : VkDevice,
 PFN_vkCmdBuildAccelerationStructuresKHR :: #type (commandBuffer : VkCommandBuffer,
                                                   infoCount : u32,
                                                   pInfos : *VkAccelerationStructureBuildGeometryInfoKHR,
-                                                  ppBuildRangeInfos : **VkAccelerationStructureBuildRangeInfoKHR) #c_call;
+                                                  ppBuildRangeInfos : **VkAccelerationStructureBuildRangeInfoKHR) #foreign;
 
 
 // Command vkCmdBuildAccelerationStructuresIndirectKHR (Device Command)
@@ -17828,7 +17828,7 @@ PFN_vkCmdBuildAccelerationStructuresIndirectKHR :: #type (commandBuffer : VkComm
                                                           pInfos : *VkAccelerationStructureBuildGeometryInfoKHR,
                                                           pIndirectDeviceAddresses : *VkDeviceAddress,
                                                           pIndirectStrides : *u32,
-                                                          ppMaxPrimitiveCounts : **u32) #c_call;
+                                                          ppMaxPrimitiveCounts : **u32) #foreign;
 
 
 // Command vkBuildAccelerationStructuresKHR (Device Command)
@@ -17839,7 +17839,7 @@ PFN_vkBuildAccelerationStructuresKHR :: #type (device : VkDevice,
                                                deferredOperation : VkDeferredOperationKHR,
                                                infoCount : u32,
                                                pInfos : *VkAccelerationStructureBuildGeometryInfoKHR,
-                                               ppBuildRangeInfos : **VkAccelerationStructureBuildRangeInfoKHR) -> VkResult #c_call;
+                                               ppBuildRangeInfos : **VkAccelerationStructureBuildRangeInfoKHR) -> VkResult #foreign;
 
 
 // Command vkGetAccelerationStructureDeviceAddressKHR (Device Command)
@@ -17847,7 +17847,7 @@ PFN_vkBuildAccelerationStructuresKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
 PFN_vkGetAccelerationStructureDeviceAddressKHR :: #type (device : VkDevice,
-                                                         pInfo : *VkAccelerationStructureDeviceAddressInfoKHR) -> VkDeviceAddress #c_call;
+                                                         pInfo : *VkAccelerationStructureDeviceAddressInfoKHR) -> VkDeviceAddress #foreign;
 
 
 // Command vkCreateDeferredOperationKHR (Device Command)
@@ -17856,7 +17856,7 @@ PFN_vkGetAccelerationStructureDeviceAddressKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_deferred_host_operations.html)
 PFN_vkCreateDeferredOperationKHR :: #type (device : VkDevice,
                                            pAllocator : *VkAllocationCallbacks,
-                                           pDeferredOperation : *VkDeferredOperationKHR) -> VkResult #c_call;
+                                           pDeferredOperation : *VkDeferredOperationKHR) -> VkResult #foreign;
 
 
 // Command vkDestroyDeferredOperationKHR (Device Command)
@@ -17865,7 +17865,7 @@ PFN_vkCreateDeferredOperationKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_deferred_host_operations.html)
 PFN_vkDestroyDeferredOperationKHR :: #type (device : VkDevice,
                                             operation : VkDeferredOperationKHR,
-                                            pAllocator : *VkAllocationCallbacks) #c_call;
+                                            pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkGetDeferredOperationMaxConcurrencyKHR (Device Command)
@@ -17873,7 +17873,7 @@ PFN_vkDestroyDeferredOperationKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_deferred_host_operations
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_deferred_host_operations.html)
 PFN_vkGetDeferredOperationMaxConcurrencyKHR :: #type (device : VkDevice,
-                                                      operation : VkDeferredOperationKHR) -> u32 #c_call;
+                                                      operation : VkDeferredOperationKHR) -> u32 #foreign;
 
 
 // Command vkGetDeferredOperationResultKHR (Device Command)
@@ -17881,7 +17881,7 @@ PFN_vkGetDeferredOperationMaxConcurrencyKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_deferred_host_operations
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_deferred_host_operations.html)
 PFN_vkGetDeferredOperationResultKHR :: #type (device : VkDevice,
-                                              operation : VkDeferredOperationKHR) -> VkResult #c_call;
+                                              operation : VkDeferredOperationKHR) -> VkResult #foreign;
 
 
 // Command vkDeferredOperationJoinKHR (Device Command)
@@ -17889,7 +17889,7 @@ PFN_vkGetDeferredOperationResultKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_deferred_host_operations
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_deferred_host_operations.html)
 PFN_vkDeferredOperationJoinKHR :: #type (device : VkDevice,
-                                         operation : VkDeferredOperationKHR) -> VkResult #c_call;
+                                         operation : VkDeferredOperationKHR) -> VkResult #foreign;
 
 
 // Command vkCmdSetCullModeEXT (Device Command)
@@ -17900,7 +17900,7 @@ PFN_vkDeferredOperationJoinKHR :: #type (device : VkDevice,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetCullModeEXT :: #type (commandBuffer : VkCommandBuffer,
-                                  cullMode : VkCullModeFlags) #c_call;
+                                  cullMode : VkCullModeFlags) #foreign;
 
 
 // Command vkCmdSetFrontFaceEXT (Device Command)
@@ -17911,7 +17911,7 @@ PFN_vkCmdSetCullModeEXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetFrontFaceEXT :: #type (commandBuffer : VkCommandBuffer,
-                                   frontFace : VkFrontFace) #c_call;
+                                   frontFace : VkFrontFace) #foreign;
 
 
 // Command vkCmdSetPrimitiveTopologyEXT (Device Command)
@@ -17922,7 +17922,7 @@ PFN_vkCmdSetFrontFaceEXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetPrimitiveTopologyEXT :: #type (commandBuffer : VkCommandBuffer,
-                                           primitiveTopology : VkPrimitiveTopology) #c_call;
+                                           primitiveTopology : VkPrimitiveTopology) #foreign;
 
 
 // Command vkCmdSetViewportWithCountEXT (Device Command)
@@ -17934,7 +17934,7 @@ PFN_vkCmdSetPrimitiveTopologyEXT :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetViewportWithCountEXT :: #type (commandBuffer : VkCommandBuffer,
                                            viewportCount : u32,
-                                           pViewports : *VkViewport) #c_call;
+                                           pViewports : *VkViewport) #foreign;
 
 
 // Command vkCmdSetScissorWithCountEXT (Device Command)
@@ -17946,7 +17946,7 @@ PFN_vkCmdSetViewportWithCountEXT :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetScissorWithCountEXT :: #type (commandBuffer : VkCommandBuffer,
                                           scissorCount : u32,
-                                          pScissors : *VkRect2D) #c_call;
+                                          pScissors : *VkRect2D) #foreign;
 
 
 // Command vkCmdBindVertexBuffers2EXT (Device Command)
@@ -17962,7 +17962,7 @@ PFN_vkCmdBindVertexBuffers2EXT :: #type (commandBuffer : VkCommandBuffer,
                                          pBuffers : *VkBuffer,
                                          pOffsets : *VkDeviceSize,
                                          pSizes : *VkDeviceSize,
-                                         pStrides : *VkDeviceSize) #c_call;
+                                         pStrides : *VkDeviceSize) #foreign;
 
 
 // Command vkCmdSetDepthTestEnableEXT (Device Command)
@@ -17973,7 +17973,7 @@ PFN_vkCmdBindVertexBuffers2EXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetDepthTestEnableEXT :: #type (commandBuffer : VkCommandBuffer,
-                                         depthTestEnable : VkBool32) #c_call;
+                                         depthTestEnable : VkBool32) #foreign;
 
 
 // Command vkCmdSetDepthWriteEnableEXT (Device Command)
@@ -17984,7 +17984,7 @@ PFN_vkCmdSetDepthTestEnableEXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetDepthWriteEnableEXT :: #type (commandBuffer : VkCommandBuffer,
-                                          depthWriteEnable : VkBool32) #c_call;
+                                          depthWriteEnable : VkBool32) #foreign;
 
 
 // Command vkCmdSetDepthCompareOpEXT (Device Command)
@@ -17995,7 +17995,7 @@ PFN_vkCmdSetDepthWriteEnableEXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetDepthCompareOpEXT :: #type (commandBuffer : VkCommandBuffer,
-                                        depthCompareOp : VkCompareOp) #c_call;
+                                        depthCompareOp : VkCompareOp) #foreign;
 
 
 // Command vkCmdSetDepthBoundsTestEnableEXT (Device Command)
@@ -18006,7 +18006,7 @@ PFN_vkCmdSetDepthCompareOpEXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetDepthBoundsTestEnableEXT :: #type (commandBuffer : VkCommandBuffer,
-                                               depthBoundsTestEnable : VkBool32) #c_call;
+                                               depthBoundsTestEnable : VkBool32) #foreign;
 
 
 // Command vkCmdSetStencilTestEnableEXT (Device Command)
@@ -18017,7 +18017,7 @@ PFN_vkCmdSetDepthBoundsTestEnableEXT :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_EXT_extended_dynamic_state
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_extended_dynamic_state.html)
 PFN_vkCmdSetStencilTestEnableEXT :: #type (commandBuffer : VkCommandBuffer,
-                                           stencilTestEnable : VkBool32) #c_call;
+                                           stencilTestEnable : VkBool32) #foreign;
 
 
 // Command vkCmdSetStencilOpEXT (Device Command)
@@ -18032,7 +18032,7 @@ PFN_vkCmdSetStencilOpEXT :: #type (commandBuffer : VkCommandBuffer,
                                    failOp : VkStencilOp,
                                    passOp : VkStencilOp,
                                    depthFailOp : VkStencilOp,
-                                   compareOp : VkCompareOp) #c_call;
+                                   compareOp : VkCompareOp) #foreign;
 
 
 // Command vkCreatePrivateDataSlotEXT (Device Command)
@@ -18042,7 +18042,7 @@ PFN_vkCmdSetStencilOpEXT :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCreatePrivateDataSlotEXT :: #type (device : VkDevice,
                                          pCreateInfo : *VkPrivateDataSlotCreateInfoEXT,
                                          pAllocator : *VkAllocationCallbacks,
-                                         pPrivateDataSlot : *VkPrivateDataSlotEXT) -> VkResult #c_call;
+                                         pPrivateDataSlot : *VkPrivateDataSlotEXT) -> VkResult #foreign;
 
 
 // Command vkDestroyPrivateDataSlotEXT (Device Command)
@@ -18051,7 +18051,7 @@ PFN_vkCreatePrivateDataSlotEXT :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_private_data.html)
 PFN_vkDestroyPrivateDataSlotEXT :: #type (device : VkDevice,
                                           privateDataSlot : VkPrivateDataSlotEXT,
-                                          pAllocator : *VkAllocationCallbacks) #c_call;
+                                          pAllocator : *VkAllocationCallbacks) #foreign;
 
 
 // Command vkSetPrivateDataEXT (Device Command)
@@ -18062,7 +18062,7 @@ PFN_vkSetPrivateDataEXT :: #type (device : VkDevice,
                                   objectType : VkObjectType,
                                   objectHandle : u64,
                                   privateDataSlot : VkPrivateDataSlotEXT,
-                                  data : u64) -> VkResult #c_call;
+                                  data : u64) -> VkResult #foreign;
 
 
 // Command vkGetPrivateDataEXT (Device Command)
@@ -18073,7 +18073,7 @@ PFN_vkGetPrivateDataEXT :: #type (device : VkDevice,
                                   objectType : VkObjectType,
                                   objectHandle : u64,
                                   privateDataSlot : VkPrivateDataSlotEXT,
-                                  pData : *u64) #c_call;
+                                  pData : *u64) #foreign;
 
 
 // Command vkCmdCopyBuffer2KHR (Device Command)
@@ -18084,7 +18084,7 @@ PFN_vkGetPrivateDataEXT :: #type (device : VkDevice,
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
 PFN_vkCmdCopyBuffer2KHR :: #type (commandBuffer : VkCommandBuffer,
-                                  pCopyBufferInfo : *VkCopyBufferInfo2KHR) #c_call;
+                                  pCopyBufferInfo : *VkCopyBufferInfo2KHR) #foreign;
 
 
 // Command vkCmdCopyImage2KHR (Device Command)
@@ -18095,7 +18095,7 @@ PFN_vkCmdCopyBuffer2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
 PFN_vkCmdCopyImage2KHR :: #type (commandBuffer : VkCommandBuffer,
-                                 pCopyImageInfo : *VkCopyImageInfo2KHR) #c_call;
+                                 pCopyImageInfo : *VkCopyImageInfo2KHR) #foreign;
 
 
 // Command vkCmdBlitImage2KHR (Device Command)
@@ -18106,7 +18106,7 @@ PFN_vkCmdCopyImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
 PFN_vkCmdBlitImage2KHR :: #type (commandBuffer : VkCommandBuffer,
-                                 pBlitImageInfo : *VkBlitImageInfo2KHR) #c_call;
+                                 pBlitImageInfo : *VkBlitImageInfo2KHR) #foreign;
 
 
 // Command vkCmdCopyBufferToImage2KHR (Device Command)
@@ -18117,7 +18117,7 @@ PFN_vkCmdBlitImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
 PFN_vkCmdCopyBufferToImage2KHR :: #type (commandBuffer : VkCommandBuffer,
-                                         pCopyBufferToImageInfo : *VkCopyBufferToImageInfo2KHR) #c_call;
+                                         pCopyBufferToImageInfo : *VkCopyBufferToImageInfo2KHR) #foreign;
 
 
 // Command vkCmdCopyImageToBuffer2KHR (Device Command)
@@ -18128,7 +18128,7 @@ PFN_vkCmdCopyBufferToImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
 PFN_vkCmdCopyImageToBuffer2KHR :: #type (commandBuffer : VkCommandBuffer,
-                                         pCopyImageToBufferInfo : *VkCopyImageToBufferInfo2KHR) #c_call;
+                                         pCopyImageToBufferInfo : *VkCopyImageToBufferInfo2KHR) #foreign;
 
 
 // Command vkCmdResolveImage2KHR (Device Command)
@@ -18139,7 +18139,7 @@ PFN_vkCmdCopyImageToBuffer2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
 PFN_vkCmdResolveImage2KHR :: #type (commandBuffer : VkCommandBuffer,
-                                    pResolveImageInfo : *VkResolveImageInfo2KHR) #c_call;
+                                    pResolveImageInfo : *VkResolveImageInfo2KHR) #foreign;
 
 
 // Command vkCmdSetFragmentShadingRateKHR (Device Command)
@@ -18151,7 +18151,7 @@ PFN_vkCmdResolveImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_fragment_shading_rate.html)
 PFN_vkCmdSetFragmentShadingRateKHR :: #type (commandBuffer : VkCommandBuffer,
                                              pFragmentSize : *VkExtent2D,
-                                             combinerOps : [2] VkFragmentShadingRateCombinerOpKHR) #c_call;
+                                             combinerOps : [2] VkFragmentShadingRateCombinerOpKHR) #foreign;
 
 
 // Command vkCmdSetFragmentShadingRateEnumNV (Device Command)
@@ -18163,7 +18163,7 @@ PFN_vkCmdSetFragmentShadingRateKHR :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_fragment_shading_rate_enums.html)
 PFN_vkCmdSetFragmentShadingRateEnumNV :: #type (commandBuffer : VkCommandBuffer,
                                                 shadingRate : VkFragmentShadingRateNV,
-                                                combinerOps : [2] VkFragmentShadingRateCombinerOpKHR) #c_call;
+                                                combinerOps : [2] VkFragmentShadingRateCombinerOpKHR) #foreign;
 
 
 // Command vkGetAccelerationStructureBuildSizesKHR (Device Command)
@@ -18174,7 +18174,7 @@ PFN_vkGetAccelerationStructureBuildSizesKHR :: #type (device : VkDevice,
                                                       buildType : VkAccelerationStructureBuildTypeKHR,
                                                       pBuildInfo : *VkAccelerationStructureBuildGeometryInfoKHR,
                                                       pMaxPrimitiveCounts : *u32,
-                                                      pSizeInfo : *VkAccelerationStructureBuildSizesInfoKHR) #c_call;
+                                                      pSizeInfo : *VkAccelerationStructureBuildSizesInfoKHR) #foreign;
 
 
 // Command vkCmdSetEvent2KHR (Device Command)
@@ -18186,7 +18186,7 @@ PFN_vkGetAccelerationStructureBuildSizesKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_synchronization2.html)
 PFN_vkCmdSetEvent2KHR :: #type (commandBuffer : VkCommandBuffer,
                                 event : VkEvent,
-                                pDependencyInfo : *VkDependencyInfoKHR) #c_call;
+                                pDependencyInfo : *VkDependencyInfoKHR) #foreign;
 
 
 // Command vkCmdResetEvent2KHR (Device Command)
@@ -18198,7 +18198,7 @@ PFN_vkCmdSetEvent2KHR :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_synchronization2.html)
 PFN_vkCmdResetEvent2KHR :: #type (commandBuffer : VkCommandBuffer,
                                   event : VkEvent,
-                                  stageMask : VkPipelineStageFlags2KHR) #c_call;
+                                  stageMask : VkPipelineStageFlags2KHR) #foreign;
 
 
 // Command vkCmdWaitEvents2KHR (Device Command)
@@ -18211,7 +18211,7 @@ PFN_vkCmdResetEvent2KHR :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdWaitEvents2KHR :: #type (commandBuffer : VkCommandBuffer,
                                   eventCount : u32,
                                   pEvents : *VkEvent,
-                                  pDependencyInfos : *VkDependencyInfoKHR) #c_call;
+                                  pDependencyInfos : *VkDependencyInfoKHR) #foreign;
 
 
 // Command vkCmdPipelineBarrier2KHR (Device Command)
@@ -18222,7 +18222,7 @@ PFN_vkCmdWaitEvents2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Referenced by VK_KHR_synchronization2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_synchronization2.html)
 PFN_vkCmdPipelineBarrier2KHR :: #type (commandBuffer : VkCommandBuffer,
-                                       pDependencyInfo : *VkDependencyInfoKHR) #c_call;
+                                       pDependencyInfo : *VkDependencyInfoKHR) #foreign;
 
 
 // Command vkQueueSubmit2KHR (Device Command)
@@ -18232,7 +18232,7 @@ PFN_vkCmdPipelineBarrier2KHR :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkQueueSubmit2KHR :: #type (queue : VkQueue,
                                 submitCount : u32,
                                 pSubmits : *VkSubmitInfo2KHR,
-                                fence : VkFence) -> VkResult #c_call;
+                                fence : VkFence) -> VkResult #foreign;
 
 
 // Command vkCmdWriteTimestamp2KHR (Device Command)
@@ -18245,7 +18245,7 @@ PFN_vkQueueSubmit2KHR :: #type (queue : VkQueue,
 PFN_vkCmdWriteTimestamp2KHR :: #type (commandBuffer : VkCommandBuffer,
                                       stage : VkPipelineStageFlags2KHR,
                                       queryPool : VkQueryPool,
-                                      query : u32) #c_call;
+                                      query : u32) #foreign;
 
 
 // Command vkCmdWriteBufferMarker2AMD (Device Command)
@@ -18259,7 +18259,7 @@ PFN_vkCmdWriteBufferMarker2AMD :: #type (commandBuffer : VkCommandBuffer,
                                          stage : VkPipelineStageFlags2KHR,
                                          dstBuffer : VkBuffer,
                                          dstOffset : VkDeviceSize,
-                                         marker : u32) #c_call;
+                                         marker : u32) #foreign;
 
 
 // Command vkGetQueueCheckpointData2NV (Device Command)
@@ -18268,7 +18268,7 @@ PFN_vkCmdWriteBufferMarker2AMD :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_synchronization2.html)
 PFN_vkGetQueueCheckpointData2NV :: #type (queue : VkQueue,
                                           pCheckpointDataCount : *u32,
-                                          pCheckpointData : *VkCheckpointData2NV) #c_call;
+                                          pCheckpointData : *VkCheckpointData2NV) #foreign;
 
 
 #if VULKAN_PLATFORM == .X11
@@ -18295,7 +18295,7 @@ VkXlibSurfaceCreateInfoKHR :: struct
 PFN_vkCreateXlibSurfaceKHR :: #type (instance : VkInstance,
                                      pCreateInfo : *VkXlibSurfaceCreateInfoKHR,
                                      pAllocator : *VkAllocationCallbacks,
-                                     pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                     pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceXlibPresentationSupportKHR (Instance Command)
@@ -18305,7 +18305,7 @@ PFN_vkCreateXlibSurfaceKHR :: #type (instance : VkInstance,
 PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                             queueFamilyIndex : u32,
                                                             dpy : *Display,
-                                                            visualID : VisualID) -> VkBool32 #c_call;
+                                                            visualID : VisualID) -> VkBool32 #foreign;
 
 
 // Command vkAcquireXlibDisplayEXT (Instance Command)
@@ -18314,7 +18314,7 @@ PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR :: #type (physicalDevice : VkP
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_acquire_xlib_display.html)
 PFN_vkAcquireXlibDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
                                       dpy : *Display,
-                                      display : VkDisplayKHR) -> VkResult #c_call;
+                                      display : VkDisplayKHR) -> VkResult #foreign;
 
 
 // Command vkGetRandROutputDisplayEXT (Instance Command)
@@ -18324,7 +18324,7 @@ PFN_vkAcquireXlibDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
 PFN_vkGetRandROutputDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
                                          dpy : *Display,
                                          rrOutput : RROutput,
-                                         pDisplay : *VkDisplayKHR) -> VkResult #c_call;
+                                         pDisplay : *VkDisplayKHR) -> VkResult #foreign;
 
 
 }
@@ -18352,7 +18352,7 @@ VkWaylandSurfaceCreateInfoKHR :: struct
 PFN_vkCreateWaylandSurfaceKHR :: #type (instance : VkInstance,
                                         pCreateInfo : *VkWaylandSurfaceCreateInfoKHR,
                                         pAllocator : *VkAllocationCallbacks,
-                                        pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                        pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceWaylandPresentationSupportKHR (Instance Command)
@@ -18361,7 +18361,7 @@ PFN_vkCreateWaylandSurfaceKHR :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_wayland_surface.html)
 PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                                queueFamilyIndex : u32,
-                                                               display : *wl_display) -> VkBool32 #c_call;
+                                                               display : *wl_display) -> VkBool32 #foreign;
 
 
 }
@@ -18515,7 +18515,7 @@ VkSurfaceFullScreenExclusiveWin32InfoEXT :: struct // Can be in the pNext chain 
 PFN_vkCreateWin32SurfaceKHR :: #type (instance : VkInstance,
                                       pCreateInfo : *VkWin32SurfaceCreateInfoKHR,
                                       pAllocator : *VkAllocationCallbacks,
-                                      pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                      pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetMemoryWin32HandleNV (Device Command)
@@ -18525,7 +18525,7 @@ PFN_vkCreateWin32SurfaceKHR :: #type (instance : VkInstance,
 PFN_vkGetMemoryWin32HandleNV :: #type (device : VkDevice,
                                        memory : VkDeviceMemory,
                                        handleType : VkExternalMemoryHandleTypeFlagsNV,
-                                       pHandle : *HANDLE) -> VkResult #c_call;
+                                       pHandle : *HANDLE) -> VkResult #foreign;
 
 
 // Command vkGetMemoryWin32HandleKHR (Device Command)
@@ -18534,7 +18534,7 @@ PFN_vkGetMemoryWin32HandleNV :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_memory_win32.html)
 PFN_vkGetMemoryWin32HandleKHR :: #type (device : VkDevice,
                                         pGetWin32HandleInfo : *VkMemoryGetWin32HandleInfoKHR,
-                                        pHandle : *HANDLE) -> VkResult #c_call;
+                                        pHandle : *HANDLE) -> VkResult #foreign;
 
 
 // Command vkGetMemoryWin32HandlePropertiesKHR (Device Command)
@@ -18544,7 +18544,7 @@ PFN_vkGetMemoryWin32HandleKHR :: #type (device : VkDevice,
 PFN_vkGetMemoryWin32HandlePropertiesKHR :: #type (device : VkDevice,
                                                   handleType : VkExternalMemoryHandleTypeFlagBits,
                                                   handle : HANDLE,
-                                                  pMemoryWin32HandleProperties : *VkMemoryWin32HandlePropertiesKHR) -> VkResult #c_call;
+                                                  pMemoryWin32HandleProperties : *VkMemoryWin32HandlePropertiesKHR) -> VkResult #foreign;
 
 
 // Command vkGetSemaphoreWin32HandleKHR (Device Command)
@@ -18553,7 +18553,7 @@ PFN_vkGetMemoryWin32HandlePropertiesKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_semaphore_win32.html)
 PFN_vkGetSemaphoreWin32HandleKHR :: #type (device : VkDevice,
                                            pGetWin32HandleInfo : *VkSemaphoreGetWin32HandleInfoKHR,
-                                           pHandle : *HANDLE) -> VkResult #c_call;
+                                           pHandle : *HANDLE) -> VkResult #foreign;
 
 
 // Command vkImportSemaphoreWin32HandleKHR (Device Command)
@@ -18561,7 +18561,7 @@ PFN_vkGetSemaphoreWin32HandleKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_external_semaphore_win32
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_semaphore_win32.html)
 PFN_vkImportSemaphoreWin32HandleKHR :: #type (device : VkDevice,
-                                              pImportSemaphoreWin32HandleInfo : *VkImportSemaphoreWin32HandleInfoKHR) -> VkResult #c_call;
+                                              pImportSemaphoreWin32HandleInfo : *VkImportSemaphoreWin32HandleInfoKHR) -> VkResult #foreign;
 
 
 // Command vkGetFenceWin32HandleKHR (Device Command)
@@ -18570,7 +18570,7 @@ PFN_vkImportSemaphoreWin32HandleKHR :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_fence_win32.html)
 PFN_vkGetFenceWin32HandleKHR :: #type (device : VkDevice,
                                        pGetWin32HandleInfo : *VkFenceGetWin32HandleInfoKHR,
-                                       pHandle : *HANDLE) -> VkResult #c_call;
+                                       pHandle : *HANDLE) -> VkResult #foreign;
 
 
 // Command vkImportFenceWin32HandleKHR (Device Command)
@@ -18578,7 +18578,7 @@ PFN_vkGetFenceWin32HandleKHR :: #type (device : VkDevice,
 // Referenced by VK_KHR_external_fence_win32
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_external_fence_win32.html)
 PFN_vkImportFenceWin32HandleKHR :: #type (device : VkDevice,
-                                          pImportFenceWin32HandleInfo : *VkImportFenceWin32HandleInfoKHR) -> VkResult #c_call;
+                                          pImportFenceWin32HandleInfo : *VkImportFenceWin32HandleInfoKHR) -> VkResult #foreign;
 
 
 }
@@ -18606,7 +18606,7 @@ VkXcbSurfaceCreateInfoKHR :: struct
 PFN_vkCreateXcbSurfaceKHR :: #type (instance : VkInstance,
                                     pCreateInfo : *VkXcbSurfaceCreateInfoKHR,
                                     pAllocator : *VkAllocationCallbacks,
-                                    pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                    pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceXcbPresentationSupportKHR (Instance Command)
@@ -18616,7 +18616,7 @@ PFN_vkCreateXcbSurfaceKHR :: #type (instance : VkInstance,
 PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                            queueFamilyIndex : u32,
                                                            connection : *xcb_connection_t,
-                                                           visual_id : xcb_visualid_t) -> VkBool32 #c_call;
+                                                           visual_id : xcb_visualid_t) -> VkBool32 #foreign;
 
 
 }
@@ -18643,7 +18643,7 @@ VkImagePipeSurfaceCreateInfoFUCHSIA :: struct
 PFN_vkCreateImagePipeSurfaceFUCHSIA :: #type (instance : VkInstance,
                                               pCreateInfo : *VkImagePipeSurfaceCreateInfoFUCHSIA,
                                               pAllocator : *VkAllocationCallbacks,
-                                              pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                              pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 }
@@ -18682,7 +18682,7 @@ VkPresentFrameTokenGGP :: struct // Can be in the pNext chain of "VkPresentInfoK
 PFN_vkCreateStreamDescriptorSurfaceGGP :: #type (instance : VkInstance,
                                                  pCreateInfo : *VkStreamDescriptorSurfaceCreateInfoGGP,
                                                  pAllocator : *VkAllocationCallbacks,
-                                                 pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                                 pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 }
@@ -18721,7 +18721,7 @@ VkImportAndroidHardwareBufferInfoANDROID :: struct // Can be in the pNext chain 
 PFN_vkCreateAndroidSurfaceKHR :: #type (instance : VkInstance,
                                         pCreateInfo : *VkAndroidSurfaceCreateInfoKHR,
                                         pAllocator : *VkAllocationCallbacks,
-                                        pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                        pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetAndroidHardwareBufferPropertiesANDROID (Device Command)
@@ -18730,7 +18730,7 @@ PFN_vkCreateAndroidSurfaceKHR :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_ANDROID_external_memory_android_hardware_buffer.html)
 PFN_vkGetAndroidHardwareBufferPropertiesANDROID :: #type (device : VkDevice,
                                                           buffer : *AHardwareBuffer,
-                                                          pProperties : *VkAndroidHardwareBufferPropertiesANDROID) -> VkResult #c_call;
+                                                          pProperties : *VkAndroidHardwareBufferPropertiesANDROID) -> VkResult #foreign;
 
 
 // Command vkGetMemoryAndroidHardwareBufferANDROID (Device Command)
@@ -18739,7 +18739,7 @@ PFN_vkGetAndroidHardwareBufferPropertiesANDROID :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_ANDROID_external_memory_android_hardware_buffer.html)
 PFN_vkGetMemoryAndroidHardwareBufferANDROID :: #type (device : VkDevice,
                                                       pInfo : *VkMemoryGetAndroidHardwareBufferInfoANDROID,
-                                                      pBuffer : **AHardwareBuffer) -> VkResult #c_call;
+                                                      pBuffer : **AHardwareBuffer) -> VkResult #foreign;
 
 
 }
@@ -18766,7 +18766,7 @@ VkMetalSurfaceCreateInfoEXT :: struct
 PFN_vkCreateMetalSurfaceEXT :: #type (instance : VkInstance,
                                       pCreateInfo : *VkMetalSurfaceCreateInfoEXT,
                                       pAllocator : *VkAllocationCallbacks,
-                                      pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                      pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 }
@@ -18794,7 +18794,7 @@ VkDirectFBSurfaceCreateInfoEXT :: struct
 PFN_vkCreateDirectFBSurfaceEXT :: #type (instance : VkInstance,
                                          pCreateInfo : *VkDirectFBSurfaceCreateInfoEXT,
                                          pAllocator : *VkAllocationCallbacks,
-                                         pSurface : *VkSurfaceKHR) -> VkResult #c_call;
+                                         pSurface : *VkSurfaceKHR) -> VkResult #foreign;
 
 
 // Command vkGetPhysicalDeviceDirectFBPresentationSupportEXT (Instance Command)
@@ -18803,7 +18803,7 @@ PFN_vkCreateDirectFBSurfaceEXT :: #type (instance : VkInstance,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_directfb_surface.html)
 PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT :: #type (physicalDevice : VkPhysicalDevice,
                                                                 queueFamilyIndex : u32,
-                                                                dfb : *IDirectFB) -> VkBool32 #c_call;
+                                                                dfb : *IDirectFB) -> VkBool32 #foreign;
 
 
 }

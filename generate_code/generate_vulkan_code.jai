@@ -2645,7 +2645,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 }
                 print_to_builder(builder, "%", c_basic_type_to_jai(return_type.name));
             }
-            print_to_builder(builder, " #c_call;\n\n\n");
+            print_to_builder(builder, " #foreign;\n\n\n");
         }
     }
 
