@@ -83,6 +83,9 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         Android;
         MacOS;
         IDirectFB;
+        Screen;
+
+        Provisional; // Jesus, Mary and Joseph and the wee donkey, why is this a platform. 
     }
 
     platform_count :: #run get_enum_count(Vulkan_Platform);
@@ -97,7 +100,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "zircon/types.h",          .Zircon);
     table_add(*requires_strings_to_platform, "ggp_c/vulkan_types.h",    .GGP);
     table_add(*requires_strings_to_platform, "directfb.h",              .IDirectFB);
-
+    table_add(*requires_strings_to_platform, "screen/screen.h",         .Screen);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std_decode.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_decode.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std_encode.h", .Provisional);
 
 
     //
@@ -150,7 +158,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     // requires="windows.h" or something. Making both of them be platform specific. This would
     // make us have to keep that chain or requiring types that require types that require platform types, etc.
     //
-    get_type_platform_requirements :: (array_of_names : [] Platform_Specific_Names, type : string) -> bool, Vulkan_Platform
+    get_type_platform_requirements :: (array_of_names : [] Platform_Specific_Names, type : string) -> Vulkan_Platform
     {
         for array_of_names
         {
@@ -160,11 +168,11 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 if it == type
                 {
                     assert(platform != .None);
-                    return true, platform;
+                    return platform;
                 }
             }
         }
-        return false, .None;
+        return .None;
     }
     
 
@@ -278,6 +286,9 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             Transfer;
             Compute;
             Graphics;
+            Sparse_Binding;
+            Decode;
+            Encode;
         }
 
         renderpass : Render_Pass;
@@ -527,7 +538,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 else if type_name == "VK_HEADER_VERSION_COMPLETE"
                 {
                     complete_version := type.contents[type.contents.count - 1];
-                    print_to_builder(*prelude_builder, "VK_HEADER_VERSION_COMPLETE :: #run VK_MAKE_VERSION%;\n", complete_version);
+                    print_to_builder(*prelude_builder, "VK_HEADER_VERSION_COMPLETE :: #run VK_MAKE_API_VERSION%;\n", complete_version);
                 }
                 else
                 {
@@ -595,15 +606,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                         assert(type_of_member_node.contents.count == 1);
                         member.type = strip_quotes_and_whitespace(type_of_member_node.contents[0]);
                         member.type = c_basic_type_to_jai(member.type);
-
-                        // If any of the members of the struct require a platform then the struct 
-                        // needs to inherit that requirement.
-                        is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, member.type);
-                        if is_platform_type
-                        {
-                            assert(struct_instance.requires_platform == .None || struct_instance.requires_platform == platform);
-                            struct_instance.requires_platform = platform;
-                        }
 
                         name_of_member_node := find_first_node_with_name(child, "name");
                         assert(name_of_member_node.contents.count == 1);
@@ -994,24 +996,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                         }
                     }
                 }
-
-                // If any of the arguments or the return type require a platform, then the procedure itself
-                // also requires that same platform.
-                is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, procedure_instance.return_type.name);
-                if is_platform_type
-                {
-                    assert(procedure_instance.requires_platform == .None || procedure_instance.requires_platform == platform);
-                    procedure_instance.requires_platform = platform;
-                }
-                for * procedure_instance.arguments
-                {
-                    is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, it.type.name);
-                    if is_platform_type
-                    {
-                        assert(procedure_instance.requires_platform == .None || procedure_instance.requires_platform == platform);
-                        procedure_instance.requires_platform = platform;
-                    }
-                }
     
                 array_add(*procedure_pointers, procedure_instance);
                 type_instance.index = procedure_pointers.count - 1;
@@ -1032,6 +1016,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         has_alias, alias := find_attribute_with_name_and_strip(constant_tag, "alias");
         has_value, value := find_attribute_with_name_and_strip(constant_tag, "value");
         has_name, name := find_attribute_with_name_and_strip(constant_tag, "name");
+        has_type, type := find_attribute_with_name_and_strip(constant_tag, "type");
         assert(has_name);
         if name == "VK_TRUE"
         {
@@ -1094,14 +1079,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             }
             if found_float
             {
+                assert(has_type && type == "float");
                 print_to_builder(*prelude_builder, "% :float: %;\n", name, value_parsed);
             }
             else if found_unsigned && !found_long
             {
+                assert(has_type && type == "uint32_t");
                 print_to_builder(*prelude_builder, "% :u32: cast,trunc(u32) %;\n", name, value_parsed);
             }
             else if found_unsigned && found_long
             {
+                assert(has_type && type == "uint64_t");
                 print_to_builder(*prelude_builder, "% :u64: cast(u64) %;\n", name, value_parsed);
             }
             else
@@ -1417,10 +1405,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 if it ==
                 {
-                    case "graphics"; array_add(*command_instance.queues, Command_Instance.Queue.Graphics);
-                    case "transfer"; array_add(*command_instance.queues, Command_Instance.Queue.Transfer);
-                    case "compute";  array_add(*command_instance.queues, Command_Instance.Queue.Compute);
-                    case "sparse_binding"; // @@HACK: Not sure what this means but doesn't make sense to be in the "queues" attribute
+                    case "graphics";        array_add(*command_instance.queues, Command_Instance.Queue.Graphics);
+                    case "transfer";        array_add(*command_instance.queues, Command_Instance.Queue.Transfer);
+                    case "compute";         array_add(*command_instance.queues, Command_Instance.Queue.Compute);
+                    case "sparse_binding";  array_add(*command_instance.queues, Command_Instance.Queue.Sparse_Binding);
+                    case "decode";          array_add(*command_instance.queues, Command_Instance.Queue.Decode);
+                    case "encode";          array_add(*command_instance.queues, Command_Instance.Queue.Encode);
                     case; assert(false);
                 }
             }
@@ -1571,24 +1561,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 argument := parse_argument(param_node);
                 array_add(*command_instance.arguments, argument);
-            }
-
-            // If the command's return type or arguments require a platform, then the command itself
-            // requires that platform too.
-            is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, command_instance.return_type.name);
-            if is_platform_type
-            {
-                assert(command_instance.requires_platform == .None || command_instance.requires_platform == platform);
-                command_instance.requires_platform = platform;
-            }
-            for * command_instance.arguments
-            {
-                is_platform_type, platform := get_type_platform_requirements(array_of_platform_specific_names, it.type.name);
-                if is_platform_type
-                {
-                    assert(command_instance.requires_platform == .None || command_instance.requires_platform == platform);
-                    command_instance.requires_platform = platform;
-                }
             }
 
         }
@@ -1873,139 +1845,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         array_add(*extensions, extension_instance);
     }
 
-
-
-    // Fixing platform requirements and type aliasing
-
-    //
-    // @@NOTE @@IMPROVEMENT
-    //
-    // There's multiple things we need to care about, types and alias other types and types can contain or
-    // reference types that require a platform. So we have to handle both problems. We need to look at all the
-    // types that are aliases of other types and make them inherit their requirements. But we also need to
-    // look at all the types involved in a type (struct) or a command (arguments) and update the requirements of these.
-    //
-    // The problem is that when we do any of those two things we might need to repeat the other, since if a type that
-    // aliases another should be updated if that other one changes.
-    //
-    // We could do with a system that has references to the aliased types. So when we encounter an alias, instead of
-    // just working with names we can point at the type that we're aliasing, and the "parent" type can point to all types
-    // that alias it. This would make it so when we need to update a type we just have to traverse the "alias" chain of all
-    // the types it has and check if any of them hit a "requires" for a platform.
-    //
-    // In practice, alias levels tend to be just 1, and type requirements don't have to trickle down very deep, so doing
-    // this only once does the trick.
-    //
-
-    fix_platform_requirements_of_all_aliased_types :: () #expand
-    {
-        fixup_platform_requirements_of_aliased_types(structs);
-        fixup_platform_requirements_of_aliased_types(procedure_pointers);
-        fixup_platform_requirements_of_aliased_types(commands);
-        fixup_platform_requirements_of_aliased_types :: (instances : [] $Instance_Type)
-        {
-            for * instance : instances
-            {
-                if instance.alias
-                {
-                    non_aliased := find_non_aliased_instance(instances, instance.alias);
-                    assert_and_error(non_aliased != null);
-                    assert_and_error(instance.requires_platform == .None);
-                    assert_and_error(!non_aliased.alias);
-                    instance.requires_platform = non_aliased.requires_platform;
-                }
-            }
-        }
-    }
-    find_non_aliased_instance :: (instances : [] $Instance_Type, alias : string) -> *Instance_Type
-    {
-        for * instance : instances
-        {
-            if alias == instance.name
-            {
-                if instance.alias
-                    return find_non_aliased_instance(instances, instance.alias);
-                else
-                    return instance;
-            }
-        }
-        return null;
-    }
-
-    // First we fix the aliased types to update them with the current platform requirements of the type they alias
-    fix_platform_requirements_of_all_aliased_types();
-
-    // Then we iterate through the members of the structs to find out if because of their members they need to be a platform
-    // specific type
-    for * struct_instance : structs
-    {
-        for * member : struct_instance.members
-        {
-            name := member.type;
-            requires_platform, platform := get_type_platform_requirements(array_of_platform_specific_names, name);
-            if requires_platform
-            {
-                add_platform_specific_name(*array_of_platform_specific_names, platform, struct_instance.name);
-                fixup_requirements_after_changing_type(structs, *array_of_platform_specific_names, struct_instance.name, platform);
-            }
-        }
-    }
-    
-    fixup_requirements_after_changing_type :: (structs : [] Struct_Instance, array_of_platform_specific_names : *[platform_count] Platform_Specific_Names, name_of_type : string, now_requires_platform : Vulkan_Platform)
-    {
-        for * struct_instance : structs
-        {
-            for * member : struct_instance.members
-            {
-                if name_of_type == member.type
-                {
-                    requires_platform, platform := get_type_platform_requirements(<<array_of_platform_specific_names, member.type);
-                    if requires_platform
-                    {
-                        assert(platform == now_requires_platform);
-                    }
-                    else
-                    {
-                        assert(platform == .None || platform == now_requires_platform);
-                        add_platform_specific_name(array_of_platform_specific_names, now_requires_platform, struct_instance.name);
-                        fixup_requirements_after_changing_type(structs, array_of_platform_specific_names, struct_instance.name, now_requires_platform);
-                    }
-                }
-            }
-        }
-    }
-
-    // Then here we iterate through all the commands and procedure pointers to see if any of the arguments they use are of a platform specific type, 
-    // in which case they need to be updated to say they are also tied to a platform.
-    for * command_instance : commands
-    {
-        update_requiremens_for_type(command_instance, command_instance.return_type.name, array_of_platform_specific_names);
-        for * command_instance.arguments
-               update_requiremens_for_type(command_instance, it.type.name, array_of_platform_specific_names);
-    }
-    for * procedure_instance : procedure_pointers
-    {
-        update_requiremens_for_type(procedure_instance, procedure_instance.return_type.name, array_of_platform_specific_names);
-        for * procedure_instance.arguments
-               update_requiremens_for_type(procedure_instance, it.type.name, array_of_platform_specific_names);
-    }
-
-    update_requiremens_for_type :: (instance : $Instance_Type, type_name : string, array_of_platform_specific_names : [] Platform_Specific_Names)
-    {
-        requires_platform, platform := get_type_platform_requirements(array_of_platform_specific_names, type_name);
-        if requires_platform
-        {
-            assert(instance.requires_platform == platform || instance.requires_platform == .None);
-            instance.requires_platform = platform;
-        }
-    }
-
-    // And finally since some types might have changed requirements that were aliased by someone
-    // we do this again just to catch those.
-    fix_platform_requirements_of_all_aliased_types();
-
-
-
     // Finding out which commands are loader, instance or device commands
 
     for * command_instance : commands
@@ -2147,6 +1986,120 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             // the value is just supposed to be zero just now since the enums
             // that would hold the flags (named with "FlagBits") are just empty
         }
+    }
+
+
+
+    // Fixing platform requirements and type aliasing
+    
+    iteration := 0;
+    while true
+    {
+        changed := do_one_step_of_expanding_requirements();
+        if !changed then break;
+        iteration += 1;
+    }
+    do_one_step_of_expanding_requirements :: () -> bool #expand
+    {
+        changed := false;
+        set_requirements :: (instance : *$T, platform : Vulkan_Platform) -> bool #must
+        {
+            if platform == .None
+            {
+                // If we're trying to say that it requires no platform nothing changes
+                // cause the instance could already have a requirement for some other reason
+                // and we shouldn't overwrite it with none.
+            }
+            else if instance.requires_platform == platform 
+            {
+                // If both are the same nothing has changed here. The platform
+                // was already correct
+            }
+            else 
+            {
+                if instance.requires_platform == .None 
+                {
+                    // If the instance has no requirements, then we can set
+                    // the new requirements.
+                    instance.requires_platform = platform;
+                    return true;
+                }
+                else
+                {
+                    // If the instance already had different requirements then this is an error
+                    // since it can't be requiring two different platforms at the time of writing.
+                    assert(false);
+                }
+            }
+            return false;
+        }
+
+        for * struct_instance : structs
+        {
+            for * member : struct_instance.members
+                changed |= update_requiremens_for_type(struct_instance, member.type);
+        }
+        for * command_instance : commands
+        {
+            changed |= update_requiremens_for_type(command_instance, command_instance.return_type.name);
+            for * command_instance.arguments
+                   changed |= update_requiremens_for_type(command_instance, it.type.name);
+        }
+        for * procedure_instance : procedure_pointers
+        {
+            changed |= update_requiremens_for_type(procedure_instance, procedure_instance.return_type.name);
+            for * procedure_instance.arguments
+                   changed |= update_requiremens_for_type(procedure_instance, it.type.name);
+        }
+        update_requiremens_for_type :: (instance : $Instance_Type, type_name : string) -> bool #must #expand
+        {
+            platform := get_type_platform_requirements(array_of_platform_specific_names, type_name);
+
+            if platform == .None
+                for structs  if type_name == it.name then platform = it.requires_platform;
+
+            if platform == .None
+                for commands if type_name == it.name then platform = it.requires_platform;
+
+            if platform == .None
+                for procedure_pointers if type_name == it.name then platform = it.requires_platform;
+
+            return set_requirements(instance, platform);
+        }
+
+        changed |= fixup_platform_requirements_of_aliased_types(structs);
+        changed |= fixup_platform_requirements_of_aliased_types(commands);
+        changed |= fixup_platform_requirements_of_aliased_types(procedure_pointers);
+        fixup_platform_requirements_of_aliased_types :: (instances : [] $Instance_Type) -> bool #must
+        {
+            changed := false;
+            for * instance : instances
+            {
+                if instance.alias
+                {
+                    non_aliased := find_non_aliased_instance(instances, instance.alias);
+                    assert(non_aliased != null);
+                    if non_aliased.requires_platform != .None
+                        changed |= set_requirements(instance, non_aliased.requires_platform);
+                }
+            }
+            return changed;
+        }
+        return changed;
+    }
+    find_non_aliased_instance :: (instances : [] $Instance_Type, alias : string) -> *Instance_Type
+    {
+        for * instance : instances
+        {
+            if alias == instance.name
+            {
+                if instance.alias
+                    return find_non_aliased_instance(instances, instance.alias);
+                else
+                    return instance;
+            }
+        }
+        return null;
     }
 
 
@@ -2388,18 +2341,26 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
-        if platform == .None  continue;
-        print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", get_enum_name(platform));
+        if platform == .None
+        {
+            continue;
+        }
+        else if platform == .Provisional
+        {
+            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n", get_enum_name(platform));
+        }
+        else
+        {
+            print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", get_enum_name(platform));
+        }
         output_all_structs(structs, *types_builder, platform);
         output_all_procedure_pointers(procedure_pointers, *types_builder, platform);
         output_all_commands(loader_commands, *types_builder, platform);
         output_all_commands(instance_commands, *types_builder, platform);
         output_all_commands(device_commands, *types_builder, platform);
-        if it == platform_count - 1
-            print_to_builder(*types_builder, "}\n\n\n");
-        else
-            print_to_builder(*types_builder, "}\nelse ");
+        print_to_builder(*types_builder, "}\n");
     }
+    print_to_builder(*types_builder, "\n\n");
     
     
     output_all_structs :: (structs : [] Struct_Instance, builder : *String_Builder, platform := Vulkan_Platform.None)
@@ -2768,21 +2729,22 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
 
         do_it_for_commands :: (commands : [] *Command_Instance) #expand
         {
-            did_first_if := false;
             write_all_commands(commands);
             for get_enum_values(Vulkan_Platform)
             {
                 platform := cast(Vulkan_Platform) it;
-                if platform == .None  continue;
                 if !has_commands(commands, platform) continue;
-                if !did_first_if
+                if platform == .None
                 {
-                    did_first_if = true;
-                    write("        #if VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                    continue;
+                }
+                else if platform == .Provisional
+                {
+                    write("        #if VK_ENABLE_BETA_EXTENSIONS\n        {\n");
                 }
                 else
                 {
-                    write("        else #if VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                    write("        #if VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
                 }
                 write_all_commands(commands, platform, "            ");
                 write("        }\n");
@@ -2880,11 +2842,21 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
-        if platform == .None  continue;
         prelude_to_add := platform_preludes[platform];
         if prelude_to_add
         {
-            print_to_builder(*prelude_builder, "#if VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
+            if platform == .None  
+            {
+                continue;
+            }
+            else if platform == .Provisional
+            {
+                print_to_builder(*prelude_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n");
+            }
+            else
+            {
+                print_to_builder(*prelude_builder, "#if VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
+            }
             append(*prelude_builder, prelude_to_add);
             print_to_builder(*prelude_builder, "} // %\n\n", get_enum_name(platform));
         }
@@ -3023,6 +2995,7 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     
 
 VULKAN_PLATFORM_SELECTION_PRELUDE :: #string DONE
+#module_parameters(VK_ENABLE_BETA_EXTENSIONS := false);
 #if      OS == .WINDOWS VULKAN_PLATFORM :: Vulkan_Platform.Windows;
 else #if OS == .LINUX   VULKAN_PLATFORM :: Vulkan_Platform.X11;
 else #if OS == .MACOS   VULKAN_PLATFORM :: Vulkan_Platform.MacOS;
@@ -3031,27 +3004,31 @@ else                    VULKAN_PLATFORM :: Vulkan_Platform.None;
 DONE
 
 VULKAN_GENERAL_PRELUDE :: #string DONE
-VK_MAKE_VERSION :: (major: u32, minor: u32, patch: u32) -> u32
+VK_MAKE_API_VERSION :: (variant : u32, major: u32, minor: u32, patch: u32) -> u32
 {
-    return (major << 22) | (minor << 12) | patch;
+    return (variant << 29) | (major << 22) | (minor << 12) | patch;
 }
 
-VK_VERSION_MAJOR :: (version: u32) -> u32
+VK_API_VERSION_VARIANT :: (version: u32) -> u32
 {
-    return version >> 22;
+    return (version >> 29);
 }
-VK_VERSION_MINOR :: (version: u32) -> u32
+VK_API_VERSION_MAJOR :: (version: u32) -> u32
 {
-    return (version >> 22) & 0x3ff;
+    return (version >> 22) & 0x7F;
 }
-VK_VERSION_PATCH :: (version: u32) -> u32
+VK_API_VERSION_MINOR :: (version: u32) -> u32
 {
-    return version & 0xfff;
+    return (version >> 12) & 0x3FF;
+}
+VK_API_VERSION_PATCH :: (version: u32) -> u32
+{
+    return version & 0xFFF;
 }
 
-VK_API_VERSION_1_0 :: #run VK_MAKE_VERSION(1, 0, 0);
-VK_API_VERSION_1_1 :: #run VK_MAKE_VERSION(1, 1, 0);
-VK_API_VERSION_1_2 :: #run VK_MAKE_VERSION(1, 2, 0);
+VK_API_VERSION_1_0 :: #run VK_MAKE_API_VERSION(0, 1, 0, 0);
+VK_API_VERSION_1_1 :: #run VK_MAKE_API_VERSION(0, 1, 1, 0);
+VK_API_VERSION_1_2 :: #run VK_MAKE_API_VERSION(0, 1, 2, 0);
 
 VK_NULL_HANDLE :: null;
 
@@ -3542,6 +3519,7 @@ patch_name_if_its_called_like_a_jai_type_god_damn :: (name : string) -> string
         case "s8";  return "s8_";
         case "float32"; return "float32_";
         case "float64"; return "float64_";
+        case "context"; return "context_";
         case; return name;
     }
 }
@@ -3603,7 +3581,10 @@ print_array_of_enum_values :: (builder : *String_Builder, values : [] $Enum_Type
 {
     for values
     {
-        print_to_builder(builder, get_enum_name(it));
+        name := tprint("%", get_enum_name(it));
+        for 0..name.count-1
+            if name[it] == #char "_" then name[it] = #char " ";
+        print_to_builder(builder, name);
         if it_index == values.count - 2
             print_to_builder(builder, " and ");
         else if it_index != values.count - 1

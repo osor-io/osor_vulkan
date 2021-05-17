@@ -629,7 +629,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
         app_info : VkApplicationInfo;
         app_info.pApplicationName = "Vulkan Example";
         app_info.pEngineName = "Unireal-Maker";
-        app_info.apiVersion = VK_MAKE_VERSION(1,2,135);
+        app_info.apiVersion = VK_MAKE_API_VERSION(0,1,2,135);
 
         create_info : VkInstanceCreateInfo;
         create_info.pApplicationInfo = *app_info;
