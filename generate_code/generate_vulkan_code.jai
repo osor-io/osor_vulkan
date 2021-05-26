@@ -2524,9 +2524,9 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             if inside && outside
                 print_to_builder(builder, "// Can be used both inside and outside a renderpass\n");
             else if inside
-                print_to_builder(builder, "// Has to be used inside a rendepass\n");
+                print_to_builder(builder, "// Has to be used inside a renderpass\n");
             else if outside
-                print_to_builder(builder, "// Has to be used outside a rendepass\n");
+                print_to_builder(builder, "// Has to be used outside a renderpass\n");
         }
         if command_instance.command_buffer_level != 0
         {

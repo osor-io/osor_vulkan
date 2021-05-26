@@ -50,7 +50,7 @@ VK_API_VERSION_1_2 :: #run VK_MAKE_API_VERSION(0, 1, 2, 0);
 
 VK_NULL_HANDLE :: null;
 
-VK_HEADER_VERSION :: 178;
+VK_HEADER_VERSION :: 179;
 VK_HEADER_VERSION_COMPLETE :: #run VK_MAKE_API_VERSION(0, 1, 2, VK_HEADER_VERSION);
 VK_MAX_PHYSICAL_DEVICE_NAME_SIZE :: 256;
 VK_UUID_SIZE :: 16;
@@ -1188,7 +1188,7 @@ using VkImageLayout :: enum s32 #specified
 
     // Added for extension VK_NV_shading_rate_image
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_shading_rate_image.html)
-    VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV :: 1000164003;
+    VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV :: VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR;
 
     // Added for extension VK_EXT_fragment_density_map
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_fragment_density_map.html)
@@ -1196,7 +1196,7 @@ using VkImageLayout :: enum s32 #specified
 
     // Added for extension VK_KHR_fragment_shading_rate
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_fragment_shading_rate.html)
-    VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR :: VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV;
+    VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR :: 1000164003;
 
     // Added for extension VK_KHR_separate_depth_stencil_layouts
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_separate_depth_stencil_layouts.html)
@@ -1262,7 +1262,7 @@ using VkImageUsageFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_NV_shading_rate_image
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_shading_rate_image.html)
-    VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV :: (1 << 8);
+    VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV :: VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR;
 
     // Added for extension VK_EXT_fragment_density_map
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_fragment_density_map.html)
@@ -1270,7 +1270,7 @@ using VkImageUsageFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_KHR_fragment_shading_rate
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_fragment_shading_rate.html)
-    VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :: VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV;
+    VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :: (1 << 8);
 
     // Added for extension VK_KHR_video_encode_queue
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_video_encode_queue.html)
@@ -1419,7 +1419,7 @@ using VkAccessFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_NV_shading_rate_image
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_shading_rate_image.html)
-    VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV :: (1 << 23);
+    VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV :: VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR;
 
     // Added for extension VK_NV_ray_tracing
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
@@ -1432,7 +1432,7 @@ using VkAccessFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_KHR_fragment_shading_rate
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_fragment_shading_rate.html)
-    VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR :: VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV;
+    VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR :: (1 << 23);
 
     // Added for extension VK_NV_device_generated_commands
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
@@ -3212,7 +3212,7 @@ using VkPipelineStageFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_NV_shading_rate_image
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_shading_rate_image.html)
-    VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV :: (1 << 22);
+    VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV :: VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR;
 
     // Added for extension VK_NV_ray_tracing
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
@@ -3230,7 +3230,7 @@ using VkPipelineStageFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_KHR_fragment_shading_rate
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_fragment_shading_rate.html)
-    VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :: VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV;
+    VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :: (1 << 22);
 
     // Added for extension VK_NV_device_generated_commands
     // (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
@@ -16903,7 +16903,7 @@ PFN_vkCmdBindVertexBuffers :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDraw (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDraw.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDraw :: #type (commandBuffer : VkCommandBuffer,
                         vertexCount : u32,
@@ -16915,7 +16915,7 @@ PFN_vkCmdDraw :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDrawIndexed (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawIndexed.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDrawIndexed :: #type (commandBuffer : VkCommandBuffer,
                                indexCount : u32,
@@ -16928,7 +16928,7 @@ PFN_vkCmdDrawIndexed :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDrawIndirect (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawIndirect.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDrawIndirect :: #type (commandBuffer : VkCommandBuffer,
                                 buffer : VkBuffer,
@@ -16940,7 +16940,7 @@ PFN_vkCmdDrawIndirect :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDrawIndexedIndirect (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawIndexedIndirect.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDrawIndexedIndirect :: #type (commandBuffer : VkCommandBuffer,
                                        buffer : VkBuffer,
@@ -16952,7 +16952,7 @@ PFN_vkCmdDrawIndexedIndirect :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDispatch (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDispatch.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDispatch :: #type (commandBuffer : VkCommandBuffer,
                             groupCountX : u32,
@@ -16963,7 +16963,7 @@ PFN_vkCmdDispatch :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDispatchIndirect (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDispatchIndirect.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDispatchIndirect :: #type (commandBuffer : VkCommandBuffer,
                                     buffer : VkBuffer,
@@ -16973,7 +16973,7 @@ PFN_vkCmdDispatchIndirect :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyBuffer.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdCopyBuffer :: #type (commandBuffer : VkCommandBuffer,
                               srcBuffer : VkBuffer,
@@ -16985,7 +16985,7 @@ PFN_vkCmdCopyBuffer :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyImage (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyImage.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdCopyImage :: #type (commandBuffer : VkCommandBuffer,
                              srcImage : VkImage,
@@ -16999,7 +16999,7 @@ PFN_vkCmdCopyImage :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdBlitImage (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBlitImage.html)
 // Can be submitted to a Graphics queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdBlitImage :: #type (commandBuffer : VkCommandBuffer,
                              srcImage : VkImage,
@@ -17014,7 +17014,7 @@ PFN_vkCmdBlitImage :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyBufferToImage (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyBufferToImage.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdCopyBufferToImage :: #type (commandBuffer : VkCommandBuffer,
                                      srcBuffer : VkBuffer,
@@ -17027,7 +17027,7 @@ PFN_vkCmdCopyBufferToImage :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyImageToBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyImageToBuffer.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdCopyImageToBuffer :: #type (commandBuffer : VkCommandBuffer,
                                      srcImage : VkImage,
@@ -17040,7 +17040,7 @@ PFN_vkCmdCopyImageToBuffer :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdUpdateBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdUpdateBuffer.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdUpdateBuffer :: #type (commandBuffer : VkCommandBuffer,
                                 dstBuffer : VkBuffer,
@@ -17052,7 +17052,7 @@ PFN_vkCmdUpdateBuffer :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdFillBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdFillBuffer.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdFillBuffer :: #type (commandBuffer : VkCommandBuffer,
                               dstBuffer : VkBuffer,
@@ -17064,7 +17064,7 @@ PFN_vkCmdFillBuffer :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdClearColorImage (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdClearColorImage.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdClearColorImage :: #type (commandBuffer : VkCommandBuffer,
                                    image : VkImage,
@@ -17077,7 +17077,7 @@ PFN_vkCmdClearColorImage :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdClearDepthStencilImage (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdClearDepthStencilImage.html)
 // Can be submitted to a Graphics queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdClearDepthStencilImage :: #type (commandBuffer : VkCommandBuffer,
                                           image : VkImage,
@@ -17090,7 +17090,7 @@ PFN_vkCmdClearDepthStencilImage :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdClearAttachments (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdClearAttachments.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdClearAttachments :: #type (commandBuffer : VkCommandBuffer,
                                     attachmentCount : u32,
@@ -17102,7 +17102,7 @@ PFN_vkCmdClearAttachments :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdResolveImage (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdResolveImage.html)
 // Can be submitted to a Graphics queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdResolveImage :: #type (commandBuffer : VkCommandBuffer,
                                 srcImage : VkImage,
@@ -17116,7 +17116,7 @@ PFN_vkCmdResolveImage :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdSetEvent (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdSetEvent.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetEvent :: #type (commandBuffer : VkCommandBuffer,
                             event : VkEvent,
@@ -17126,7 +17126,7 @@ PFN_vkCmdSetEvent :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdResetEvent (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdResetEvent.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdResetEvent :: #type (commandBuffer : VkCommandBuffer,
                               event : VkEvent,
@@ -17213,7 +17213,7 @@ PFN_vkCmdEndConditionalRenderingEXT :: #type (commandBuffer : VkCommandBuffer) #
 // Command vkCmdResetQueryPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdResetQueryPool.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdResetQueryPool :: #type (commandBuffer : VkCommandBuffer,
                                   queryPool : VkQueryPool,
@@ -17235,7 +17235,7 @@ PFN_vkCmdWriteTimestamp :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyQueryPoolResults (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyQueryPoolResults.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdCopyQueryPoolResults :: #type (commandBuffer : VkCommandBuffer,
                                         queryPool : VkQueryPool,
@@ -17263,7 +17263,7 @@ PFN_vkCmdPushConstants :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdBeginRenderPass (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBeginRenderPass.html)
 // Can be submitted to a Graphics queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdBeginRenderPass :: #type (commandBuffer : VkCommandBuffer,
                                    pRenderPassBegin : *VkRenderPassBeginInfo,
@@ -17273,7 +17273,7 @@ PFN_vkCmdBeginRenderPass :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdNextSubpass (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdNextSubpass.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdNextSubpass :: #type (commandBuffer : VkCommandBuffer,
                                contents : VkSubpassContents) #foreign;
@@ -17282,7 +17282,7 @@ PFN_vkCmdNextSubpass :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdEndRenderPass (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdEndRenderPass.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdEndRenderPass :: #type (commandBuffer : VkCommandBuffer) #foreign;
 
@@ -17408,7 +17408,7 @@ PFN_vkCmdDebugMarkerInsertEXT :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdExecuteGeneratedCommandsNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdExecuteGeneratedCommandsNV.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_device_generated_commands
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
@@ -17420,7 +17420,7 @@ PFN_vkCmdExecuteGeneratedCommandsNV :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdPreprocessGeneratedCommandsNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdPreprocessGeneratedCommandsNV.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_device_generated_commands
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_device_generated_commands.html)
@@ -17683,7 +17683,7 @@ PFN_vkAcquireNextImage2KHR :: #type (device : VkDevice,
 // Command vkCmdDispatchBase (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDispatchBase.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDispatchBase :: #type (commandBuffer : VkCommandBuffer,
                                 baseGroupX : u32,
@@ -18041,7 +18041,7 @@ PFN_vkCreateRenderPass2KHR :: PFN_vkCreateRenderPass2;
 // Command vkCmdBeginRenderPass2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBeginRenderPass2.html)
 // Can be submitted to a Graphics queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdBeginRenderPass2 :: #type (commandBuffer : VkCommandBuffer,
                                     pRenderPassBegin : *VkRenderPassBeginInfo,
@@ -18058,7 +18058,7 @@ PFN_vkCmdBeginRenderPass2KHR :: PFN_vkCmdBeginRenderPass2;
 // Command vkCmdNextSubpass2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdNextSubpass2.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdNextSubpass2 :: #type (commandBuffer : VkCommandBuffer,
                                 pSubpassBeginInfo : *VkSubpassBeginInfo,
@@ -18075,7 +18075,7 @@ PFN_vkCmdNextSubpass2KHR :: PFN_vkCmdNextSubpass2;
 // Command vkCmdEndRenderPass2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdEndRenderPass2.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Has to be recorded to a primary command buffer
 PFN_vkCmdEndRenderPass2 :: #type (commandBuffer : VkCommandBuffer,
                                   pSubpassEndInfo : *VkSubpassEndInfo) #foreign;
@@ -18132,7 +18132,7 @@ PFN_vkSignalSemaphoreKHR :: PFN_vkSignalSemaphore;
 // Command vkCmdDrawIndirectCount (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawIndirectCount.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDrawIndirectCount :: #type (commandBuffer : VkCommandBuffer,
                                      buffer : VkBuffer,
@@ -18160,7 +18160,7 @@ PFN_vkCmdDrawIndirectCountAMD :: PFN_vkCmdDrawIndirectCount;
 // Command vkCmdDrawIndexedIndirectCount (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawIndexedIndirectCount.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdDrawIndexedIndirectCount :: #type (commandBuffer : VkCommandBuffer,
                                             buffer : VkBuffer,
@@ -18223,7 +18223,7 @@ PFN_vkCmdBindTransformFeedbackBuffersEXT :: #type (commandBuffer : VkCommandBuff
 // Command vkCmdBeginTransformFeedbackEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBeginTransformFeedbackEXT.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_transform_feedback
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_transform_feedback.html)
@@ -18237,7 +18237,7 @@ PFN_vkCmdBeginTransformFeedbackEXT :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdEndTransformFeedbackEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdEndTransformFeedbackEXT.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_transform_feedback
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_transform_feedback.html)
@@ -18278,7 +18278,7 @@ PFN_vkCmdEndQueryIndexedEXT :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDrawIndirectByteCountEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawIndirectByteCountEXT.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_transform_feedback
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_transform_feedback.html)
@@ -18345,7 +18345,7 @@ PFN_vkCmdSetCoarseSampleOrderNV :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDrawMeshTasksNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawMeshTasksNV.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_mesh_shader
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_mesh_shader.html)
@@ -18357,7 +18357,7 @@ PFN_vkCmdDrawMeshTasksNV :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDrawMeshTasksIndirectNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawMeshTasksIndirectNV.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_mesh_shader
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_mesh_shader.html)
@@ -18371,7 +18371,7 @@ PFN_vkCmdDrawMeshTasksIndirectNV :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdDrawMeshTasksIndirectCountNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDrawMeshTasksIndirectCountNV.html)
 // Can be submitted to a Graphics queue
-// Has to be used inside a rendepass
+// Has to be used inside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_mesh_shader
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_mesh_shader.html)
@@ -18442,7 +18442,7 @@ PFN_vkBindAccelerationStructureMemoryNV :: #type (device : VkDevice,
 // Command vkCmdCopyAccelerationStructureNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyAccelerationStructureNV.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_ray_tracing
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
@@ -18455,7 +18455,7 @@ PFN_vkCmdCopyAccelerationStructureNV :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyAccelerationStructureKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyAccelerationStructureKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
@@ -18475,7 +18475,7 @@ PFN_vkCopyAccelerationStructureKHR :: #type (device : VkDevice,
 // Command vkCmdCopyAccelerationStructureToMemoryKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyAccelerationStructureToMemoryKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
@@ -18495,7 +18495,7 @@ PFN_vkCopyAccelerationStructureToMemoryKHR :: #type (device : VkDevice,
 // Command vkCmdCopyMemoryToAccelerationStructureKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyMemoryToAccelerationStructureKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
@@ -18515,7 +18515,7 @@ PFN_vkCopyMemoryToAccelerationStructureKHR :: #type (device : VkDevice,
 // Command vkCmdWriteAccelerationStructuresPropertiesKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdWriteAccelerationStructuresPropertiesKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
@@ -18530,7 +18530,7 @@ PFN_vkCmdWriteAccelerationStructuresPropertiesKHR :: #type (commandBuffer : VkCo
 // Command vkCmdWriteAccelerationStructuresPropertiesNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdWriteAccelerationStructuresPropertiesNV.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_ray_tracing
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
@@ -18545,7 +18545,7 @@ PFN_vkCmdWriteAccelerationStructuresPropertiesNV :: #type (commandBuffer : VkCom
 // Command vkCmdBuildAccelerationStructureNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBuildAccelerationStructureNV.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_ray_tracing
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
@@ -18576,7 +18576,7 @@ PFN_vkWriteAccelerationStructuresPropertiesKHR :: #type (device : VkDevice,
 // Command vkCmdTraceRaysKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdTraceRaysKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_ray_tracing_pipeline
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)
@@ -18593,7 +18593,7 @@ PFN_vkCmdTraceRaysKHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdTraceRaysNV (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdTraceRaysNV.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_NV_ray_tracing
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_ray_tracing.html)
@@ -18683,7 +18683,7 @@ PFN_vkCreateRayTracingPipelinesKHR :: #type (device : VkDevice,
 // Command vkCmdTraceRaysIndirectKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdTraceRaysIndirectKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_ray_tracing_pipeline
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)
@@ -18717,7 +18717,7 @@ PFN_vkGetRayTracingShaderGroupStackSizeKHR :: #type (device : VkDevice,
 // Command vkCmdSetRayTracingPipelineStackSizeKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdSetRayTracingPipelineStackSizeKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_ray_tracing_pipeline
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)
@@ -18975,7 +18975,7 @@ PFN_vkCreateAccelerationStructureKHR :: #type (device : VkDevice,
 // Command vkCmdBuildAccelerationStructuresKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBuildAccelerationStructuresKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
@@ -18988,7 +18988,7 @@ PFN_vkCmdBuildAccelerationStructuresKHR :: #type (commandBuffer : VkCommandBuffe
 // Command vkCmdBuildAccelerationStructuresIndirectKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBuildAccelerationStructuresIndirectKHR.html)
 // Can be submitted to a Compute queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_acceleration_structure
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html)
@@ -19303,7 +19303,7 @@ PFN_vkGetPrivateDataEXT :: #type (device : VkDevice,
 // Command vkCmdCopyBuffer2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyBuffer2KHR.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
@@ -19314,7 +19314,7 @@ PFN_vkCmdCopyBuffer2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyImage2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyImage2KHR.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
@@ -19325,7 +19325,7 @@ PFN_vkCmdCopyImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdBlitImage2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBlitImage2KHR.html)
 // Can be submitted to a Graphics queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
@@ -19336,7 +19336,7 @@ PFN_vkCmdBlitImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyBufferToImage2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyBufferToImage2KHR.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
@@ -19347,7 +19347,7 @@ PFN_vkCmdCopyBufferToImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdCopyImageToBuffer2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdCopyImageToBuffer2KHR.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
@@ -19358,7 +19358,7 @@ PFN_vkCmdCopyImageToBuffer2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdResolveImage2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdResolveImage2KHR.html)
 // Can be submitted to a Graphics queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_copy_commands2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_copy_commands2.html)
@@ -19430,7 +19430,7 @@ PFN_vkCmdSetColorWriteEnableEXT :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdSetEvent2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdSetEvent2KHR.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_synchronization2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_synchronization2.html)
@@ -19442,7 +19442,7 @@ PFN_vkCmdSetEvent2KHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdResetEvent2KHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdResetEvent2KHR.html)
 // Can be submitted to a Graphics and Compute queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_KHR_synchronization2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_synchronization2.html)
@@ -19591,7 +19591,7 @@ PFN_vkBindVideoSessionMemoryKHR :: #type (device : VkDevice,
 // Command vkCmdDecodeVideoKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdDecodeVideoKHR.html)
 // Can be submitted to a Decode queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Has to be recorded to a primary command buffer
 // Referenced by VK_KHR_video_decode_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_video_decode_queue.html)
@@ -19602,7 +19602,7 @@ PFN_vkCmdDecodeVideoKHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdBeginVideoCodingKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBeginVideoCodingKHR.html)
 // Can be submitted to a Decode and Encode queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Has to be recorded to a primary command buffer
 // Referenced by VK_KHR_video_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_video_queue.html)
@@ -19613,7 +19613,7 @@ PFN_vkCmdBeginVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdControlVideoCodingKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdControlVideoCodingKHR.html)
 // Can be submitted to a Decode and Encode queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Has to be recorded to a primary command buffer
 // Referenced by VK_KHR_video_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_video_queue.html)
@@ -19624,7 +19624,7 @@ PFN_vkCmdControlVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdEndVideoCodingKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdEndVideoCodingKHR.html)
 // Can be submitted to a Decode and Encode queues
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Has to be recorded to a primary command buffer
 // Referenced by VK_KHR_video_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_video_queue.html)
@@ -19635,7 +19635,7 @@ PFN_vkCmdEndVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
 // Command vkCmdEncodeVideoKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdEncodeVideoKHR.html)
 // Can be submitted to a Encode queue
-// Has to be used outside a rendepass
+// Has to be used outside a renderpass
 // Has to be recorded to a primary command buffer
 // Referenced by VK_KHR_video_encode_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_video_encode_queue.html)
