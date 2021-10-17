@@ -23,6 +23,233 @@ error :: (format : string = "", args : ..Any, caller_location := #caller_locatio
 
 
 
+Vulkan_Platform :: enum
+{
+    None;
+    X11;
+    Wayland;
+    Windows;
+    Vi;
+    XCB;
+    Fuchsia;
+    GGP;
+    Android;
+    MacOS;
+    IDirectFB;
+    Screen;
+
+    Provisional; // Jesus, Mary and Joseph and the wee donkey, why is this a platform. 
+}
+
+platform_count :: #run get_enum_count(Vulkan_Platform);
+
+Comments_In_Type :: struct
+{
+    comments : [..] Comment;
+    Comment :: struct
+    {
+        print_before_nth_member : int;
+        text : string;
+    }
+}
+
+Struct_Instance :: struct
+{
+    name   : string;
+    alias  : string;
+    is_union := false;
+    struct_extends : string;
+    members : [..] Member;
+    Member :: struct
+    {
+        name : string;
+        type : string;
+        only_value_possible : string;
+        is_optional := false;
+        pointer_count := 0;
+        array_dimensions : [8] string;
+        array_dimensions_used := 0;
+        bit_field_count := -1;
+        comment : string;
+    }
+    using comments_in_type : Comments_In_Type;
+    requires_platform := Vulkan_Platform.None;
+    extensions_that_reference_this : [..] int;
+}
+
+Enum_Instance :: struct
+{
+    name   : string;
+    bitwidth := 32;
+    alias  : string;
+    is_bit_mask := false;
+    values : [..] Value;
+    Value :: struct
+    {
+        name  : string;
+        value_type := Type.In_String;
+        union
+        {
+            value_in_string : string;
+            alias : string;
+            value_in_int : s64;
+        }
+        comment : string;
+        is_bit_position := false;
+
+        Type :: enum
+        {
+            In_String;
+            In_Int;
+            Is_Alias;
+        }
+    }
+    using comments_in_type : Comments_In_Type;
+    who_extended_this : [..] *Node;
+    extensions_that_reference_this : [..] int;
+}
+
+Procedure_Instance :: struct
+{
+    name : string;
+    alias : string;
+    return_type : Type;
+    arguments : [..] Argument;
+    Argument :: struct
+    {
+        type : Type;
+        name : string;
+    }
+    Type :: struct
+    {
+        name : string;
+        pointer_count := 0;
+        array_counts : [..] string;
+    }
+    
+    requires_platform := Vulkan_Platform.None;
+    
+    extensions_that_reference_this : [..] int;
+}
+
+Command_Instance :: struct
+{
+    using procedure_instance : Procedure_Instance;
+    // Commands are treated kind of like an extended procedure
+    // for our purposes.
+
+    success_codes : [..] string;
+    error_codes : [..] string;
+
+    queues : [..] Queue;
+    Queue :: enum
+    {
+        Transfer;
+        Compute;
+        Graphics;
+        Sparse_Binding;
+        Decode;
+        Encode;
+    }
+
+    renderpass : Render_Pass;
+    Render_Pass :: enum_flags
+    {
+        Inside;
+        Outside;
+    }
+
+    command_buffer_level : Command_Buffer_Level;
+    Command_Buffer_Level :: enum_flags
+    {
+        Primary;
+        Secondary;
+    }
+
+    pipeline : Pipeline;
+    Pipeline :: enum
+    {
+        Graphics;
+        Compute;
+        Transfer;
+    }
+
+    command_kind := Command_Kind.None;
+    Command_Kind :: enum
+    {
+        None;
+        Device;
+        Instance;
+        Device_But_Referenced_From_Instance_Extension;
+    }
+
+    comment : string;
+}
+
+Base_Type_Instance :: struct
+{
+    name : string;
+    alias : string;
+    alias_pointer_count := 0;
+};
+
+Bitmask_Instance :: struct
+{
+    name : string;
+    alias : string;
+    requires : string;
+    bitvalues : string;
+};
+
+Handle_Instance :: struct
+{
+    name : string;
+    alias : string;
+    Type :: enum
+    {
+        Dispatchable;
+        Non_Dispatchable;
+    }
+    type : Type;
+};
+
+Extension_Instance :: struct
+{
+    name : string;
+    number : int;
+    type : string;
+    author : string;
+    contact : string;
+    platform := Vulkan_Platform.None;
+
+    enabled := true;
+
+    defines : [..] Define;
+    Define :: struct
+    {
+        name : string;
+        value : string; // Have to deal with &quot
+    }
+}
+
+
+
+includes           : [..] string;
+defines            : [..] string;
+structs            : [..] Struct_Instance;
+enums              : [..] Enum_Instance;
+procedure_pointers : [..] Procedure_Instance;
+base_types         : [..] Base_Type_Instance;
+ignored_base_types : [..] string;
+bitmasks           : [..] Bitmask_Instance;
+handles            : [..] Handle_Instance;
+commands           : [..] Command_Instance;
+instance_commands  : [..] *Command_Instance;
+device_commands    : [..] *Command_Instance;
+loader_commands    : [..] *Command_Instance;
+extensions         : [..] Extension_Instance;
+
+
 
 generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loader : string
 {
@@ -70,25 +297,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
 
 
-
-    Vulkan_Platform :: enum
-    {
-        None;
-        X11;
-        Wayland;
-        Windows;
-        XCB;
-        Zircon;
-        GGP;
-        Android;
-        MacOS;
-        IDirectFB;
-        Screen;
-
-        Provisional; // Jesus, Mary and Joseph and the wee donkey, why is this a platform. 
-    }
-
-    platform_count :: #run get_enum_count(Vulkan_Platform);
     
     requires_strings_to_platform : Table(string, Vulkan_Platform);
     defer uninit(*requires_strings_to_platform);
@@ -97,15 +305,40 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "wayland-client.h",        .Wayland);
     table_add(*requires_strings_to_platform, "windows.h",               .Windows);
     table_add(*requires_strings_to_platform, "xcb/xcb.h",               .XCB);
-    table_add(*requires_strings_to_platform, "zircon/types.h",          .Zircon);
+    table_add(*requires_strings_to_platform, "zircon/types.h",          .Fuchsia);
     table_add(*requires_strings_to_platform, "ggp_c/vulkan_types.h",    .GGP);
     table_add(*requires_strings_to_platform, "directfb.h",              .IDirectFB);
     table_add(*requires_strings_to_platform, "screen/screen.h",         .Screen);
-    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std.h",        .Provisional);
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std_decode.h", .Provisional);
-    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std.h", .Provisional);
-    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_decode.h", .Provisional);
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std_encode.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std.h",        .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_decode.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_encode.h", .Provisional);
+
+    platform_name_to_platform_table : Table(string, Vulkan_Platform);
+    defer uninit(*platform_name_to_platform_table);
+    table_add(*platform_name_to_platform_table, "xlib",         .X11);
+    table_add(*platform_name_to_platform_table, "xlib_xrandr",  .X11);
+    table_add(*platform_name_to_platform_table, "xcb",          .XCB);
+    table_add(*platform_name_to_platform_table, "wayland",      .Wayland);
+    table_add(*platform_name_to_platform_table, "directfb",     .IDirectFB);
+    table_add(*platform_name_to_platform_table, "android",      .Android);
+    table_add(*platform_name_to_platform_table, "win32",        .Windows);
+    table_add(*platform_name_to_platform_table, "vi",           .Vi);
+    table_add(*platform_name_to_platform_table, "ios",          .MacOS); // @@NOTE: Maybe these three should be separate?
+    table_add(*platform_name_to_platform_table, "macos",        .MacOS);
+    table_add(*platform_name_to_platform_table, "metal",        .MacOS);
+    table_add(*platform_name_to_platform_table, "fuchsia",      .Fuchsia);
+    table_add(*platform_name_to_platform_table, "ggp",          .GGP);
+    table_add(*platform_name_to_platform_table, "provisional",  .Provisional);
+    table_add(*platform_name_to_platform_table, "screen",       .Screen);
+    find_platform_from_platform_name :: (name : string) -> Vulkan_Platform #expand
+    {
+        platform := table_find_pointer(platform_name_to_platform_table, name);
+        if !platform then return Vulkan_Platform.None;
+        return <<platform;
+    }
 
 
     //
@@ -174,218 +407,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
         return .None;
     }
-    
 
-    Comments_In_Type :: struct
-    {
-        comments : [..] Comment;
-        Comment :: struct
-        {
-            print_before_nth_member : int;
-            text : string;
-        }
-    }
-
-    Extension_Name_And_Is_Enabled :: struct
-    {
-        name : string;
-        enabled : bool;
-    }
-
-    Struct_Instance :: struct
-    {
-        name   : string;
-        alias  : string;
-        is_union := false;
-        struct_extends : string;
-        members : [..] Member;
-        Member :: struct
-        {
-            name : string;
-            type : string;
-            only_value_possible : string;
-            is_optional := false;
-            pointer_count := 0;
-            array_dimensions : [8] string;
-            array_dimensions_used := 0;
-            bit_field_count := -1;
-            comment : string;
-        }
-        using comments_in_type : Comments_In_Type;
-        requires_platform := Vulkan_Platform.None;
-        extensions_that_reference_this : [..] Extension_Name_And_Is_Enabled;
-    }
-
-    Enum_Instance :: struct
-    {
-        name   : string;
-        bitwidth := 32;
-        alias  : string;
-        is_bit_mask := false;
-        values : [..] Value;
-        Value :: struct
-        {
-            name  : string;
-            value_type := Type.In_String;
-            union
-            {
-                value_in_string : string;
-                alias : string;
-                value_in_int : s64;
-            }
-            comment : string;
-            is_bit_position := false;
-
-            Type :: enum
-            {
-                In_String;
-                In_Int;
-                Is_Alias;
-            }
-        }
-        using comments_in_type : Comments_In_Type;
-        who_extended_this : [..] *Node;
-        extensions_that_reference_this : [..] Extension_Name_And_Is_Enabled;
-    }
-
-    Procedure_Instance :: struct
-    {
-        name : string;
-        alias : string;
-        return_type : Type;
-        arguments : [..] Argument;
-        Argument :: struct
-        {
-            type : Type;
-            name : string;
-        }
-        Type :: struct
-        {
-            name : string;
-            pointer_count := 0;
-            array_counts : [..] string;
-        }
-        
-        requires_platform := Vulkan_Platform.None;
-        
-        extensions_that_reference_this : [..] Extension_Name_And_Is_Enabled;
-    }
-    
-    Command_Instance :: struct
-    {
-        using procedure_instance : Procedure_Instance;
-        // Commands are treated kind of like an extended procedure
-        // for our purposes.
-
-        success_codes : [..] string;
-        error_codes : [..] string;
-
-        queues : [..] Queue;
-        Queue :: enum
-        {
-            Transfer;
-            Compute;
-            Graphics;
-            Sparse_Binding;
-            Decode;
-            Encode;
-        }
-
-        renderpass : Render_Pass;
-        Render_Pass :: enum_flags
-        {
-            Inside;
-            Outside;
-        }
-
-        command_buffer_level : Command_Buffer_Level;
-        Command_Buffer_Level :: enum_flags
-        {
-            Primary;
-            Secondary;
-        }
-
-        pipeline : Pipeline;
-        Pipeline :: enum
-        {
-            Graphics;
-            Compute;
-            Transfer;
-        }
-
-        command_kind := Command_Kind.None;
-        Command_Kind :: enum
-        {
-            None;
-            Device;
-            Instance;
-            Device_But_Referenced_From_Instance_Extension;
-        }
-
-        comment : string;
-    }
-
-    Base_Type_Instance :: struct
-    {
-        name : string;
-        alias : string;
-    };
-
-    Bitmask_Instance :: struct
-    {
-        name : string;
-        alias : string;
-        requires : string;
-        bitvalues : string;
-    };
-
-    Handle_Instance :: struct
-    {
-        name : string;
-        alias : string;
-        Type :: enum
-        {
-            Dispatchable;
-            Non_Dispatchable;
-        }
-        type : Type;
-    };
-
-    Extension_Instance :: struct
-    {
-        name : string;
-        number : int;
-        type : string;
-        author : string;
-        contact : string;
-
-        enabled := true;
-
-        defines : [..] Define;
-        Define :: struct
-        {
-            name : string;
-            value : string; // Have to deal with &quot
-        }
-    }
-
-
-
-
-    includes           : [..] string;
-    defines            : [..] string;
-    structs            : [..] Struct_Instance;
-    enums              : [..] Enum_Instance;
-    procedure_pointers : [..] Procedure_Instance;
-    base_types         : [..] Base_Type_Instance;
-    ignored_base_types : [..] string;
-    bitmasks           : [..] Bitmask_Instance;
-    handles            : [..] Handle_Instance;
-    commands           : [..] Command_Instance;
-    instance_commands  : [..] *Command_Instance;
-    device_commands    : [..] *Command_Instance;
-    loader_commands    : [..] *Command_Instance;
-    extensions         : [..] Extension_Instance;
 
 
 
@@ -622,34 +644,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
                         string_after_type := find_contents_after_node(child, type_of_member_node);
                         string_after_name := find_contents_after_node(child, name_of_member_node);
-                        
-                        find_contents_after_node :: (parent : *Node, child : *Node) -> string
-                        {
-                            index := -1;
-                            for parent.all_contents_or_children
-                            {
-                                if it.type == Node
-                                {
-                                    node := *parent.children[it.index];
-                                    if node == child
-                                    {
-                                        index = it_index;
-                                    }
-                                }
-                            }
-                            if index == -1 return "";
-                            potential_index_of_contents := index + 1;
-                            if potential_index_of_contents < parent.all_contents_or_children.count
-                            {
-                                maybe_contents := parent.all_contents_or_children[potential_index_of_contents];
-                                if maybe_contents.type == string
-                                {
-                                    contents := parent.contents[maybe_contents.index];
-                                    return contents;
-                                }
-                            }
-                            return "";
-                        }
+
 
                         for 0..string_after_type.count-1
                             if string_after_type[it] == #char "*" member.pointer_count += 1;
@@ -757,9 +752,19 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     assert(type_node != null);
                     assert(type_node.contents.count > 0);
                     right_hand_type := strip_quotes_and_whitespace(type_node.contents[0]);
-                    right_hand_type = c_basic_type_to_jai(right_hand_type);
+                    success : bool;
+                    right_hand_type, success = c_basic_type_to_jai(right_hand_type);
+                    assert(success);
                     base_type_instance.name  = type_name;
                     base_type_instance.alias = right_hand_type;
+
+                    pointer_count := 0;
+                    string_after_type := find_contents_after_node(type, type_node);
+                    for 0..string_after_type.count-1
+                        if string_after_type[it] == #char "*" then pointer_count += 1;
+
+                    base_type_instance.alias_pointer_count = pointer_count;
+
                     array_add(*base_types, base_type_instance);
                     type_instance.index = base_types.count - 1;
                 }
@@ -1094,7 +1099,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             }
             else
             {
-                print_to_builder(*prelude_builder, "% :: %;\n", name, value);
+                if has_type then print_to_builder(*prelude_builder, "% :%: %;\n", name, c_basic_type_to_jai(type), value);
+                else             print_to_builder(*prelude_builder, "% :: %;\n", name, value);
             }
         }
         else
@@ -1656,9 +1662,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         found_extension_author, extension_author := find_attribute_with_name_and_strip(extension_node, "author");
         found_extension_contact, extension_contact := find_attribute_with_name_and_strip(extension_node, "contact");
         found_extension_supported, extension_supported := find_attribute_with_name_and_strip(extension_node, "supported");
+        found_extension_platform, extension_platform := find_attribute_with_name_and_strip(extension_node, "platform");
         if found_extension_type assert(extension_type == "instance" || extension_type == "device");
         
-        extension_instance : Extension_Instance;
+        extension_index_in_array := extensions.count;
+        extension_instance := array_add(*extensions);
+        <<extension_instance = .{};
         assert(found_extension_name);
         extension_instance.name = extension_name;
         assert(found_extension_number);
@@ -1666,6 +1675,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         if found_extension_type     extension_instance.type = extension_type;
         if found_extension_author   extension_instance.author = extension_author;
         if found_extension_contact  extension_instance.contact = extension_contact;
+        if found_extension_platform extension_instance.platform = find_platform_from_platform_name(extension_platform);
         if found_extension_supported && extension_supported == "disabled"  extension_instance.enabled = false;
         //
         // It appears that sometimes they will just put commands/types/enums in extensions that aren't defined in
@@ -1754,10 +1764,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             }
         }
 
-        extension_and_enabled : Extension_Name_And_Is_Enabled;
-        extension_and_enabled.name = extension_instance.name;
-        extension_and_enabled.enabled = extension_instance.enabled;
-
         all_type_references := find_all_nodes_with_name_and_attribute_recursive(extension_node, "type", "name");
         defer array_reset(*all_type_references);
         for type_reference_node : all_type_references
@@ -1765,18 +1771,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             found_name, name := find_attribute_with_name_and_strip(type_reference_node, "name");
             assert(found_name);
 
-
             for * struct_instance : structs
                 if struct_instance.name == name
-                    array_add(*struct_instance.extensions_that_reference_this, extension_and_enabled);
+                    array_add(*struct_instance.extensions_that_reference_this, extension_index_in_array);
 
             for * enum_instance : enums
                 if enum_instance.name == name
-                    array_add(*enum_instance.extensions_that_reference_this, extension_and_enabled);
+                    array_add(*enum_instance.extensions_that_reference_this, extension_index_in_array);
 
             for * procedure_pointer_instance : procedure_pointers
                 if procedure_pointer_instance.name == name
-                    array_add(*procedure_pointer_instance.extensions_that_reference_this, extension_and_enabled);
+                    array_add(*procedure_pointer_instance.extensions_that_reference_this, extension_index_in_array);
                     
         }
 
@@ -1793,7 +1798,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 if command_instance.name == name
                 {
                     found_command_instance = command_instance;
-                    array_add(*command_instance.extensions_that_reference_this, extension_and_enabled);
+                    array_add(*command_instance.extensions_that_reference_this, extension_index_in_array);
                 }
             }
 
@@ -1841,8 +1846,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             array_add(*extension_instance.defines, define_instance);
         }
-
-        array_add(*extensions, extension_instance);
     }
 
     // Finding out which commands are loader, instance or device commands
@@ -2028,11 +2031,22 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 {
                     // If the instance already had different requirements then this is an error
                     // since it can't be requiring two different platforms at the time of writing.
+                    log_error("% had platform % and we're trying to assign %!!", instance.name, instance.requires_platform, platform);
                     assert(false);
                 }
             }
             return false;
         }
+
+        for * struct_instance : structs
+            for extension_index : struct_instance.extensions_that_reference_this
+               changed |= set_requirements(struct_instance, extensions[extension_index].platform);
+        for * command_instance : commands
+            for extension_index : command_instance.extensions_that_reference_this
+               changed |= set_requirements(command_instance, extensions[extension_index].platform);
+        for * procedure_instance : procedure_pointers
+            for extension_index : procedure_instance.extensions_that_reference_this
+               changed |= set_requirements(procedure_instance, extensions[extension_index].platform);
 
         for * struct_instance : structs
         {
@@ -2292,7 +2306,16 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         for * base_types
         {
             if it.name != "VkBool32"
-                print_to_builder(*types_builder, "% :: %;\n", it.name, it.alias);
+            {
+                pointer_builder : String_Builder;
+                defer reset(*pointer_builder);
+                for 0..it.alias_pointer_count-1
+                {
+                    append(*pointer_builder, "*");
+                }
+                pointer_string := builder_to_string(*pointer_builder);
+                print_to_builder(*types_builder, "%1 :: %2%3;\n", it.name, pointer_string, it.alias);
+            }
         }
         append(*types_builder, "\n");
         for * bitmask : bitmasks
@@ -2825,6 +2848,8 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     {
         using Vulkan_Platform;
 
+        for * platform_preludes { <<it = ""; };
+
         platform_preludes[X11]       = VULKAN_LINUX_PRELUDE;
         platform_preludes[Wayland]   = VULKAN_LINUX_PRELUDE;
         // @@NOTE: On these we probably will need more stuff since
@@ -2832,12 +2857,6 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
         // different ways linux has to deal with presentation.
 
         platform_preludes[Windows]   = VULKAN_WINDOWS_PRELUDE;
-
-        platform_preludes[XCB]       = "";
-        platform_preludes[Zircon]    = "";
-        platform_preludes[GGP]       = "";
-        platform_preludes[Android]   = "";
-        platform_preludes[MacOS]     = "";
     }
     for get_enum_values(Vulkan_Platform)
     {
@@ -2926,17 +2945,18 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     // # Some stuff help with the implementation of the generate procedure:
 
 
-    print_extensions_that_reference :: (builder : *String_Builder, extensions_that_reference : [] Extension_Name_And_Is_Enabled)
+    print_extensions_that_reference :: (builder : *String_Builder, extensions_that_reference : [] int)
     {
         if extensions_that_reference.count > 0
         {
             print_to_builder(builder, "// Referenced by ");
             for extensions_that_reference
             {
+                extension := extensions[it];
                 if it_index == 0 
-                    print_to_builder(builder, "%", it.name);
+                    print_to_builder(builder, "%", extension.name);
                 else
-                    print_to_builder(builder, ", %", it.name);
+                    print_to_builder(builder, ", %", extension.name);
             }
             print_to_builder(builder, "\n");
             
@@ -2944,17 +2964,22 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
             {
                 for extensions_that_reference
                 {
-                    print_address_of_manual_for_extension_comment(builder, it.name);
+                    extension := extensions[it];
+                    print_address_of_manual_for_extension_comment(builder, extension.name);
                 }
             }
         }
     }
 
-    all_extensions_that_reference_this_are_disabled :: (extensions_that_reference : [] Extension_Name_And_Is_Enabled) -> bool
+    all_extensions_that_reference_this_are_disabled :: (extensions_that_reference : [] int) -> bool
     {
         if extensions_that_reference.count > 0 
         {
-            for extensions_that_reference  if it.enabled  return false;
+            for extensions_that_reference  
+            {
+                extension := extensions[it];  
+                if extension.enabled then return false;
+            }
             return true;
         }
         return false;
@@ -3727,6 +3752,34 @@ find_attribute_with_name_and_strip :: (node : *Node, name : string) -> found: bo
     found, content := find_attribute_with_name(node, name);
     if found content = strip_quotes_and_whitespace(content);
     return found, content;
+}
+
+find_contents_after_node :: (parent : *Node, child : *Node) -> string
+{
+    index := -1;
+    for parent.all_contents_or_children
+    {
+        if it.type == Node
+        {
+            node := *parent.children[it.index];
+            if node == child
+            {
+                index = it_index;
+            }
+        }
+    }
+    if index == -1 return "";
+    potential_index_of_contents := index + 1;
+    if potential_index_of_contents < parent.all_contents_or_children.count
+    {
+        maybe_contents := parent.all_contents_or_children[potential_index_of_contents];
+        if maybe_contents.type == string
+        {
+            contents := parent.contents[maybe_contents.index];
+            return contents;
+        }
+    }
+    return "";
 }
 
 aggregate_all_contents_of_node_and_children :: (node : *Node, buffer : [] u8) -> string #must
