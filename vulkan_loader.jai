@@ -72,7 +72,7 @@ using _vulkan_all_commands : Vulkan_All_Commands;
 Vulkan_All_Commands :: struct
 {
     using _vulkan_loader_commands : Vulkan_Loader_Commands;
-    Vulkan_Loader_Commands :: struct
+    Vulkan_Loader_Commands :: struct #type_info_no_size_complaint
     {
         vkCreateInstance : PFN_vkCreateInstance;
         vkGetInstanceProcAddr : PFN_vkGetInstanceProcAddr;
@@ -82,7 +82,7 @@ Vulkan_All_Commands :: struct
     }
 
     using _vulkan_instance_commands : Vulkan_Instance_Commands;
-    Vulkan_Instance_Commands :: struct
+    Vulkan_Instance_Commands :: struct #type_info_no_size_complaint
     {
         vkDestroyInstance : PFN_vkDestroyInstance;
         vkEnumeratePhysicalDevices : PFN_vkEnumeratePhysicalDevices;
@@ -231,7 +231,7 @@ Vulkan_All_Commands :: struct
     }
 
     using _vulkan_device_commands : Vulkan_Device_Commands;
-    Vulkan_Device_Commands :: struct
+    Vulkan_Device_Commands :: struct #type_info_no_size_complaint
     {
         vkDestroyDevice : PFN_vkDestroyDevice;
         vkGetDeviceQueue : PFN_vkGetDeviceQueue;

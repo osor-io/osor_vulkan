@@ -2255,11 +2255,15 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     for 0..spaces_to_pad-1 print_to_builder(builder, " ");
                 }
                 print_to_builder(builder, "% : ", argument.name);
-                for argument.type.array_counts
+                if argument.type.array_counts.count > 0
                 {
-                    print_to_builder(builder, "[%]", it);
-                    if it_index == argument.type.array_counts.count-1 
-                        print_to_builder(builder, " ");
+                    print_to_builder(builder, "*");
+                    for argument.type.array_counts
+                    {
+                        print_to_builder(builder, "[%]", it);
+                        if it_index == argument.type.array_counts.count-1 
+                            print_to_builder(builder, " ");
+                    }
                 }
                 for 0..argument.type.pointer_count-1
                 {
@@ -2278,11 +2282,15 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             else
             {
                 print_to_builder(builder, " -> ");
-                for return_type.array_counts
+                if return_type.array_counts.count > 0
                 {
-                    print_to_builder(builder, "[%]", it);
-                    if it_index == return_type.array_counts.count-1 
-                        print_to_builder(builder, " ");
+                    print_to_builder(builder, "*");
+                    for return_type.array_counts
+                    {
+                        print_to_builder(builder, "[%]", it);
+                        if it_index == return_type.array_counts.count-1 
+                            print_to_builder(builder, " ");
+                    }
                 }
                 for 0..return_type.pointer_count-1
                 {
@@ -2594,11 +2602,15 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     for 0..spaces_to_pad-1 print_to_builder(builder, " ");
                 }
                 print_to_builder(builder, "% : ", argument.name);
-                for argument.type.array_counts
+                if argument.type.array_counts.count > 0
                 {
-                    print_to_builder(builder, "[%]", it);
-                    if it_index == argument.type.array_counts.count-1 
-                        print_to_builder(builder, " ");
+                    print_to_builder(builder, "*");
+                    for argument.type.array_counts
+                    {
+                        print_to_builder(builder, "[%]", it);
+                        if it_index == argument.type.array_counts.count-1 
+                            print_to_builder(builder, " ");
+                    }
                 }
                 for 0..argument.type.pointer_count-1
                 {
@@ -2617,11 +2629,15 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             else
             {
                 print_to_builder(builder, " -> ");
-                for return_type.array_counts
+                if return_type.array_counts.count > 0
                 {
-                    print_to_builder(builder, "[%]", it);
-                    if it_index == return_type.array_counts.count-1 
-                        print_to_builder(builder, " ");
+                    print_to_builder(builder, "*"); 
+                    for return_type.array_counts
+                    {
+                        print_to_builder(builder, "[%]", it);
+                        if it_index == return_type.array_counts.count-1 
+                            print_to_builder(builder, " ");
+                    }
                 }
                 for 0..return_type.pointer_count-1
                 {
@@ -2734,17 +2750,17 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
         write("Vulkan_All_Commands :: struct\n{\n");
         
         write("    using _vulkan_loader_commands : Vulkan_Loader_Commands;\n");
-        write("    Vulkan_Loader_Commands :: struct\n    {\n");
+        write("    Vulkan_Loader_Commands :: struct #type_info_no_size_complaint\n    {\n");
         do_it_for_commands(loader_commands);
         write("    }\n\n");
         
         write("    using _vulkan_instance_commands : Vulkan_Instance_Commands;\n");
-        write("    Vulkan_Instance_Commands :: struct\n    {\n");
+        write("    Vulkan_Instance_Commands :: struct #type_info_no_size_complaint\n    {\n");
         do_it_for_commands(instance_commands);
         write("    }\n\n");
 
         write("    using _vulkan_device_commands : Vulkan_Device_Commands;\n");
-        write("    Vulkan_Device_Commands :: struct\n    {\n");
+        write("    Vulkan_Device_Commands :: struct #type_info_no_size_complaint\n    {\n");
         do_it_for_commands(device_commands);
         write("    }\n");
 

@@ -16998,7 +16998,7 @@ PFN_vkCmdSetDepthBias :: #type (commandBuffer : VkCommandBuffer,
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetBlendConstants :: #type (commandBuffer : VkCommandBuffer,
-                                     blendConstants : [4] float32) #foreign;
+                                     blendConstants : *[4] float32) #foreign;
 
 
 // Command vkCmdSetDepthBounds (Device Command)
@@ -19618,7 +19618,7 @@ PFN_vkCmdResolveImage2KHR :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_fragment_shading_rate.html)
 PFN_vkCmdSetFragmentShadingRateKHR :: #type (commandBuffer : VkCommandBuffer,
                                              pFragmentSize : *VkExtent2D,
-                                             combinerOps : [2] VkFragmentShadingRateCombinerOpKHR) #foreign;
+                                             combinerOps : *[2] VkFragmentShadingRateCombinerOpKHR) #foreign;
 
 
 // Command vkCmdSetFragmentShadingRateEnumNV (Device Command)
@@ -19630,7 +19630,7 @@ PFN_vkCmdSetFragmentShadingRateKHR :: #type (commandBuffer : VkCommandBuffer,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_NV_fragment_shading_rate_enums.html)
 PFN_vkCmdSetFragmentShadingRateEnumNV :: #type (commandBuffer : VkCommandBuffer,
                                                 shadingRate : VkFragmentShadingRateNV,
-                                                combinerOps : [2] VkFragmentShadingRateCombinerOpKHR) #foreign;
+                                                combinerOps : *[2] VkFragmentShadingRateCombinerOpKHR) #foreign;
 
 
 // Command vkGetAccelerationStructureBuildSizesKHR (Device Command)
