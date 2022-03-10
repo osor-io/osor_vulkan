@@ -609,7 +609,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
                         {
                             has_value, value := find_attribute_with_name_and_strip(child, "values");
-                            only_one_value_possible := has_value && !contains_any(value, ",");
+                            only_one_value_possible := has_value && !contains_any_character(value, ",");
                             if only_one_value_possible
                             {
                                 member.only_value_possible = value;
@@ -3070,6 +3070,7 @@ VK_API_VERSION_PATCH :: (version: u32) -> u32
 VK_API_VERSION_1_0 :: #run VK_MAKE_API_VERSION(0, 1, 0, 0);
 VK_API_VERSION_1_1 :: #run VK_MAKE_API_VERSION(0, 1, 1, 0);
 VK_API_VERSION_1_2 :: #run VK_MAKE_API_VERSION(0, 1, 2, 0);
+VK_API_VERSION_1_3 :: #run VK_MAKE_API_VERSION(0, 1, 3, 0);
 
 VK_NULL_HANDLE :: null;
 

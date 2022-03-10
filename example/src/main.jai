@@ -145,10 +145,19 @@ main :: ()
         }
         if !run_main_loop break;
 
-        window_resized, record := is_a_window_resized();
-        if window_resized
+        window_resizes := get_window_resizes();
+        resize_record : *Window_Resize_Record;
+        for * window_resizes
         {
-            success := vulkan_create_swapchain(*vulkan_context, width = record.width, height = record.height);
+            if it.window == window_handle
+            {
+                resize_record == it;
+                break;
+            }
+        }
+        if resize_record
+        {
+            success := vulkan_create_swapchain(*vulkan_context, width = resize_record.width, height = resize_record.height);
             need_to_recreate_framebuffers = success;
         }
 
@@ -2837,10 +2846,10 @@ cleanup_extension_name :: (name : string) -> string
     return builder_to_string(*builder);
 }();
 
-alloc_and_copy_array :: (array : [] $T, allocator := context.allocator, allocator_data := context.allocator_data) -> [] T #must
+alloc_and_copy_array :: (array : [] $T, allocator := context.allocator) -> [] T #must
 {
     new_array := array;
-    new_array.data = xx alloc(array.count * size_of(T), allocator, allocator_data);
+    new_array.data = xx alloc(array.count * size_of(T), allocator);
     memcpy(new_array.data, array.data, array.count * size_of(T));
     return new_array;
 }

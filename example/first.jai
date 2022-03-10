@@ -20,9 +20,7 @@
         print("Not building shaders because we couldn't find a compiler to do it\n");
     }
 
-    build_options := get_build_options();
-    build_options.output_type = .NO_OUTPUT;
-    set_build_options(build_options);
+    set_build_options_dc(.{do_output=false});
     
     main_workspace := compiler_create_workspace();
     if !main_workspace 
@@ -30,9 +28,11 @@
         print("Couldn't create workspace to build the application!!!\n");
         exit(0);
     }
+    
+    build_options := get_build_options();
     build_options.output_type = .EXECUTABLE;
     build_options.output_executable_name = "vulkan_example";
-    build_options.output_path = concatenate(#filepath, "run_tree/");
+    build_options.output_path = join(#filepath, "run_tree/");
 	make_directory_if_it_does_not_exist(build_options.output_path);
 
     new_import_path := string.[
