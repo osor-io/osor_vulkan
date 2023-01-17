@@ -17,9 +17,9 @@ Feel free to request changes here :)
 #import "String";
 #import "Windows";
 #import "Input";
-#import "Vulkan";
 #import "Window_Creation";
 #import "Debug";
+#import,dir "../../../osor_vulkan";
 
 
 
