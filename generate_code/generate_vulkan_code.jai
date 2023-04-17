@@ -299,7 +299,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     
     requires_strings_to_platform : Table(string, Vulkan_Platform);
-    defer uninit(*requires_strings_to_platform);
+    defer deinit(*requires_strings_to_platform);
     table_add(*requires_strings_to_platform, "X11/Xlib.h",              .X11);
     table_add(*requires_strings_to_platform, "X11/extensions/Xrandr.h", .X11);
     table_add(*requires_strings_to_platform, "wayland-client.h",        .Wayland);
@@ -317,7 +317,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_encode.h", .Provisional);
 
     platform_name_to_platform_table : Table(string, Vulkan_Platform);
-    defer uninit(*platform_name_to_platform_table);
+    defer deinit(*platform_name_to_platform_table);
     table_add(*platform_name_to_platform_table, "xlib",         .X11);
     table_add(*platform_name_to_platform_table, "xlib_xrandr",  .X11);
     table_add(*platform_name_to_platform_table, "xcb",          .XCB);
@@ -2352,9 +2352,9 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 if it.type == 
                 {
                     case Handle_Instance.Type.Dispatchable;
-                        print_to_builder(*types_builder, "// Dispatchable Handle\n", it.name, it.name, it.name);
+                        print_to_builder(*types_builder, "// Dispatchable Handle\n");
                     case Handle_Instance.Type.Non_Dispatchable;
-                        print_to_builder(*types_builder, "// Non-Dispatchable Handle\n", it.name, it.name, it.name);
+                        print_to_builder(*types_builder, "// Non-Dispatchable Handle\n");
                     case; error();
                 }
                 print_to_builder(*types_builder, "%_T :: struct {};\n% :: *%_T;\n\n", it.name, it.name, it.name);
@@ -2378,7 +2378,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
         else if platform == .Provisional
         {
-            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n", enum_value_to_name(platform));
+            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n");
         }
         else
         {
