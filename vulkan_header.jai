@@ -18,6 +18,7 @@ Vulkan_Platform :: enum
     MacOS;
     IDirectFB;
     Screen;
+    Jetson;
     Provisional;
 }
 
@@ -52,7 +53,7 @@ VK_API_VERSION_1_3 :: #run VK_MAKE_API_VERSION(0, 1, 3, 0);
 
 VK_NULL_HANDLE :: null;
 
-VK_HEADER_VERSION :: 204;
+VK_HEADER_VERSION :: 247;
 VK_HEADER_VERSION_COMPLETE :: #run VK_MAKE_API_VERSION(0, 1, 3, VK_HEADER_VERSION);
 VK_MAX_PHYSICAL_DEVICE_NAME_SIZE :u32: 256;
 VK_UUID_SIZE :u32: 16;
@@ -65,6 +66,7 @@ VK_MAX_MEMORY_HEAPS :u32: 16;
 VK_LOD_CLAMP_NONE :float: 1000.0;
 VK_REMAINING_MIP_LEVELS :u32: cast,trunc(u32) (~0);
 VK_REMAINING_ARRAY_LAYERS :u32: cast,trunc(u32) (~0);
+VK_REMAINING_3D_SLICES_EXT :u32: cast,trunc(u32) (~0);
 VK_WHOLE_SIZE :u64: cast(u64) (~0);
 VK_ATTACHMENT_UNUSED :u32: cast,trunc(u32) (~0);
 VK_QUEUE_FAMILY_IGNORED :u32: cast,trunc(u32) (~0);
@@ -82,6 +84,7 @@ VK_SHADER_UNUSED_KHR :u32: cast,trunc(u32) (~0);
 VK_SHADER_UNUSED_NV :: VK_SHADER_UNUSED_KHR;
 VK_MAX_GLOBAL_PRIORITY_SIZE_KHR :u32: 16;
 VK_MAX_GLOBAL_PRIORITY_SIZE_EXT :: VK_MAX_GLOBAL_PRIORITY_SIZE_KHR;
+VK_MAX_SHADER_MODULE_IDENTIFIER_SIZE_EXT :u32: 32;
 
 
 #if VULKAN_PLATFORM == .X11
@@ -126,7 +129,7 @@ using VkAttachmentStoreOp :: enum s32 #specified
     VK_ATTACHMENT_STORE_OP_STORE :: 0;
     VK_ATTACHMENT_STORE_OP_DONT_CARE :: 1;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_ATTACHMENT_STORE_OP_NONE :: 1000301000;
 
     // Added for extension VK_KHR_dynamic_rendering
@@ -252,7 +255,7 @@ using VkBorderColor :: enum s32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFramebufferCreateFlagBits.html)
 using VkFramebufferCreateFlagBits :: enum_flags u32 #specified 
 {
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT :: (1 << 0);
 
     // Added for extension VK_KHR_imageless_framebuffer
@@ -287,6 +290,18 @@ using VkSamplerCreateFlagBits :: enum_flags u32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_fragment_density_map.html)
     VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT :: (1 << 0);
     VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT :: (1 << 1);
+
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT :: (1 << 3);
+
+    // Added for extension VK_EXT_non_seamless_cube_map
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_non_seamless_cube_map.html)
+    VK_SAMPLER_CREATE_NON_SEAMLESS_CUBE_MAP_BIT_EXT :: (1 << 2);
+
+    // Added for extension VK_QCOM_image_processing
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+    VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM :: (1 << 4);
 }
 
 
@@ -295,6 +310,9 @@ using VkSamplerCreateFlagBits :: enum_flags u32 #specified
 using VkPipelineCacheHeaderVersion :: enum s32 #specified
 {
     VK_PIPELINE_CACHE_HEADER_VERSION_ONE :: 1;
+
+    // Added in vulkansc 1.0
+    VK_PIPELINE_CACHE_HEADER_VERSION_SAFETY_CRITICAL_ONE :: 1000298001;
 }
 
 
@@ -304,8 +322,12 @@ using VkPipelineCacheHeaderVersion :: enum s32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_creation_cache_control.html)
 using VkPipelineCacheCreateFlagBits :: enum_flags u32 #specified 
 {
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT :: (1 << 0);
+
+    // Added in vulkansc 1.0
+    VK_PIPELINE_CACHE_CREATE_READ_ONLY_BIT :: (1 << 1);
+    VK_PIPELINE_CACHE_CREATE_USE_APPLICATION_STORAGE_BIT :: (1 << 2);
 
     // Added for extension VK_EXT_pipeline_creation_cache_control
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_creation_cache_control.html)
@@ -317,7 +339,7 @@ using VkPipelineCacheCreateFlagBits :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineShaderStageCreateFlagBits.html)
 using VkPipelineShaderStageCreateFlagBits :: enum_flags u32 #specified 
 {
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT :: (1 << 0);
     VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT :: (1 << 1);
 
@@ -332,7 +354,7 @@ using VkPipelineShaderStageCreateFlagBits :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutCreateFlagBits.html)
 using VkDescriptorSetLayoutCreateFlagBits :: enum_flags u32 #specified 
 {
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT :: (1 << 1);
 
     // Added for extension VK_KHR_push_descriptor
@@ -343,9 +365,18 @@ using VkDescriptorSetLayoutCreateFlagBits :: enum_flags u32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_indexing.html)
     VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT_EXT :: VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
 
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT :: (1 << 4);
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT :: (1 << 5);
+
     // Added for extension VK_VALVE_mutable_descriptor_type
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
-    VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE :: (1 << 2);
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE :: VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT;
+
+    // Added for extension VK_EXT_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT :: (1 << 2);
 }
 
 
@@ -353,7 +384,9 @@ using VkDescriptorSetLayoutCreateFlagBits :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkInstanceCreateFlagBits.html)
 using VkInstanceCreateFlagBits :: enum_flags u32 #specified 
 {
-    // empty
+    // Added for extension VK_KHR_portability_enumeration
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_portability_enumeration.html)
+    VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR :: (1 << 0);
 }
 
 
@@ -361,7 +394,7 @@ using VkInstanceCreateFlagBits :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueCreateFlagBits.html)
 using VkDeviceQueueCreateFlagBits :: enum_flags u32 #specified 
 {
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT :: (1 << 0); // Queue is a protected-capable device queue
 }
 
@@ -374,10 +407,10 @@ using VkBufferCreateFlagBits :: enum_flags u32 #specified
     VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT :: (1 << 1); // Buffer should support sparse backing with partial residency
     VK_BUFFER_CREATE_SPARSE_ALIASED_BIT :: (1 << 2); // Buffer should support constant data access to physical memory ranges mapped into multiple locations of sparse buffers
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_BUFFER_CREATE_PROTECTED_BIT :: (1 << 3); // Buffer requires protected memory
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT :: (1 << 4);
 
     // Added for extension VK_EXT_buffer_device_address
@@ -387,6 +420,10 @@ using VkBufferCreateFlagBits :: enum_flags u32 #specified
     // Added for extension VK_KHR_buffer_device_address
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_buffer_device_address.html)
     VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR :: VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT;
+
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT :: (1 << 5);
 }
 
 
@@ -404,7 +441,7 @@ using VkBufferUsageFlagBits :: enum_flags u32 #specified
     VK_BUFFER_USAGE_VERTEX_BUFFER_BIT :: (1 << 7); // Can be used as source of fixed-function vertex fetch (VBO)
     VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT :: (1 << 8); // Can be the source of indirect parameters (e.g. indirect buffer, parameter buffer)
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT :: (1 << 17);
 
     // Added for extension VK_KHR_video_decode_queue
@@ -446,6 +483,17 @@ using VkBufferUsageFlagBits :: enum_flags u32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
     VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR :: (1 << 15);
     VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR :: (1 << 16);
+
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT :: (1 << 21);
+    VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT :: (1 << 22);
+    VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT :: (1 << 26);
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT :: (1 << 23);
+    VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT :: (1 << 24);
 }
 
 
@@ -481,7 +529,7 @@ using VkCommandPoolCreateFlagBits :: enum_flags u32 #specified
     VK_COMMAND_POOL_CREATE_TRANSIENT_BIT :: (1 << 0); // Command buffers have a short lifetime
     VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT :: (1 << 1); // Command buffers may release their memory individually
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_COMMAND_POOL_CREATE_PROTECTED_BIT :: (1 << 2); // Command buffers allocated from pool are protected command buffers
 }
 
@@ -563,7 +611,7 @@ using VkDescriptorType :: enum s32 #specified
     VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC :: 9;
     VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT :: 10;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK :: 1000138000;
 
     // Added for extension VK_EXT_inline_uniform_block
@@ -580,7 +628,16 @@ using VkDescriptorType :: enum s32 #specified
 
     // Added for extension VK_VALVE_mutable_descriptor_type
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
-    VK_DESCRIPTOR_TYPE_MUTABLE_VALVE :: 1000351000;
+    VK_DESCRIPTOR_TYPE_MUTABLE_VALVE :: VK_DESCRIPTOR_TYPE_MUTABLE_EXT;
+
+    // Added for extension VK_QCOM_image_processing
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+    VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM :: 1000440000;
+    VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM :: 1000440001;
+
+    // Added for extension VK_EXT_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+    VK_DESCRIPTOR_TYPE_MUTABLE_EXT :: 1000351000;
 }
 
 
@@ -606,7 +663,7 @@ using VkDynamicState :: enum s32 #specified
     VK_DYNAMIC_STATE_STENCIL_WRITE_MASK :: 7;
     VK_DYNAMIC_STATE_STENCIL_REFERENCE :: 8;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_DYNAMIC_STATE_CULL_MODE :: 1000267000;
     VK_DYNAMIC_STATE_FRONT_FACE :: 1000267001;
     VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY :: 1000267002;
@@ -630,6 +687,8 @@ using VkDynamicState :: enum s32 #specified
     // Added for extension VK_EXT_discard_rectangles
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_discard_rectangles.html)
     VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT :: 1000099000;
+    VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXT :: 1000099001;
+    VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXT :: 1000099002;
 
     // Added for extension VK_EXT_sample_locations
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_sample_locations.html)
@@ -646,6 +705,7 @@ using VkDynamicState :: enum s32 #specified
 
     // Added for extension VK_NV_scissor_exclusive
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_scissor_exclusive.html)
+    VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_ENABLE_NV :: 1000205000;
     VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV :: 1000205001;
 
     // Added for extension VK_KHR_fragment_shading_rate
@@ -686,6 +746,40 @@ using VkDynamicState :: enum s32 #specified
     // Added for extension VK_EXT_color_write_enable
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_color_write_enable.html)
     VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT :: 1000381000;
+
+    // Added for extension VK_EXT_extended_dynamic_state3
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+    VK_DYNAMIC_STATE_TESSELLATION_DOMAIN_ORIGIN_EXT :: 1000455002;
+    VK_DYNAMIC_STATE_DEPTH_CLAMP_ENABLE_EXT :: 1000455003;
+    VK_DYNAMIC_STATE_POLYGON_MODE_EXT :: 1000455004;
+    VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT :: 1000455005;
+    VK_DYNAMIC_STATE_SAMPLE_MASK_EXT :: 1000455006;
+    VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT :: 1000455007;
+    VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT :: 1000455008;
+    VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT :: 1000455009;
+    VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT :: 1000455010;
+    VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT :: 1000455011;
+    VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT :: 1000455012;
+    VK_DYNAMIC_STATE_RASTERIZATION_STREAM_EXT :: 1000455013;
+    VK_DYNAMIC_STATE_CONSERVATIVE_RASTERIZATION_MODE_EXT :: 1000455014;
+    VK_DYNAMIC_STATE_EXTRA_PRIMITIVE_OVERESTIMATION_SIZE_EXT :: 1000455015;
+    VK_DYNAMIC_STATE_DEPTH_CLIP_ENABLE_EXT :: 1000455016;
+    VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT :: 1000455017;
+    VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT :: 1000455018;
+    VK_DYNAMIC_STATE_PROVOKING_VERTEX_MODE_EXT :: 1000455019;
+    VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT :: 1000455020;
+    VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT :: 1000455021;
+    VK_DYNAMIC_STATE_DEPTH_CLIP_NEGATIVE_ONE_TO_ONE_EXT :: 1000455022;
+    VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_ENABLE_NV :: 1000455023;
+    VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV :: 1000455024;
+    VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV :: 1000455025;
+    VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_LOCATION_NV :: 1000455026;
+    VK_DYNAMIC_STATE_COVERAGE_MODULATION_MODE_NV :: 1000455027;
+    VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_ENABLE_NV :: 1000455028;
+    VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_NV :: 1000455029;
+    VK_DYNAMIC_STATE_SHADING_RATE_IMAGE_ENABLE_NV :: 1000455030;
+    VK_DYNAMIC_STATE_REPRESENTATIVE_FRAGMENT_TEST_ENABLE_NV :: 1000455031;
+    VK_DYNAMIC_STATE_COVERAGE_REDUCTION_MODE_NV :: 1000455032;
 }
 
 
@@ -901,7 +995,7 @@ using VkFormat :: enum s32 #specified
     VK_FORMAT_ASTC_12x12_UNORM_BLOCK :: 183;
     VK_FORMAT_ASTC_12x12_SRGB_BLOCK :: 184;
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_FORMAT_G8B8G8R8_422_UNORM :: 1000156000;
     VK_FORMAT_B8G8R8G8_422_UNORM :: 1000156001;
     VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM :: 1000156002;
@@ -937,7 +1031,7 @@ using VkFormat :: enum s32 #specified
     VK_FORMAT_G16_B16R16_2PLANE_422_UNORM :: 1000156032;
     VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM :: 1000156033;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_FORMAT_G8_B8R8_2PLANE_444_UNORM :: 1000330000;
     VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 :: 1000330001;
     VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 :: 1000330002;
@@ -1035,6 +1129,10 @@ using VkFormat :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_4444_formats.html)
     VK_FORMAT_A4R4G4B4_UNORM_PACK16_EXT :: VK_FORMAT_A4R4G4B4_UNORM_PACK16;
     VK_FORMAT_A4B4G4R4_UNORM_PACK16_EXT :: VK_FORMAT_A4B4G4R4_UNORM_PACK16;
+
+    // Added for extension VK_NV_optical_flow
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+    VK_FORMAT_R16G16_S10_5_NV :: 1000464000;
 }
 
 
@@ -1056,7 +1154,7 @@ using VkFormatFeatureFlagBits :: enum_flags u32 #specified
     VK_FORMAT_FEATURE_BLIT_DST_BIT :: (1 << 11); // Format can be used as the destination image of blits with vkCmdBlitImage
     VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT :: (1 << 12); // Format can be filtered with VK_FILTER_LINEAR when being sampled
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_FORMAT_FEATURE_TRANSFER_SRC_BIT :: (1 << 14); // Format can be used as the source image of image transfer commands
     VK_FORMAT_FEATURE_TRANSFER_DST_BIT :: (1 << 15); // Format can be used as the destination image of image transfer commands
     VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT :: (1 << 17); // Format can have midpoint rather than cosited chroma samples
@@ -1067,12 +1165,12 @@ using VkFormatFeatureFlagBits :: enum_flags u32 #specified
     VK_FORMAT_FEATURE_DISJOINT_BIT :: (1 << 22); // Format supports disjoint planes
     VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT :: (1 << 23); // Format can have cosited rather than midpoint chroma samples
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT :: (1 << 16); // Format can be used with min/max reduction filtering
 
     // Added for extension VK_IMG_filter_cubic
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_IMG_filter_cubic.html)
-    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG :: (1 << 13); // Format can be filtered with VK_FILTER_CUBIC_IMG when being sampled
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG :: VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT; // Format can be filtered with VK_FILTER_CUBIC_IMG when being sampled
 
     // Added for extension VK_KHR_video_decode_queue
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
@@ -1104,7 +1202,7 @@ using VkFormatFeatureFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_EXT_filter_cubic
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_filter_cubic.html)
-    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT :: VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG;
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT :: (1 << 13);
 
     // Added for extension VK_EXT_fragment_density_map
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_fragment_density_map.html)
@@ -1139,10 +1237,13 @@ using VkImageAspectFlagBits :: enum_flags u32 #specified
     VK_IMAGE_ASPECT_STENCIL_BIT :: (1 << 2);
     VK_IMAGE_ASPECT_METADATA_BIT :: (1 << 3);
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_IMAGE_ASPECT_PLANE_0_BIT :: (1 << 4);
     VK_IMAGE_ASPECT_PLANE_1_BIT :: (1 << 5);
     VK_IMAGE_ASPECT_PLANE_2_BIT :: (1 << 6);
+
+    // Added in vulkan,vulkansc 1.3
+    VK_IMAGE_ASPECT_NONE :: 0;
 
     // Added for extension VK_KHR_sampler_ycbcr_conversion
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_sampler_ycbcr_conversion.html)
@@ -1159,7 +1260,7 @@ using VkImageAspectFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_KHR_maintenance4
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_maintenance4.html)
-    VK_IMAGE_ASPECT_NONE_KHR :: 0;
+    VK_IMAGE_ASPECT_NONE_KHR :: VK_IMAGE_ASPECT_NONE;
 }
 
 
@@ -1173,7 +1274,7 @@ using VkImageCreateFlagBits :: enum_flags u32 #specified
     VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT :: (1 << 3); // Allows image views to have different format than the base image
     VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT :: (1 << 4); // Allows creating image views with cube type from the created image
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_IMAGE_CREATE_ALIAS_BIT :: (1 << 10);
     VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT :: (1 << 6); // Allows using VkBindImageMemoryDeviceGroupInfo::pSplitInstanceBindRegions when binding memory to the image
     VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT :: (1 << 5); // The 3D image can be viewed as a 2D or 2D array image
@@ -1215,6 +1316,18 @@ using VkImageCreateFlagBits :: enum_flags u32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_fragment_density_map.html)
     VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT :: (1 << 14);
 
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT :: (1 << 16);
+
+    // Added for extension VK_EXT_multisampled_render_to_single_sampled
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_multisampled_render_to_single_sampled.html)
+    VK_IMAGE_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT :: (1 << 18);
+
+    // Added for extension VK_EXT_image_2d_view_of_3d
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_2d_view_of_3d.html)
+    VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT :: (1 << 17); // Image is created with a layout where individual slices are capable of being used as 2D images
+
     // Added for extension VK_QCOM_fragment_density_map_offset
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_fragment_density_map_offset.html)
     VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM :: (1 << 15);
@@ -1235,17 +1348,17 @@ using VkImageLayout :: enum s32 #specified
     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL :: 7; // Optimal layout when image is used only as destination of transfer operations
     VK_IMAGE_LAYOUT_PREINITIALIZED :: 8; // Initial layout used when the data is populated by the CPU
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL :: 1000117000;
     VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL :: 1000117001;
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL :: 1000241000;
     VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL :: 1000241001;
     VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL :: 1000241002;
     VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL :: 1000241003;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL :: 1000314000;
     VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL :: 1000314001;
 
@@ -1297,6 +1410,10 @@ using VkImageLayout :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_synchronization2.html)
     VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR :: VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL;
     VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR :: VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
+
+    // Added for extension VK_EXT_attachment_feedback_loop_layout
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_attachment_feedback_loop_layout.html)
+    VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT :: 1000339000;
 }
 
 
@@ -1360,9 +1477,18 @@ using VkImageUsageFlagBits :: enum_flags u32 #specified
     VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR :: (1 << 14);
     VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR :: (1 << 15);
 
+    // Added for extension VK_EXT_attachment_feedback_loop_layout
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_attachment_feedback_loop_layout.html)
+    VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT :: (1 << 19);
+
     // Added for extension VK_HUAWEI_invocation_mask
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_invocation_mask.html)
     VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI :: (1 << 18);
+
+    // Added for extension VK_QCOM_image_processing
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+    VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM :: (1 << 20);
+    VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM :: (1 << 21);
 }
 
 
@@ -1373,6 +1499,10 @@ using VkImageViewCreateFlagBits :: enum_flags u32 #specified
     // Added for extension VK_EXT_fragment_density_map
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_fragment_density_map.html)
     VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT :: (1 << 0);
+
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT :: (1 << 2);
 
     // Added for extension VK_EXT_fragment_density_map2
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_fragment_density_map2.html)
@@ -1453,8 +1583,11 @@ using VkMemoryHeapFlagBits :: enum_flags u32 #specified
 {
     VK_MEMORY_HEAP_DEVICE_LOCAL_BIT :: (1 << 0); // If set, heap represents device memory
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_MEMORY_HEAP_MULTI_INSTANCE_BIT :: (1 << 1); // If set, heap allocations allocate multiple instances by default
+
+    // Added in vulkansc 1.0
+    VK_MEMORY_HEAP_SEU_SAFE_BIT :: (1 << 2);
 
     // Added for extension VK_KHR_device_group_creation
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_device_group_creation.html)
@@ -1484,7 +1617,7 @@ using VkAccessFlagBits :: enum_flags u32 #specified
     VK_ACCESS_MEMORY_READ_BIT :: (1 << 15); // Controls coherency of memory reads
     VK_ACCESS_MEMORY_WRITE_BIT :: (1 << 16); // Controls coherency of memory writes
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_ACCESS_NONE :: 0;
 
     // Added for extension VK_EXT_transform_feedback
@@ -1544,7 +1677,7 @@ using VkMemoryPropertyFlagBits :: enum_flags u32 #specified
     VK_MEMORY_PROPERTY_HOST_CACHED_BIT :: (1 << 3); // Memory will be cached by the host
     VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT :: (1 << 4); // Memory may be allocated by the driver when it is required
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_MEMORY_PROPERTY_PROTECTED_BIT :: (1 << 5); // Memory is protected
 
     // Added for extension VK_AMD_device_coherent_memory
@@ -1599,21 +1732,21 @@ using VkPipelineCreateFlagBits :: enum_flags u32 #specified
     VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT :: (1 << 1);
     VK_PIPELINE_CREATE_DERIVATIVE_BIT :: (1 << 2);
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT :: (1 << 3);
     VK_PIPELINE_CREATE_DISPATCH_BASE_BIT :: (1 << 4);
     VK_PIPELINE_CREATE_DISPATCH_BASE :: VK_PIPELINE_CREATE_DISPATCH_BASE_BIT;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT :: (1 << 8);
     VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT :: (1 << 9);
 
     // Added for extension VK_KHR_dynamic_rendering
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_dynamic_rendering.html)
     VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :: (1 << 21);
-    VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :: VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR; // Backwards-compatible alias containing a typo
+    VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :: VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR;
     VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT :: (1 << 22);
-    VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT :: VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT; // Backwards-compatible alias containing a typo
+    VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT :: VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT;
 
     // Added for extension VK_KHR_device_group
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_device_group.html)
@@ -1652,9 +1785,36 @@ using VkPipelineCreateFlagBits :: enum_flags u32 #specified
     VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT :: VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT;
     VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT :: VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT;
 
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT :: (1 << 29);
+
+    // Added for extension VK_EXT_graphics_pipeline_library
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+    VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT :: (1 << 23);
+    VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT :: (1 << 10);
+
     // Added for extension VK_NV_ray_tracing_motion_blur
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_motion_blur.html)
     VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV :: (1 << 20);
+
+    // Added for extension VK_EXT_attachment_feedback_loop_layout
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_attachment_feedback_loop_layout.html)
+    VK_PIPELINE_CREATE_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT :: (1 << 25);
+    VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT :: (1 << 26);
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT :: (1 << 24);
+
+    // Added for extension VK_NV_displacement_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+    VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV :: (1 << 28);
+
+    // Added for extension VK_EXT_pipeline_protected_access
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_protected_access.html)
+    VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT :: (1 << 27);
+    VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT :: (1 << 30);
 }
 
 
@@ -1699,6 +1859,15 @@ using VkQueryPipelineStatisticFlagBits :: enum_flags u32 #specified
     VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT :: (1 << 8); // Optional
     VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT :: (1 << 9); // Optional
     VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT :: (1 << 10); // Optional
+
+    // Added for extension VK_EXT_mesh_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+    VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT :: (1 << 11);
+    VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT :: (1 << 12);
+
+    // Added for extension VK_HUAWEI_cluster_culling_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+    VK_QUERY_PIPELINE_STATISTIC_CLUSTER_CULLING_SHADER_INVOCATIONS_BIT_HUAWEI :: (1 << 13);
 }
 
 
@@ -1752,7 +1921,25 @@ using VkQueryType :: enum s32 #specified
 
     // Added for extension VK_KHR_video_encode_queue
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
-    VK_QUERY_TYPE_VIDEO_ENCODE_BITSTREAM_BUFFER_RANGE_KHR :: 1000299000;
+    VK_QUERY_TYPE_VIDEO_ENCODE_FEEDBACK_KHR :: 1000299000;
+
+    // Added for extension VK_EXT_mesh_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+    VK_QUERY_TYPE_MESH_PRIMITIVES_GENERATED_EXT :: 1000328000;
+
+    // Added for extension VK_EXT_primitives_generated_query
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_primitives_generated_query.html)
+    VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT :: 1000382000;
+
+    // Added for extension VK_KHR_ray_tracing_maintenance1
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+    VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_BOTTOM_LEVEL_POINTERS_KHR :: 1000386000;
+    VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SIZE_KHR :: 1000386001;
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_QUERY_TYPE_MICROMAP_SERIALIZATION_SIZE_EXT :: 1000396000;
+    VK_QUERY_TYPE_MICROMAP_COMPACTED_SIZE_EXT :: 1000396001;
 }
 
 
@@ -1765,7 +1952,7 @@ using VkQueueFlagBits :: enum_flags u32 #specified
     VK_QUEUE_TRANSFER_BIT :: (1 << 2); // Queue supports transfer operations
     VK_QUEUE_SPARSE_BINDING_BIT :: (1 << 3); // Queue supports sparse resource memory management operations
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_QUEUE_PROTECTED_BIT :: (1 << 4); // Queues may support protected operations
 
     // Added for extension VK_KHR_video_decode_queue
@@ -1775,6 +1962,10 @@ using VkQueueFlagBits :: enum_flags u32 #specified
     // Added for extension VK_KHR_video_encode_queue
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
     VK_QUEUE_VIDEO_ENCODE_BIT_KHR :: (1 << 6);
+
+    // Added for extension VK_NV_optical_flow
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+    VK_QUEUE_OPTICAL_FLOW_BIT_NV :: (1 << 8);
 }
 
 
@@ -1802,7 +1993,7 @@ using VkResult :: enum s32 #specified
     // Error codes (negative values)
     VK_ERROR_OUT_OF_HOST_MEMORY :: -1; // A host memory allocation has failed
     VK_ERROR_OUT_OF_DEVICE_MEMORY :: -2; // A device memory allocation has failed
-    VK_ERROR_INITIALIZATION_FAILED :: -3; // Initialization of a object has failed
+    VK_ERROR_INITIALIZATION_FAILED :: -3; // Initialization of an object has failed
     VK_ERROR_DEVICE_LOST :: -4; // The logical device has been lost. See &lt;&lt;devsandqueues-lost-device&gt;&gt;
     VK_ERROR_MEMORY_MAP_FAILED :: -5; // Mapping of a memory object has failed
     VK_ERROR_LAYER_NOT_PRESENT :: -6; // Layer specified does not exist
@@ -1814,16 +2005,21 @@ using VkResult :: enum s32 #specified
     VK_ERROR_FRAGMENTED_POOL :: -12; // A requested pool allocation has failed due to fragmentation of the pool's memory
     VK_ERROR_UNKNOWN :: -13; // An unknown error has occurred, due to an implementation or application bug
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_ERROR_OUT_OF_POOL_MEMORY :: -1000069000;
     VK_ERROR_INVALID_EXTERNAL_HANDLE :: -1000072003;
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_ERROR_FRAGMENTATION :: -1000161000;
     VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS :: -1000257000;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_PIPELINE_COMPILE_REQUIRED :: 1000297000;
+
+    // Added in vulkansc 1.0
+    VK_ERROR_VALIDATION_FAILED :: -1000011001;
+    VK_ERROR_INVALID_PIPELINE_CACHE_DATA :: -1000298000;
+    VK_ERROR_NO_PIPELINE_MATCH :: -1000298001;
 
     // Added for extension VK_KHR_surface
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)
@@ -1846,6 +2042,15 @@ using VkResult :: enum s32 #specified
     // Added for extension VK_NV_glsl_shader
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_glsl_shader.html)
     VK_ERROR_INVALID_SHADER_NV :: -1000012000;
+
+    // Added for extension VK_KHR_video_queue
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+    VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR :: -1000023000;
+    VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR :: -1000023001;
+    VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR :: -1000023002;
+    VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR :: -1000023003;
+    VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR :: -1000023004;
+    VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR :: -1000023005;
 
     // Added for extension VK_KHR_maintenance1
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_maintenance1.html)
@@ -1894,6 +2099,18 @@ using VkResult :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_creation_cache_control.html)
     VK_PIPELINE_COMPILE_REQUIRED_EXT :: VK_PIPELINE_COMPILE_REQUIRED;
     VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT :: VK_PIPELINE_COMPILE_REQUIRED;
+
+    // Added for extension VK_KHR_video_encode_queue
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+    VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR :: -1000299000;
+
+    // Added for extension VK_EXT_image_compression_control
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+    VK_ERROR_COMPRESSION_EXHAUSTED_EXT :: -1000338000;
+
+    // Added for extension VK_EXT_shader_object
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+    VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT :: 1000482000;
 }
 
 
@@ -1930,12 +2147,21 @@ using VkShaderStageFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_NV_mesh_shader
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_mesh_shader.html)
-    VK_SHADER_STAGE_TASK_BIT_NV :: (1 << 6);
-    VK_SHADER_STAGE_MESH_BIT_NV :: (1 << 7);
+    VK_SHADER_STAGE_TASK_BIT_NV :: VK_SHADER_STAGE_TASK_BIT_EXT;
+    VK_SHADER_STAGE_MESH_BIT_NV :: VK_SHADER_STAGE_MESH_BIT_EXT;
+
+    // Added for extension VK_EXT_mesh_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+    VK_SHADER_STAGE_TASK_BIT_EXT :: (1 << 6);
+    VK_SHADER_STAGE_MESH_BIT_EXT :: (1 << 7);
 
     // Added for extension VK_HUAWEI_subpass_shading
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_subpass_shading.html)
     VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI :: (1 << 14);
+
+    // Added for extension VK_HUAWEI_cluster_culling_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+    VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI :: (1 << 19);
 }
 
 
@@ -1954,7 +2180,7 @@ using VkStencilFaceFlagBits :: enum_flags u32 #specified
     VK_STENCIL_FACE_FRONT_BIT :: (1 << 0); // Front face
     VK_STENCIL_FACE_BACK_BIT :: (1 << 1); // Back face
     VK_STENCIL_FACE_FRONT_AND_BACK :: 0x00000003; // Front and back faces
-    VK_STENCIL_FRONT_AND_BACK :: VK_STENCIL_FACE_FRONT_AND_BACK; // Backwards-compatible alias containing a typo
+    VK_STENCIL_FRONT_AND_BACK :: VK_STENCIL_FACE_FRONT_AND_BACK;
 }
 
 
@@ -2027,7 +2253,7 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO :: 47; // Reserved for internal use by the loader, layers, and ICDs
     VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO :: 48; // Reserved for internal use by the loader, layers, and ICDs
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES :: 1000094000;
     VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO :: 1000157000;
     VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO :: 1000157001;
@@ -2096,7 +2322,7 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES :: 1000063000;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES :: VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES :: 49;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES :: 50;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES :: 51;
@@ -2148,7 +2374,7 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_MEMORY_OPAQUE_CAPTURE_ADDRESS_ALLOCATE_INFO :: 1000257003;
     VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO :: 1000257004;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES :: 53;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES :: 54;
     VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO :: 1000192000;
@@ -2202,6 +2428,17 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS :: 1000413002;
     VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS :: 1000413003;
 
+    // Added in vulkansc 1.0
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_SC_1_0_FEATURES :: 1000298000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_SC_1_0_PROPERTIES :: 1000298001;
+    VK_STRUCTURE_TYPE_DEVICE_OBJECT_RESERVATION_CREATE_INFO :: 1000298002;
+    VK_STRUCTURE_TYPE_COMMAND_POOL_MEMORY_RESERVATION_CREATE_INFO :: 1000298003;
+    VK_STRUCTURE_TYPE_COMMAND_POOL_MEMORY_CONSUMPTION :: 1000298004;
+    VK_STRUCTURE_TYPE_PIPELINE_POOL_SIZE :: 1000298005;
+    VK_STRUCTURE_TYPE_FAULT_DATA :: 1000298007;
+    VK_STRUCTURE_TYPE_FAULT_CALLBACK_INFO :: 1000298008;
+    VK_STRUCTURE_TYPE_PIPELINE_OFFLINE_CREATE_INFO :: 1000298010;
+
     // Added for extension VK_KHR_swapchain
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)
     VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR :: 1000001000;
@@ -2245,7 +2482,7 @@ using VkStructureType :: enum s32 #specified
     // Added for extension VK_EXT_debug_report
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_report.html)
     VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT :: 1000011000;
-    VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT :: VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT; // Backwards-compatible alias containing a typo
+    VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT :: VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 
     // Added for extension VK_AMD_rasterization_order
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_AMD_rasterization_order.html)
@@ -2259,27 +2496,29 @@ using VkStructureType :: enum s32 #specified
 
     // Added for extension VK_KHR_video_queue
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-    VK_STRUCTURE_TYPE_VIDEO_PROFILE_KHR :: 1000023000;
+    VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR :: 1000023000;
     VK_STRUCTURE_TYPE_VIDEO_CAPABILITIES_KHR :: 1000023001;
-    VK_STRUCTURE_TYPE_VIDEO_PICTURE_RESOURCE_KHR :: 1000023002;
-    VK_STRUCTURE_TYPE_VIDEO_GET_MEMORY_PROPERTIES_KHR :: 1000023003;
-    VK_STRUCTURE_TYPE_VIDEO_BIND_MEMORY_KHR :: 1000023004;
+    VK_STRUCTURE_TYPE_VIDEO_PICTURE_RESOURCE_INFO_KHR :: 1000023002;
+    VK_STRUCTURE_TYPE_VIDEO_SESSION_MEMORY_REQUIREMENTS_KHR :: 1000023003;
+    VK_STRUCTURE_TYPE_BIND_VIDEO_SESSION_MEMORY_INFO_KHR :: 1000023004;
     VK_STRUCTURE_TYPE_VIDEO_SESSION_CREATE_INFO_KHR :: 1000023005;
     VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_CREATE_INFO_KHR :: 1000023006;
     VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_UPDATE_INFO_KHR :: 1000023007;
     VK_STRUCTURE_TYPE_VIDEO_BEGIN_CODING_INFO_KHR :: 1000023008;
     VK_STRUCTURE_TYPE_VIDEO_END_CODING_INFO_KHR :: 1000023009;
     VK_STRUCTURE_TYPE_VIDEO_CODING_CONTROL_INFO_KHR :: 1000023010;
-    VK_STRUCTURE_TYPE_VIDEO_REFERENCE_SLOT_KHR :: 1000023011;
-    VK_STRUCTURE_TYPE_VIDEO_QUEUE_FAMILY_PROPERTIES_2_KHR :: 1000023012;
-    VK_STRUCTURE_TYPE_VIDEO_PROFILES_KHR :: 1000023013;
+    VK_STRUCTURE_TYPE_VIDEO_REFERENCE_SLOT_INFO_KHR :: 1000023011;
+    VK_STRUCTURE_TYPE_QUEUE_FAMILY_VIDEO_PROPERTIES_KHR :: 1000023012;
+    VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR :: 1000023013;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_FORMAT_INFO_KHR :: 1000023014;
     VK_STRUCTURE_TYPE_VIDEO_FORMAT_PROPERTIES_KHR :: 1000023015;
-    VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_2_KHR :: 1000023016;
+    VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_KHR :: 1000023016;
 
     // Added for extension VK_KHR_video_decode_queue
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
     VK_STRUCTURE_TYPE_VIDEO_DECODE_INFO_KHR :: 1000024000;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_CAPABILITIES_KHR :: 1000024001;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR :: 1000024002;
 
     // Added for extension VK_NV_dedicated_allocation
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_dedicated_allocation.html)
@@ -2307,42 +2546,35 @@ using VkStructureType :: enum s32 #specified
     // Added for extension VK_EXT_video_encode_h264
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
     VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_CAPABILITIES_EXT :: 1000038000;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_CREATE_INFO_EXT :: 1000038001;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT :: 1000038002;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT :: 1000038003;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_VCL_FRAME_INFO_EXT :: 1000038004;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_DPB_SLOT_INFO_EXT :: 1000038005;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_EXT :: 1000038006;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_EMIT_PICTURE_PARAMETERS_EXT :: 1000038007;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_EXT :: 1000038008;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_INFO_EXT :: 1000038009;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_LAYER_INFO_EXT :: 1000038010;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT :: 1000038001;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT :: 1000038002;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_VCL_FRAME_INFO_EXT :: 1000038003;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_DPB_SLOT_INFO_EXT :: 1000038004;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_INFO_EXT :: 1000038005;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_INFO_EXT :: 1000038007;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_INFO_EXT :: 1000038008;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_LAYER_INFO_EXT :: 1000038009;
 
     // Added for extension VK_EXT_video_encode_h265
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
     VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_CAPABILITIES_EXT :: 1000039000;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_CREATE_INFO_EXT :: 1000039001;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT :: 1000039002;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT :: 1000039003;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_VCL_FRAME_INFO_EXT :: 1000039004;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_DPB_SLOT_INFO_EXT :: 1000039005;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_EXT :: 1000039006;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_EMIT_PICTURE_PARAMETERS_EXT :: 1000039007;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PROFILE_EXT :: 1000039008;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_REFERENCE_LISTS_EXT :: 1000039009;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_INFO_EXT :: 1000039010;
-    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_LAYER_INFO_EXT :: 1000039011;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT :: 1000039001;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT :: 1000039002;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_VCL_FRAME_INFO_EXT :: 1000039003;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_DPB_SLOT_INFO_EXT :: 1000039004;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_SEGMENT_INFO_EXT :: 1000039005;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PROFILE_INFO_EXT :: 1000039007;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_INFO_EXT :: 1000039009;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_LAYER_INFO_EXT :: 1000039010;
 
-    // Added for extension VK_EXT_video_decode_h264
-    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_CAPABILITIES_EXT :: 1000040000;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_CREATE_INFO_EXT :: 1000040001;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_EXT :: 1000040002;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_MVC_EXT :: 1000040003;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_EXT :: 1000040004;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT :: 1000040005;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT :: 1000040006;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_EXT :: 1000040007;
+    // Added for extension VK_KHR_video_decode_h264
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_CAPABILITIES_KHR :: 1000040000;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_KHR :: 1000040001;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR :: 1000040003;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR :: 1000040004;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR :: 1000040005;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_KHR :: 1000040006;
 
     // Added for extension VK_AMD_texture_gather_bias_lod
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_AMD_texture_gather_bias_lod.html)
@@ -2368,6 +2600,10 @@ using VkStructureType :: enum s32 #specified
     // Added for extension VK_NV_corner_sampled_image
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_corner_sampled_image.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV :: 1000050000;
+
+    // Added for extension VK_NV_private_vendor_info
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_private_vendor_info.html)
+    VK_STRUCTURE_TYPE_PRIVATE_VENDOR_INFO_RESERVED_OFFSET_0_NV :: 1000051000;
 
     // Added for extension VK_KHR_multiview
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html)
@@ -2427,6 +2663,12 @@ using VkStructureType :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_astc_decode_mode.html)
     VK_STRUCTURE_TYPE_IMAGE_VIEW_ASTC_DECODE_MODE_EXT :: 1000067000;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ASTC_DECODE_FEATURES_EXT :: 1000067001;
+
+    // Added for extension VK_EXT_pipeline_robustness
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_robustness.html)
+    VK_STRUCTURE_TYPE_PIPELINE_ROBUSTNESS_CREATE_INFO_EXT :: 1000068000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_ROBUSTNESS_FEATURES_EXT :: 1000068001;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_ROBUSTNESS_PROPERTIES_EXT :: 1000068002;
 
     // Added for extension VK_KHR_device_group_creation
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_device_group_creation.html)
@@ -2519,7 +2761,7 @@ using VkStructureType :: enum s32 #specified
     // Added for extension VK_EXT_display_surface_counter
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_display_surface_counter.html)
     VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT :: 1000090000;
-    VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES2_EXT :: VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT; // Backwards-compatible alias containing a typo
+    VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES2_EXT :: VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT;
 
     // Added for extension VK_EXT_display_control
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_display_control.html)
@@ -2609,6 +2851,7 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_ACQUIRE_PROFILING_LOCK_INFO_KHR :: 1000116004;
     VK_STRUCTURE_TYPE_PERFORMANCE_COUNTER_KHR :: 1000116005;
     VK_STRUCTURE_TYPE_PERFORMANCE_COUNTER_DESCRIPTION_KHR :: 1000116006;
+    VK_STRUCTURE_TYPE_PERFORMANCE_QUERY_RESERVATION_INFO_KHR :: 1000116007;
 
     // Added for extension VK_KHR_maintenance2
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_maintenance2.html)
@@ -2863,15 +3106,14 @@ using VkStructureType :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_AMD_shader_core_properties.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD :: 1000185000;
 
-    // Added for extension VK_EXT_video_decode_h265
-    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_CAPABILITIES_EXT :: 1000187000;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_CREATE_INFO_EXT :: 1000187001;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT :: 1000187002;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT :: 1000187003;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PROFILE_EXT :: 1000187004;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_EXT :: 1000187005;
-    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_DPB_SLOT_INFO_EXT :: 1000187006;
+    // Added for extension VK_KHR_video_decode_h265
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_CAPABILITIES_KHR :: 1000187000;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_CREATE_INFO_KHR :: 1000187001;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_ADD_INFO_KHR :: 1000187002;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PROFILE_INFO_KHR :: 1000187003;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_KHR :: 1000187004;
+    VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_DPB_SLOT_INFO_KHR :: 1000187005;
 
     // Added for extension VK_KHR_global_priority
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_global_priority.html)
@@ -2921,7 +3163,7 @@ using VkStructureType :: enum s32 #specified
 
     // Added for extension VK_NV_fragment_shader_barycentric
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_fragment_shader_barycentric.html)
-    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV :: 1000203000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV :: VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_KHR;
 
     // Added for extension VK_NV_shader_image_footprint
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_shader_image_footprint.html)
@@ -2953,7 +3195,7 @@ using VkStructureType :: enum s32 #specified
     // Added for extension VK_INTEL_performance_query
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_INTEL_performance_query.html)
     VK_STRUCTURE_TYPE_QUERY_POOL_PERFORMANCE_QUERY_CREATE_INFO_INTEL :: 1000210000;
-    VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO_INTEL :: VK_STRUCTURE_TYPE_QUERY_POOL_PERFORMANCE_QUERY_CREATE_INFO_INTEL; // Backwards-compatible alias containing a typo
+    VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO_INTEL :: VK_STRUCTURE_TYPE_QUERY_POOL_PERFORMANCE_QUERY_CREATE_INFO_INTEL;
     VK_STRUCTURE_TYPE_INITIALIZE_PERFORMANCE_API_INFO_INTEL :: 1000210001;
     VK_STRUCTURE_TYPE_PERFORMANCE_MARKER_INFO_INTEL :: 1000210002;
     VK_STRUCTURE_TYPE_PERFORMANCE_STREAM_MARKER_INFO_INTEL :: 1000210003;
@@ -3146,9 +3388,29 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_STATISTIC_KHR :: 1000269004;
     VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_INTERNAL_REPRESENTATION_KHR :: 1000269005;
 
+    // Added for extension VK_KHR_map_memory2
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)
+    VK_STRUCTURE_TYPE_MEMORY_MAP_INFO_KHR :: 1000271000;
+    VK_STRUCTURE_TYPE_MEMORY_UNMAP_INFO_KHR :: 1000271001;
+
     // Added for extension VK_EXT_shader_atomic_float2
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_atomic_float2.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_2_FEATURES_EXT :: 1000273000;
+
+    // Added for extension VK_EXT_surface_maintenance1
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_surface_maintenance1.html)
+    VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_EXT :: 1000274000;
+    VK_STRUCTURE_TYPE_SURFACE_PRESENT_SCALING_CAPABILITIES_EXT :: 1000274001;
+    VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_COMPATIBILITY_EXT :: 1000274002;
+
+    // Added for extension VK_EXT_swapchain_maintenance1
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT :: 1000275000;
+    VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT :: 1000275001;
+    VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT :: 1000275002;
+    VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT :: 1000275003;
+    VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT :: 1000275004;
+    VK_STRUCTURE_TYPE_RELEASE_SWAPCHAIN_IMAGES_INFO_EXT :: 1000275005;
 
     // Added for extension VK_EXT_shader_demote_to_helper_invocation
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_demote_to_helper_invocation.html)
@@ -3206,6 +3468,12 @@ using VkStructureType :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_pipeline_library.html)
     VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR :: 1000290000;
 
+    // Added for extension VK_NV_present_barrier
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_present_barrier.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_BARRIER_FEATURES_NV :: 1000292000;
+    VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_PRESENT_BARRIER_NV :: 1000292001;
+    VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_BARRIER_CREATE_INFO_NV :: 1000292002;
+
     // Added for extension VK_KHR_present_id
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_present_id.html)
     VK_STRUCTURE_TYPE_PRESENT_ID_KHR :: 1000294000;
@@ -3226,11 +3494,37 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_VIDEO_ENCODE_INFO_KHR :: 1000299000;
     VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_INFO_KHR :: 1000299001;
     VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_LAYER_INFO_KHR :: 1000299002;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_CAPABILITIES_KHR :: 1000299003;
+    VK_STRUCTURE_TYPE_VIDEO_ENCODE_USAGE_INFO_KHR :: 1000299004;
+    VK_STRUCTURE_TYPE_QUERY_POOL_VIDEO_ENCODE_FEEDBACK_CREATE_INFO_KHR :: 1000299005;
 
     // Added for extension VK_NV_device_diagnostics_config
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_device_diagnostics_config.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DIAGNOSTICS_CONFIG_FEATURES_NV :: 1000300000;
     VK_STRUCTURE_TYPE_DEVICE_DIAGNOSTICS_CONFIG_CREATE_INFO_NV :: 1000300001;
+
+    // Added for extension VK_KHR_object_refresh
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_object_refresh.html)
+    VK_STRUCTURE_TYPE_REFRESH_OBJECT_LIST_KHR :: 1000308000;
+
+    // Added for extension VK_NV_low_latency
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_low_latency.html)
+    VK_STRUCTURE_TYPE_QUERY_LOW_LATENCY_SUPPORT_NV :: 1000310000;
+
+    // Added for extension VK_EXT_metal_objects
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+    VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT :: 1000311000;
+    VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECTS_INFO_EXT :: 1000311001;
+    VK_STRUCTURE_TYPE_EXPORT_METAL_DEVICE_INFO_EXT :: 1000311002;
+    VK_STRUCTURE_TYPE_EXPORT_METAL_COMMAND_QUEUE_INFO_EXT :: 1000311003;
+    VK_STRUCTURE_TYPE_EXPORT_METAL_BUFFER_INFO_EXT :: 1000311004;
+    VK_STRUCTURE_TYPE_IMPORT_METAL_BUFFER_INFO_EXT :: 1000311005;
+    VK_STRUCTURE_TYPE_EXPORT_METAL_TEXTURE_INFO_EXT :: 1000311006;
+    VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT :: 1000311007;
+    VK_STRUCTURE_TYPE_EXPORT_METAL_IO_SURFACE_INFO_EXT :: 1000311008;
+    VK_STRUCTURE_TYPE_IMPORT_METAL_IO_SURFACE_INFO_EXT :: 1000311009;
+    VK_STRUCTURE_TYPE_EXPORT_METAL_SHARED_EVENT_INFO_EXT :: 1000311010;
+    VK_STRUCTURE_TYPE_IMPORT_METAL_SHARED_EVENT_INFO_EXT :: 1000311011;
 
     // Added for extension VK_KHR_synchronization2
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_synchronization2.html)
@@ -3244,6 +3538,37 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR :: VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES;
     VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_2_NV :: 1000314008;
     VK_STRUCTURE_TYPE_CHECKPOINT_DATA_2_NV :: 1000314009;
+
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_PROPERTIES_EXT :: 1000316000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_DENSITY_MAP_PROPERTIES_EXT :: 1000316001;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_FEATURES_EXT :: 1000316002;
+    VK_STRUCTURE_TYPE_DESCRIPTOR_ADDRESS_INFO_EXT :: 1000316003;
+    VK_STRUCTURE_TYPE_DESCRIPTOR_GET_INFO_EXT :: 1000316004;
+    VK_STRUCTURE_TYPE_BUFFER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT :: 1000316005;
+    VK_STRUCTURE_TYPE_IMAGE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT :: 1000316006;
+    VK_STRUCTURE_TYPE_IMAGE_VIEW_CAPTURE_DESCRIPTOR_DATA_INFO_EXT :: 1000316007;
+    VK_STRUCTURE_TYPE_SAMPLER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT :: 1000316008;
+    VK_STRUCTURE_TYPE_OPAQUE_CAPTURE_DESCRIPTOR_DATA_CREATE_INFO_EXT :: 1000316010;
+    VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT :: 1000316011;
+    VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_PUSH_DESCRIPTOR_BUFFER_HANDLE_EXT :: 1000316012;
+    VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT :: 1000316009;
+
+    // Added for extension VK_EXT_graphics_pipeline_library
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_FEATURES_EXT :: 1000320000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_PROPERTIES_EXT :: 1000320001;
+    VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT :: 1000320002;
+
+    // Added for extension VK_AMD_shader_early_and_late_fragment_tests
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_AMD_shader_early_and_late_fragment_tests.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_FEATURES_AMD :: 1000321000;
+
+    // Added for extension VK_KHR_fragment_shader_barycentric
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_fragment_shader_barycentric.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_KHR :: 1000203000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_PROPERTIES_KHR :: 1000322000;
 
     // Added for extension VK_KHR_shader_subgroup_uniform_control_flow
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_shader_subgroup_uniform_control_flow.html)
@@ -3264,6 +3589,11 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_MOTION_TRIANGLES_DATA_NV :: 1000327000;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MOTION_BLUR_FEATURES_NV :: 1000327001;
     VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MOTION_INFO_NV :: 1000327002;
+
+    // Added for extension VK_EXT_mesh_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT :: 1000328000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT :: 1000328001;
 
     // Added for extension VK_EXT_ycbcr_2plane_444_formats
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_ycbcr_2plane_444_formats.html)
@@ -3300,13 +3630,31 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2_KHR :: VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2;
     VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2_KHR :: VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2;
 
+    // Added for extension VK_EXT_image_compression_control
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_FEATURES_EXT :: 1000338000;
+    VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_CONTROL_EXT :: 1000338001;
+    VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2_EXT :: 1000338002;
+    VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2_EXT :: 1000338003;
+    VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_PROPERTIES_EXT :: 1000338004;
+
+    // Added for extension VK_EXT_attachment_feedback_loop_layout
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_attachment_feedback_loop_layout.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ATTACHMENT_FEEDBACK_LOOP_LAYOUT_FEATURES_EXT :: 1000339000;
+
     // Added for extension VK_EXT_4444_formats
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_4444_formats.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_4444_FORMATS_FEATURES_EXT :: 1000340000;
 
+    // Added for extension VK_EXT_device_fault
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FAULT_FEATURES_EXT :: 1000341000;
+    VK_STRUCTURE_TYPE_DEVICE_FAULT_COUNTS_EXT :: 1000341001;
+    VK_STRUCTURE_TYPE_DEVICE_FAULT_INFO_EXT :: 1000341002;
+
     // Added for extension VK_ARM_rasterization_order_attachment_access
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
-    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_ARM :: 1000342000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_ARM :: VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_EXT;
 
     // Added for extension VK_EXT_rgba10x6_formats
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rgba10x6_formats.html)
@@ -3318,8 +3666,8 @@ using VkStructureType :: enum s32 #specified
 
     // Added for extension VK_VALVE_mutable_descriptor_type
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
-    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE :: 1000351000;
-    VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE :: 1000351002;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE :: VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_EXT;
+    VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE :: VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_EXT;
 
     // Added for extension VK_EXT_vertex_input_dynamic_state
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)
@@ -3330,6 +3678,11 @@ using VkStructureType :: enum s32 #specified
     // Added for extension VK_EXT_physical_device_drm
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_physical_device_drm.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRM_PROPERTIES_EXT :: 1000353000;
+
+    // Added for extension VK_EXT_device_address_binding_report
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_address_binding_report.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ADDRESS_BINDING_REPORT_FEATURES_EXT :: 1000354000;
+    VK_STRUCTURE_TYPE_DEVICE_ADDRESS_BINDING_CALLBACK_DATA_EXT :: 1000354001;
 
     // Added for extension VK_EXT_depth_clip_control
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_depth_clip_control.html)
@@ -3383,6 +3736,38 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_MEMORY_GET_REMOTE_ADDRESS_INFO_NV :: 1000371000;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_RDMA_FEATURES_NV :: 1000371001;
 
+    // Added for extension VK_EXT_pipeline_properties
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_properties.html)
+    VK_STRUCTURE_TYPE_PIPELINE_PROPERTIES_IDENTIFIER_EXT :: 1000372000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT :: 1000372001;
+    VK_STRUCTURE_TYPE_PIPELINE_INFO_EXT :: VK_STRUCTURE_TYPE_PIPELINE_INFO_KHR;
+
+    // Added for extension VK_NV_external_sci_sync
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+    VK_STRUCTURE_TYPE_IMPORT_FENCE_SCI_SYNC_INFO_NV :: 1000373000;
+    VK_STRUCTURE_TYPE_EXPORT_FENCE_SCI_SYNC_INFO_NV :: 1000373001;
+    VK_STRUCTURE_TYPE_FENCE_GET_SCI_SYNC_INFO_NV :: 1000373002;
+    VK_STRUCTURE_TYPE_SCI_SYNC_ATTRIBUTES_INFO_NV :: 1000373003;
+    VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_SCI_SYNC_INFO_NV :: 1000373004;
+    VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_SCI_SYNC_INFO_NV :: 1000373005;
+    VK_STRUCTURE_TYPE_SEMAPHORE_GET_SCI_SYNC_INFO_NV :: 1000373006;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SCI_SYNC_FEATURES_NV :: 1000373007;
+
+    // Added for extension VK_NV_external_memory_sci_buf
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+    VK_STRUCTURE_TYPE_IMPORT_MEMORY_SCI_BUF_INFO_NV :: 1000374000;
+    VK_STRUCTURE_TYPE_EXPORT_MEMORY_SCI_BUF_INFO_NV :: 1000374001;
+    VK_STRUCTURE_TYPE_MEMORY_GET_SCI_BUF_INFO_NV :: 1000374002;
+    VK_STRUCTURE_TYPE_MEMORY_SCI_BUF_PROPERTIES_NV :: 1000374003;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCI_BUF_FEATURES_NV :: 1000374004;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SCI_BUF_FEATURES_NV :: VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCI_BUF_FEATURES_NV;
+
+    // Added for extension VK_EXT_multisampled_render_to_single_sampled
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_multisampled_render_to_single_sampled.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_FEATURES_EXT :: 1000376000;
+    VK_STRUCTURE_TYPE_SUBPASS_RESOLVE_PERFORMANCE_QUERY_EXT :: 1000376001;
+    VK_STRUCTURE_TYPE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_INFO_EXT :: 1000376002;
+
     // Added for extension VK_EXT_extended_dynamic_state2
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state2.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_2_FEATURES_EXT :: 1000377000; // Not promoted to 1.3
@@ -3395,6 +3780,14 @@ using VkStructureType :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_color_write_enable.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COLOR_WRITE_ENABLE_FEATURES_EXT :: 1000381000;
     VK_STRUCTURE_TYPE_PIPELINE_COLOR_WRITE_CREATE_INFO_EXT :: 1000381001;
+
+    // Added for extension VK_EXT_primitives_generated_query
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_primitives_generated_query.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVES_GENERATED_QUERY_FEATURES_EXT :: 1000382000;
+
+    // Added for extension VK_KHR_ray_tracing_maintenance1
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MAINTENANCE_1_FEATURES_KHR :: 1000386000;
 
     // Added for extension VK_EXT_global_priority_query
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_global_priority_query.html)
@@ -3410,6 +3803,39 @@ using VkStructureType :: enum s32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_multi_draw.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_FEATURES_EXT :: 1000392000;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_PROPERTIES_EXT :: 1000392001;
+
+    // Added for extension VK_EXT_image_2d_view_of_3d
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_2d_view_of_3d.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_2D_VIEW_OF_3D_FEATURES_EXT :: 1000393000;
+
+    // Added for extension VK_EXT_shader_tile_image
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_tile_image.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_FEATURES_EXT :: 1000395000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_PROPERTIES_EXT :: 1000395001;
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_STRUCTURE_TYPE_MICROMAP_BUILD_INFO_EXT :: 1000396000;
+    VK_STRUCTURE_TYPE_MICROMAP_VERSION_INFO_EXT :: 1000396001;
+    VK_STRUCTURE_TYPE_COPY_MICROMAP_INFO_EXT :: 1000396002;
+    VK_STRUCTURE_TYPE_COPY_MICROMAP_TO_MEMORY_INFO_EXT :: 1000396003;
+    VK_STRUCTURE_TYPE_COPY_MEMORY_TO_MICROMAP_INFO_EXT :: 1000396004;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_FEATURES_EXT :: 1000396005;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_PROPERTIES_EXT :: 1000396006;
+    VK_STRUCTURE_TYPE_MICROMAP_CREATE_INFO_EXT :: 1000396007;
+    VK_STRUCTURE_TYPE_MICROMAP_BUILD_SIZES_INFO_EXT :: 1000396008;
+    VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_OPACITY_MICROMAP_EXT :: 1000396009;
+
+    // Added for extension VK_NV_displacement_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_FEATURES_NV :: 1000397000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_PROPERTIES_NV :: 1000397001;
+    VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_DISPLACEMENT_MICROMAP_NV :: 1000397002;
+
+    // Added for extension VK_HUAWEI_cluster_culling_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_FEATURES_HUAWEI :: 1000404000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_PROPERTIES_HUAWEI :: 1000404001;
 
     // Added for extension VK_EXT_border_color_swizzle
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_border_color_swizzle.html)
@@ -3427,15 +3853,160 @@ using VkStructureType :: enum s32 #specified
     VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS_KHR :: VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS;
     VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS_KHR :: VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS;
 
+    // Added for extension VK_ARM_shader_core_properties
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_shader_core_properties.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_ARM :: 1000415000;
+
+    // Added for extension VK_EXT_image_sliced_view_of_3d
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_sliced_view_of_3d.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_SLICED_VIEW_OF_3D_FEATURES_EXT :: 1000418000;
+    VK_STRUCTURE_TYPE_IMAGE_VIEW_SLICED_CREATE_INFO_EXT :: 1000418001;
+
+    // Added for extension VK_VALVE_descriptor_set_host_mapping
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_descriptor_set_host_mapping.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_SET_HOST_MAPPING_FEATURES_VALVE :: 1000420000;
+    VK_STRUCTURE_TYPE_DESCRIPTOR_SET_BINDING_REFERENCE_VALVE :: 1000420001;
+    VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_HOST_MAPPING_INFO_VALVE :: 1000420002;
+
+    // Added for extension VK_EXT_depth_clamp_zero_one
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_depth_clamp_zero_one.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT :: 1000421000;
+
+    // Added for extension VK_EXT_non_seamless_cube_map
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_non_seamless_cube_map.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NON_SEAMLESS_CUBE_MAP_FEATURES_EXT :: 1000422000;
+
     // Added for extension VK_QCOM_fragment_density_map_offset
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_fragment_density_map_offset.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_FEATURES_QCOM :: 1000425000;
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_PROPERTIES_QCOM :: 1000425001;
     VK_STRUCTURE_TYPE_SUBPASS_FRAGMENT_DENSITY_MAP_OFFSET_END_INFO_QCOM :: 1000425002;
 
+    // Added for extension VK_NV_copy_memory_indirect
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV :: 1000426000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_PROPERTIES_NV :: 1000426001;
+
+    // Added for extension VK_NV_memory_decompression
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_FEATURES_NV :: 1000427000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV :: 1000427001;
+
     // Added for extension VK_NV_linear_color_attachment
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_linear_color_attachment.html)
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINEAR_COLOR_ATTACHMENT_FEATURES_NV :: 1000430000;
+
+    // Added for extension VK_EXT_application_parameters
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_application_parameters.html)
+    VK_STRUCTURE_TYPE_APPLICATION_PARAMETERS_EXT :: 1000435000;
+
+    // Added for extension VK_EXT_image_compression_control_swapchain
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control_swapchain.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_FEATURES_EXT :: 1000437000;
+
+    // Added for extension VK_QCOM_image_processing
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_FEATURES_QCOM :: 1000440000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_PROPERTIES_QCOM :: 1000440001;
+    VK_STRUCTURE_TYPE_IMAGE_VIEW_SAMPLE_WEIGHT_CREATE_INFO_QCOM :: 1000440002;
+
+    // Added for extension VK_EXT_extended_dynamic_state3
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_3_FEATURES_EXT :: 1000455000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_3_PROPERTIES_EXT :: 1000455001;
+
+    // Added for extension VK_EXT_subpass_merge_feedback
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_MERGE_FEEDBACK_FEATURES_EXT :: 1000458000;
+    VK_STRUCTURE_TYPE_RENDER_PASS_CREATION_CONTROL_EXT :: 1000458001;
+    VK_STRUCTURE_TYPE_RENDER_PASS_CREATION_FEEDBACK_CREATE_INFO_EXT :: 1000458002;
+    VK_STRUCTURE_TYPE_RENDER_PASS_SUBPASS_FEEDBACK_CREATE_INFO_EXT :: 1000458003;
+
+    // Added for extension VK_LUNARG_direct_driver_loading
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_LUNARG_direct_driver_loading.html)
+    VK_STRUCTURE_TYPE_DIRECT_DRIVER_LOADING_INFO_LUNARG :: 1000459000;
+    VK_STRUCTURE_TYPE_DIRECT_DRIVER_LOADING_LIST_LUNARG :: 1000459001;
+
+    // Added for extension VK_EXT_shader_module_identifier
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MODULE_IDENTIFIER_FEATURES_EXT :: 1000462000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MODULE_IDENTIFIER_PROPERTIES_EXT :: 1000462001;
+    VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_MODULE_IDENTIFIER_CREATE_INFO_EXT :: 1000462002;
+    VK_STRUCTURE_TYPE_SHADER_MODULE_IDENTIFIER_EXT :: 1000462003;
+
+    // Added for extension VK_EXT_rasterization_order_attachment_access
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_EXT :: 1000342000;
+
+    // Added for extension VK_NV_optical_flow
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_FEATURES_NV :: 1000464000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_PROPERTIES_NV :: 1000464001;
+    VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_INFO_NV :: 1000464002;
+    VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_PROPERTIES_NV :: 1000464003;
+    VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_INFO_NV :: 1000464004;
+    VK_STRUCTURE_TYPE_OPTICAL_FLOW_EXECUTE_INFO_NV :: 1000464005;
+    VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_PRIVATE_DATA_INFO_NV :: 1000464010;
+
+    // Added for extension VK_EXT_legacy_dithering
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_legacy_dithering.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_DITHERING_FEATURES_EXT :: 1000465000;
+
+    // Added for extension VK_EXT_pipeline_protected_access
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_protected_access.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES_EXT :: 1000466000;
+
+    // Added for extension VK_EXT_shader_object
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT :: 1000482000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT :: 1000482001;
+    VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT :: 1000482002;
+    VK_STRUCTURE_TYPE_SHADER_REQUIRED_SUBGROUP_SIZE_CREATE_INFO_EXT :: VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO;
+
+    // Added for extension VK_QCOM_tile_properties
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_tile_properties.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_PROPERTIES_FEATURES_QCOM :: 1000484000;
+    VK_STRUCTURE_TYPE_TILE_PROPERTIES_QCOM :: 1000484001;
+
+    // Added for extension VK_SEC_amigo_profiling
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_SEC_amigo_profiling.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_AMIGO_PROFILING_FEATURES_SEC :: 1000485000;
+    VK_STRUCTURE_TYPE_AMIGO_PROFILING_SUBMIT_INFO_SEC :: 1000485001;
+
+    // Added for extension VK_QCOM_multiview_per_view_viewports
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_multiview_per_view_viewports.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_VIEWPORTS_FEATURES_QCOM :: 1000488000;
+
+    // Added for extension VK_NV_external_sci_sync2
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+    VK_STRUCTURE_TYPE_SEMAPHORE_SCI_SYNC_POOL_CREATE_INFO_NV :: 1000489000;
+    VK_STRUCTURE_TYPE_SEMAPHORE_SCI_SYNC_CREATE_INFO_NV :: 1000489001;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SCI_SYNC_2_FEATURES_NV :: 1000489002;
+    VK_STRUCTURE_TYPE_DEVICE_SEMAPHORE_SCI_SYNC_POOL_RESERVATION_CREATE_INFO_NV :: 1000489003;
+
+    // Added for extension VK_NV_ray_tracing_invocation_reorder
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_invocation_reorder.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_NV :: 1000490000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_PROPERTIES_NV :: 1000490001;
+
+    // Added for extension VK_EXT_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_EXT :: 1000351000;
+    VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_EXT :: 1000351002;
+
+    // Added for extension VK_ARM_shader_core_builtins
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_shader_core_builtins.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_FEATURES_ARM :: 1000497000;
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_PROPERTIES_ARM :: 1000497001;
+
+    // Added for extension VK_EXT_pipeline_library_group_handles
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_library_group_handles.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_LIBRARY_GROUP_HANDLES_FEATURES_EXT :: 1000498000;
+
+    // Added for extension VK_QCOM_multiview_per_view_render_areas
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_multiview_per_view_render_areas.html)
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_RENDER_AREAS_FEATURES_QCOM :: 1000510000;
+    VK_STRUCTURE_TYPE_MULTIVIEW_PER_VIEW_RENDER_AREAS_RENDER_PASS_BEGIN_INFO_QCOM :: 1000510001;
 }
 
 
@@ -3472,7 +4043,7 @@ using VkSamplerAddressMode :: enum s32 #specified
     // enum VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE; do not
     // alias!
     VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE :: 4; // No need to add an extnumber attribute, since this uses a core enum value
-    VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE_KHR :: VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE; // Alias introduced for consistency with extension suffixing rules
+    VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE_KHR :: VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE; // Introduced for consistency with extension suffixing rules
 }
 
 
@@ -3485,11 +4056,11 @@ using VkFilter :: enum s32 #specified
 
     // Added for extension VK_IMG_filter_cubic
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_IMG_filter_cubic.html)
-    VK_FILTER_CUBIC_IMG :: 1000015000;
+    VK_FILTER_CUBIC_IMG :: VK_FILTER_CUBIC_EXT;
 
     // Added for extension VK_EXT_filter_cubic
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_filter_cubic.html)
-    VK_FILTER_CUBIC_EXT :: VK_FILTER_CUBIC_IMG;
+    VK_FILTER_CUBIC_EXT :: 1000015000;
 }
 
 
@@ -3533,7 +4104,7 @@ using VkPipelineStageFlagBits :: enum_flags u32 #specified
     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT :: (1 << 15); // All stages of the graphics pipeline
     VK_PIPELINE_STAGE_ALL_COMMANDS_BIT :: (1 << 16); // All stages supported on the queue
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_PIPELINE_STAGE_NONE :: 0;
 
     // Added for extension VK_EXT_transform_feedback
@@ -3563,8 +4134,8 @@ using VkPipelineStageFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_NV_mesh_shader
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_mesh_shader.html)
-    VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV :: (1 << 19);
-    VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV :: (1 << 20);
+    VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV :: VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT;
+    VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV :: VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
 
     // Added for extension VK_EXT_fragment_density_map
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_fragment_density_map.html)
@@ -3581,6 +4152,11 @@ using VkPipelineStageFlagBits :: enum_flags u32 #specified
     // Added for extension VK_KHR_synchronization2
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_synchronization2.html)
     VK_PIPELINE_STAGE_NONE_KHR :: VK_PIPELINE_STAGE_NONE;
+
+    // Added for extension VK_EXT_mesh_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+    VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT :: (1 << 19);
+    VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT :: (1 << 20);
 }
 
 
@@ -3622,7 +4198,7 @@ using VkDescriptorPoolCreateFlagBits :: enum_flags u32 #specified
 {
     VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT :: (1 << 0); // Descriptor sets may be freed individually
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT :: (1 << 1);
 
     // Added for extension VK_EXT_descriptor_indexing
@@ -3631,7 +4207,11 @@ using VkDescriptorPoolCreateFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_VALVE_mutable_descriptor_type
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
-    VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE :: (1 << 2);
+    VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE :: VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT;
+
+    // Added for extension VK_EXT_mutable_descriptor_type
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+    VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT :: (1 << 2);
 }
 
 
@@ -3641,7 +4221,7 @@ using VkDependencyFlagBits :: enum_flags u32 #specified
 {
     VK_DEPENDENCY_BY_REGION_BIT :: (1 << 0); // Dependency is per pixel region 
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_DEPENDENCY_DEVICE_GROUP_BIT :: (1 << 2); // Dependency is across devices
     VK_DEPENDENCY_VIEW_LOCAL_BIT :: (1 << 1);
 
@@ -3652,6 +4232,10 @@ using VkDependencyFlagBits :: enum_flags u32 #specified
     // Added for extension VK_KHR_device_group
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_device_group.html)
     VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR :: VK_DEPENDENCY_DEVICE_GROUP_BIT;
+
+    // Added for extension VK_EXT_attachment_feedback_loop_layout
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_attachment_feedback_loop_layout.html)
+    VK_DEPENDENCY_FEEDBACK_LOOP_BIT_EXT :: (1 << 3); // Dependency may be a feedback loop
 }
 
 
@@ -3686,11 +4270,11 @@ using VkObjectType :: enum s32 #specified
     VK_OBJECT_TYPE_FRAMEBUFFER :: 24;
     VK_OBJECT_TYPE_COMMAND_POOL :: 25;
 
-    // Added in vulkan 1.1
+    // Added in vulkan,vulkansc 1.1
     VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION :: 1000156000;
     VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE :: 1000085000;
 
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_OBJECT_TYPE_PRIVATE_DATA_SLOT :: 1000295000;
 
     // Added for extension VK_KHR_surface
@@ -3763,6 +4347,22 @@ using VkObjectType :: enum s32 #specified
     // Added for extension VK_FUCHSIA_buffer_collection
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_FUCHSIA_buffer_collection.html)
     VK_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA :: 1000366000; // VkBufferCollectionFUCHSIA
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_OBJECT_TYPE_MICROMAP_EXT :: 1000396000;
+
+    // Added for extension VK_NV_optical_flow
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+    VK_OBJECT_TYPE_OPTICAL_FLOW_SESSION_NV :: 1000464000;
+
+    // Added for extension VK_EXT_shader_object
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+    VK_OBJECT_TYPE_SHADER_EXT :: 1000482000;
+
+    // Added for extension VK_NV_external_sci_sync2
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+    VK_OBJECT_TYPE_SEMAPHORE_SCI_SYNC_POOL_NV :: 1000489000; // VkSemaphoreSciSyncPoolNV
 }
 
 
@@ -3770,7 +4370,7 @@ using VkObjectType :: enum s32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkEventCreateFlagBits.html)
 using VkEventCreateFlagBits :: enum_flags u32 #specified 
 {
-    // Added in vulkan 1.3
+    // Added in vulkan,vulkansc 1.3
     VK_EVENT_CREATE_DEVICE_ONLY_BIT :: (1 << 0);
 
     // Added for extension VK_KHR_synchronization2
@@ -3781,9 +4381,13 @@ using VkEventCreateFlagBits :: enum_flags u32 #specified
 
 // Enum VkPipelineLayoutCreateFlagBits
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLayoutCreateFlagBits.html)
+// Referenced by VK_EXT_graphics_pipeline_library
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
 using VkPipelineLayoutCreateFlagBits :: enum_flags u32 #specified 
 {
-    // empty
+    // Added for extension VK_EXT_graphics_pipeline_library
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+    VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT :: (1 << 1);
 }
 
 
@@ -3792,6 +4396,17 @@ using VkPipelineLayoutCreateFlagBits :: enum_flags u32 #specified
 using VkSemaphoreCreateFlagBits :: enum_flags u32 #specified 
 {
     // empty
+}
+
+
+// Enum VkRayTracingInvocationReorderModeNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRayTracingInvocationReorderModeNV.html)
+// Referenced by VK_NV_ray_tracing_invocation_reorder
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_invocation_reorder.html)
+using VkRayTracingInvocationReorderModeNV :: enum s32 #specified
+{
+    VK_RAY_TRACING_INVOCATION_REORDER_MODE_NONE_NV :: 0;
+    VK_RAY_TRACING_INVOCATION_REORDER_MODE_REORDER_NV :: 1;
 }
 
 
@@ -3821,6 +4436,10 @@ using VkIndirectCommandsTokenTypeNV :: enum s32 #specified
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_NV :: 5;
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_NV :: 6;
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_TASKS_NV :: 7;
+
+    // Added for extension VK_EXT_mesh_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+    VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV :: 1000328000;
 }
 
 
@@ -3844,8 +4463,6 @@ using VkPrivateDataSlotCreateFlagBits :: enum_flags u32 #specified
 
 // Enum VkPrivateDataSlotCreateFlagBitsEXT
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPrivateDataSlotCreateFlagBitsEXT.html)
-// Referenced by VK_EXT_private_data
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_private_data.html)
 VkPrivateDataSlotCreateFlagBitsEXT :: VkPrivateDataSlotCreateFlagBits;
 
 
@@ -3916,9 +4533,19 @@ using VkSubpassDescriptionFlagBits :: enum_flags u32 #specified
 
     // Added for extension VK_ARM_rasterization_order_attachment_access
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
-    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_ARM :: (1 << 4);
-    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM :: (1 << 5);
-    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM :: (1 << 6);
+    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_ARM :: VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_EXT;
+    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM :: VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT;
+    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM :: VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT;
+
+    // Added for extension VK_EXT_rasterization_order_attachment_access
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
+    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_EXT :: (1 << 4);
+    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT :: (1 << 5);
+    VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT :: (1 << 6);
+
+    // Added for extension VK_EXT_legacy_dithering
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_legacy_dithering.html)
+    VK_SUBPASS_DESCRIPTION_ENABLE_LEGACY_DITHERING_BIT_EXT :: (1 << 7);
 }
 
 
@@ -4162,6 +4789,11 @@ using VkGeometryInstanceFlagBitsKHR :: enum_flags u32 #specified
     VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_NV :: VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR;
     VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_NV :: VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR;
     VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_NV :: VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_GEOMETRY_INSTANCE_FORCE_OPACITY_MICROMAP_2_STATE_EXT :: (1 << 4);
+    VK_GEOMETRY_INSTANCE_DISABLE_OPACITY_MICROMAPS_EXT :: (1 << 5);
 }
 
 
@@ -4195,6 +4827,16 @@ using VkBuildAccelerationStructureFlagBitsKHR :: enum_flags u32 #specified
     // Added for extension VK_NV_ray_tracing_motion_blur
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_motion_blur.html)
     VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV :: (1 << 5);
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXT :: (1 << 6);
+    VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISABLE_OPACITY_MICROMAPS_EXT :: (1 << 7);
+    VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT :: (1 << 8);
+
+    // Added for extension VK_NV_displacement_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+    VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV :: (1 << 9);
 }
 
 
@@ -4212,6 +4854,10 @@ VkBuildAccelerationStructureFlagBitsNV :: VkBuildAccelerationStructureFlagBitsKH
 using VkAccelerationStructureCreateFlagBitsKHR :: enum_flags u32 #specified 
 {
     VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR :: (1 << 0);
+
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT :: (1 << 3);
 
     // Added for extension VK_NV_ray_tracing_motion_blur
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_motion_blur.html)
@@ -4430,6 +5076,7 @@ using VkDeviceDiagnosticsConfigFlagBitsNV :: enum_flags u32 #specified
     VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV :: (1 << 0);
     VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_RESOURCE_TRACKING_BIT_NV :: (1 << 1);
     VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_AUTOMATIC_CHECKPOINTS_BIT_NV :: (1 << 2);
+    VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_ERROR_REPORTING_BIT_NV :: (1 << 3);
 }
 
 
@@ -4462,9 +5109,9 @@ using VkPerformanceCounterScopeKHR :: enum s32 #specified
     VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_BUFFER_KHR :: 0;
     VK_PERFORMANCE_COUNTER_SCOPE_RENDER_PASS_KHR :: 1;
     VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_KHR :: 2;
-    VK_QUERY_SCOPE_COMMAND_BUFFER_KHR :: VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_BUFFER_KHR; // Backwards-compatible alias containing a typo
-    VK_QUERY_SCOPE_RENDER_PASS_KHR :: VK_PERFORMANCE_COUNTER_SCOPE_RENDER_PASS_KHR; // Backwards-compatible alias containing a typo
-    VK_QUERY_SCOPE_COMMAND_KHR :: VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_KHR; // Backwards-compatible alias containing a typo
+    VK_QUERY_SCOPE_COMMAND_BUFFER_KHR :: VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_BUFFER_KHR;
+    VK_QUERY_SCOPE_RENDER_PASS_KHR :: VK_PERFORMANCE_COUNTER_SCOPE_RENDER_PASS_KHR;
+    VK_QUERY_SCOPE_COMMAND_KHR :: VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_KHR;
 }
 
 
@@ -4510,9 +5157,9 @@ using VkPerformanceCounterStorageKHR :: enum s32 #specified
 using VkPerformanceCounterDescriptionFlagBitsKHR :: enum_flags u32 #specified 
 {
     VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR :: (1 << 0);
-    VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_KHR :: VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR; // Backwards-compatible alias containing a typo
+    VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_KHR :: VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR;
     VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR :: (1 << 1);
-    VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_KHR :: VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR; // Backwards-compatible alias containing a typo
+    VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_KHR :: VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR;
 }
 
 
@@ -4642,6 +5289,82 @@ using VkShaderCorePropertiesFlagBitsAMD :: enum_flags u32 #specified
 }
 
 
+// Enum VkRefreshObjectFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRefreshObjectFlagBitsKHR.html)
+// Referenced by VK_KHR_object_refresh
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_object_refresh.html)
+using VkRefreshObjectFlagBitsKHR :: enum_flags u32 #specified 
+{
+    // empty
+}
+
+
+// Enum VkFaultLevel
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFaultLevel.html)
+using VkFaultLevel :: enum s32 #specified
+{
+    VK_FAULT_LEVEL_UNASSIGNED :: 0;
+    VK_FAULT_LEVEL_CRITICAL :: 1;
+    VK_FAULT_LEVEL_RECOVERABLE :: 2;
+    VK_FAULT_LEVEL_WARNING :: 3;
+}
+
+
+// Enum VkFaultType
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFaultType.html)
+using VkFaultType :: enum s32 #specified
+{
+    VK_FAULT_TYPE_INVALID :: 0;
+    VK_FAULT_TYPE_UNASSIGNED :: 1;
+    VK_FAULT_TYPE_IMPLEMENTATION :: 2;
+    VK_FAULT_TYPE_SYSTEM :: 3;
+    VK_FAULT_TYPE_PHYSICAL_DEVICE :: 4;
+    VK_FAULT_TYPE_COMMAND_BUFFER_FULL :: 5;
+    VK_FAULT_TYPE_INVALID_API_USAGE :: 6;
+}
+
+
+// Enum VkFaultQueryBehavior
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFaultQueryBehavior.html)
+using VkFaultQueryBehavior :: enum s32 #specified
+{
+    VK_FAULT_QUERY_BEHAVIOR_GET_AND_CLEAR_ALL_FAULTS :: 0;
+}
+
+
+// Enum VkPipelineMatchControl
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineMatchControl.html)
+using VkPipelineMatchControl :: enum s32 #specified
+{
+    VK_PIPELINE_MATCH_CONTROL_APPLICATION_UUID_EXACT_MATCH :: 0;
+}
+
+
+// Enum VkSciSyncClientTypeNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSciSyncClientTypeNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+using VkSciSyncClientTypeNV :: enum s32 #specified
+{
+    VK_SCI_SYNC_CLIENT_TYPE_SIGNALER_NV :: 0;
+    VK_SCI_SYNC_CLIENT_TYPE_WAITER_NV :: 1;
+    VK_SCI_SYNC_CLIENT_TYPE_SIGNALER_WAITER_NV :: 2;
+}
+
+
+// Enum VkSciSyncPrimitiveTypeNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSciSyncPrimitiveTypeNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+using VkSciSyncPrimitiveTypeNV :: enum s32 #specified
+{
+    VK_SCI_SYNC_PRIMITIVE_TYPE_FENCE_NV :: 0;
+    VK_SCI_SYNC_PRIMITIVE_TYPE_SEMAPHORE_NV :: 1;
+}
+
+
 // Enum VkToolPurposeFlagBits
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkToolPurposeFlagBits.html)
 using VkToolPurposeFlagBits :: enum_flags u32 #specified 
@@ -4703,6 +5426,29 @@ using VkFragmentShadingRateTypeNV :: enum s32 #specified
 }
 
 
+// Enum VkSubpassMergeStatusEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubpassMergeStatusEXT.html)
+// Referenced by VK_EXT_subpass_merge_feedback
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+using VkSubpassMergeStatusEXT :: enum s32 #specified
+{
+    VK_SUBPASS_MERGE_STATUS_MERGED_EXT :: 0;
+    VK_SUBPASS_MERGE_STATUS_DISALLOWED_EXT :: 1;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_SIDE_EFFECTS_EXT :: 2;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_SAMPLES_MISMATCH_EXT :: 3;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_VIEWS_MISMATCH_EXT :: 4;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_ALIASING_EXT :: 5;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_DEPENDENCIES_EXT :: 6;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_INCOMPATIBLE_INPUT_ATTACHMENT_EXT :: 7;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_TOO_MANY_ATTACHMENTS_EXT :: 8;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_INSUFFICIENT_STORAGE_EXT :: 9;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_DEPTH_STENCIL_COUNT_EXT :: 10;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_RESOLVE_ATTACHMENT_REUSE_EXT :: 11;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_SINGLE_SUBPASS_EXT :: 12;
+    VK_SUBPASS_MERGE_STATUS_NOT_MERGED_UNSPECIFIED_EXT :: 13;
+}
+
+
 // Enum VkAccessFlagBits2
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlagBits2.html)
 using VkAccessFlagBits2 :: enum_flags u64 #specified 
@@ -4743,6 +5489,8 @@ using VkAccessFlagBits2 :: enum_flags u64 #specified
     VK_ACCESS_2_MEMORY_READ_BIT_KHR :: VK_ACCESS_2_MEMORY_READ_BIT;
     VK_ACCESS_2_MEMORY_WRITE_BIT :: (1 << 16);
     VK_ACCESS_2_MEMORY_WRITE_BIT_KHR :: VK_ACCESS_2_MEMORY_WRITE_BIT;
+
+    // bitpos 17-31 are specified by extensions to the original VkAccessFlagBits enum
     VK_ACCESS_2_SHADER_SAMPLED_READ_BIT :: (1 << 32);
     VK_ACCESS_2_SHADER_SAMPLED_READ_BIT_KHR :: VK_ACCESS_2_SHADER_SAMPLED_READ_BIT;
     VK_ACCESS_2_SHADER_STORAGE_READ_BIT :: (1 << 33);
@@ -4777,9 +5525,27 @@ using VkAccessFlagBits2 :: enum_flags u64 #specified
     VK_ACCESS_2_FRAGMENT_DENSITY_MAP_READ_BIT_EXT :: (1 << 24);
     VK_ACCESS_2_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT :: (1 << 19);
 
+    // Added for extension VK_EXT_descriptor_buffer
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+    VK_ACCESS_2_DESCRIPTOR_BUFFER_READ_BIT_EXT :: (1 << 41);
+
     // Added for extension VK_HUAWEI_invocation_mask
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_invocation_mask.html)
     VK_ACCESS_2_INVOCATION_MASK_READ_BIT_HUAWEI :: (1 << 39);
+
+    // Added for extension VK_KHR_ray_tracing_maintenance1
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+    VK_ACCESS_2_SHADER_BINDING_TABLE_READ_BIT_KHR :: (1 << 40);
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_ACCESS_2_MICROMAP_READ_BIT_EXT :: (1 << 44);
+    VK_ACCESS_2_MICROMAP_WRITE_BIT_EXT :: (1 << 45);
+
+    // Added for extension VK_NV_optical_flow
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+    VK_ACCESS_2_OPTICAL_FLOW_READ_BIT_NV :: (1 << 42);
+    VK_ACCESS_2_OPTICAL_FLOW_WRITE_BIT_NV :: (1 << 43);
 }
 
 
@@ -4823,7 +5589,7 @@ using VkPipelineStageFlagBits2 :: enum_flags u64 #specified
     VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT :: (1 << 12);
     VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT_KHR :: VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT;
     VK_PIPELINE_STAGE_2_TRANSFER_BIT :: VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT_KHR;
-    VK_PIPELINE_STAGE_2_TRANSFER_BIT_KHR :: VK_PIPELINE_STAGE_2_TRANSFER_BIT;
+    VK_PIPELINE_STAGE_2_TRANSFER_BIT_KHR :: VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT;
     VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT :: (1 << 13);
     VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT_KHR :: VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT;
     VK_PIPELINE_STAGE_2_HOST_BIT :: (1 << 14);
@@ -4832,6 +5598,8 @@ using VkPipelineStageFlagBits2 :: enum_flags u64 #specified
     VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT_KHR :: VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT;
     VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT :: (1 << 16);
     VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR :: VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
+
+    // bitpos 17-31 are specified by extensions to the original VkPipelineStageFlagBits enum
     VK_PIPELINE_STAGE_2_COPY_BIT :: (1 << 32);
     VK_PIPELINE_STAGE_2_COPY_BIT_KHR :: VK_PIPELINE_STAGE_2_COPY_BIT;
     VK_PIPELINE_STAGE_2_RESOLVE_BIT :: (1 << 33);
@@ -4867,8 +5635,10 @@ using VkPipelineStageFlagBits2 :: enum_flags u64 #specified
     VK_PIPELINE_STAGE_2_RAY_TRACING_SHADER_BIT_NV :: VK_PIPELINE_STAGE_2_RAY_TRACING_SHADER_BIT_KHR;
     VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_BUILD_BIT_NV :: VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_BUILD_BIT_KHR;
     VK_PIPELINE_STAGE_2_FRAGMENT_DENSITY_PROCESS_BIT_EXT :: (1 << 23);
-    VK_PIPELINE_STAGE_2_TASK_SHADER_BIT_NV :: (1 << 19);
-    VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_NV :: (1 << 20);
+    VK_PIPELINE_STAGE_2_TASK_SHADER_BIT_NV :: VK_PIPELINE_STAGE_2_TASK_SHADER_BIT_EXT;
+    VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_NV :: VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_EXT;
+    VK_PIPELINE_STAGE_2_TASK_SHADER_BIT_EXT :: (1 << 19);
+    VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_EXT :: (1 << 20);
 
     // Added for extension VK_HUAWEI_subpass_shading
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_subpass_shading.html)
@@ -4877,6 +5647,22 @@ using VkPipelineStageFlagBits2 :: enum_flags u64 #specified
     // Added for extension VK_HUAWEI_invocation_mask
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_invocation_mask.html)
     VK_PIPELINE_STAGE_2_INVOCATION_MASK_BIT_HUAWEI :: (1 << 40);
+
+    // Added for extension VK_KHR_ray_tracing_maintenance1
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+    VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR :: (1 << 28);
+
+    // Added for extension VK_EXT_opacity_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+    VK_PIPELINE_STAGE_2_MICROMAP_BUILD_BIT_EXT :: (1 << 30);
+
+    // Added for extension VK_HUAWEI_cluster_culling_shader
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+    VK_PIPELINE_STAGE_2_CLUSTER_CULLING_SHADER_BIT_HUAWEI :: (1 << 41);
+
+    // Added for extension VK_NV_optical_flow
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+    VK_PIPELINE_STAGE_2_OPTICAL_FLOW_BIT_NV :: (1 << 29);
 }
 
 
@@ -4895,6 +5681,14 @@ using VkProvokingVertexModeEXT :: enum s32 #specified
 {
     VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT :: 0;
     VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT :: 1;
+}
+
+
+// Enum VkPipelineCacheValidationVersion
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCacheValidationVersion.html)
+using VkPipelineCacheValidationVersion :: enum s32 #specified
+{
+    VK_PIPELINE_CACHE_VALIDATION_VERSION_SAFETY_CRITICAL_ONE :: 1;
 }
 
 
@@ -5004,6 +5798,19 @@ using VkFormatFeatureFlagBits2 :: enum_flags u64 #specified
     // Added for extension VK_NV_linear_color_attachment
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_linear_color_attachment.html)
     VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV :: (1 << 38); // Format support linear image as render target, it cannot be mixed with non linear attachment
+
+    // Added for extension VK_QCOM_image_processing
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+    VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM :: (1 << 34);
+    VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM :: (1 << 35);
+    VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM :: (1 << 36);
+    VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM :: (1 << 37);
+
+    // Added for extension VK_NV_optical_flow
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+    VK_FORMAT_FEATURE_2_OPTICAL_FLOW_IMAGE_BIT_NV :: (1 << 40);
+    VK_FORMAT_FEATURE_2_OPTICAL_FLOW_VECTOR_BIT_NV :: (1 << 41);
+    VK_FORMAT_FEATURE_2_OPTICAL_FLOW_COST_BIT_NV :: (1 << 42);
 }
 
 
@@ -5024,6 +5831,10 @@ using VkRenderingFlagBits :: enum_flags u32 #specified
     VK_RENDERING_SUSPENDING_BIT_KHR :: VK_RENDERING_SUSPENDING_BIT;
     VK_RENDERING_RESUMING_BIT :: (1 << 2);
     VK_RENDERING_RESUMING_BIT_KHR :: VK_RENDERING_RESUMING_BIT;
+
+    // Added for extension VK_EXT_legacy_dithering
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_legacy_dithering.html)
+    VK_RENDERING_ENABLE_LEGACY_DITHERING_BIT_EXT :: (1 << 3);
 }
 
 
@@ -5036,26 +5847,300 @@ VkRenderingFlagBitsKHR :: VkRenderingFlagBits;
 
 // Enum VkPipelineDepthStencilStateCreateFlagBits
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineDepthStencilStateCreateFlagBits.html)
-// Referenced by VK_ARM_rasterization_order_attachment_access
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
+// Referenced by VK_EXT_rasterization_order_attachment_access
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
 using VkPipelineDepthStencilStateCreateFlagBits :: enum_flags u32 #specified 
 {
     // Added for extension VK_ARM_rasterization_order_attachment_access
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
-    VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM :: (1 << 0);
-    VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM :: (1 << 1);
+    VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM :: VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT;
+    VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM :: VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT;
+
+    // Added for extension VK_EXT_rasterization_order_attachment_access
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
+    VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT :: (1 << 0);
+    VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT :: (1 << 1);
 }
 
 
 // Enum VkPipelineColorBlendStateCreateFlagBits
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineColorBlendStateCreateFlagBits.html)
-// Referenced by VK_ARM_rasterization_order_attachment_access
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
+// Referenced by VK_EXT_rasterization_order_attachment_access
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
 using VkPipelineColorBlendStateCreateFlagBits :: enum_flags u32 #specified 
 {
     // Added for extension VK_ARM_rasterization_order_attachment_access
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
-    VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_ARM :: (1 << 0);
+    VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_ARM :: VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT;
+
+    // Added for extension VK_EXT_rasterization_order_attachment_access
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
+    VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT :: (1 << 0);
+}
+
+
+// Enum VkImageCompressionFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCompressionFlagBitsEXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+using VkImageCompressionFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_IMAGE_COMPRESSION_DEFAULT_EXT :: 0;
+    VK_IMAGE_COMPRESSION_FIXED_RATE_DEFAULT_EXT :: (1 << 0);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT :: (1 << 1);
+    VK_IMAGE_COMPRESSION_DISABLED_EXT :: (1 << 2);
+}
+
+
+// Enum VkImageCompressionFixedRateFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCompressionFixedRateFlagBitsEXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+using VkImageCompressionFixedRateFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_IMAGE_COMPRESSION_FIXED_RATE_NONE_EXT :: 0;
+    VK_IMAGE_COMPRESSION_FIXED_RATE_1BPC_BIT_EXT :: (1 << 0);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_2BPC_BIT_EXT :: (1 << 1);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_3BPC_BIT_EXT :: (1 << 2);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_4BPC_BIT_EXT :: (1 << 3);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_5BPC_BIT_EXT :: (1 << 4);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_6BPC_BIT_EXT :: (1 << 5);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_7BPC_BIT_EXT :: (1 << 6);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_8BPC_BIT_EXT :: (1 << 7);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_9BPC_BIT_EXT :: (1 << 8);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_10BPC_BIT_EXT :: (1 << 9);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_11BPC_BIT_EXT :: (1 << 10);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_12BPC_BIT_EXT :: (1 << 11);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_13BPC_BIT_EXT :: (1 << 12);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_14BPC_BIT_EXT :: (1 << 13);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_15BPC_BIT_EXT :: (1 << 14);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_16BPC_BIT_EXT :: (1 << 15);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_17BPC_BIT_EXT :: (1 << 16);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_18BPC_BIT_EXT :: (1 << 17);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_19BPC_BIT_EXT :: (1 << 18);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_20BPC_BIT_EXT :: (1 << 19);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_21BPC_BIT_EXT :: (1 << 20);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_22BPC_BIT_EXT :: (1 << 21);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_23BPC_BIT_EXT :: (1 << 22);
+    VK_IMAGE_COMPRESSION_FIXED_RATE_24BPC_BIT_EXT :: (1 << 23);
+}
+
+
+// Enum VkExportMetalObjectTypeFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalObjectTypeFlagBitsEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+using VkExportMetalObjectTypeFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT :: (1 << 0);
+    VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT :: (1 << 1);
+    VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT :: (1 << 2);
+    VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT :: (1 << 3);
+    VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT :: (1 << 4);
+    VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT :: (1 << 5);
+}
+
+
+// Enum VkPipelineRobustnessBufferBehaviorEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineRobustnessBufferBehaviorEXT.html)
+// Referenced by VK_EXT_pipeline_robustness
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_robustness.html)
+using VkPipelineRobustnessBufferBehaviorEXT :: enum s32 #specified
+{
+    VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT :: 0;
+    VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DISABLED_EXT :: 1;
+    VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT :: 2;
+    VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT :: 3;
+}
+
+
+// Enum VkPipelineRobustnessImageBehaviorEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineRobustnessImageBehaviorEXT.html)
+// Referenced by VK_EXT_pipeline_robustness
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_robustness.html)
+using VkPipelineRobustnessImageBehaviorEXT :: enum s32 #specified
+{
+    VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT :: 0;
+    VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DISABLED_EXT :: 1;
+    VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_EXT :: 2;
+    VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_2_EXT :: 3;
+}
+
+
+// Enum VkDeviceAddressBindingFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceAddressBindingFlagBitsEXT.html)
+// Referenced by VK_EXT_device_address_binding_report
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_address_binding_report.html)
+using VkDeviceAddressBindingFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT :: (1 << 0);
+}
+
+
+// Enum VkDeviceAddressBindingTypeEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceAddressBindingTypeEXT.html)
+// Referenced by VK_EXT_device_address_binding_report
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_address_binding_report.html)
+using VkDeviceAddressBindingTypeEXT :: enum s32 #specified
+{
+    VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT :: 0;
+    VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT :: 1;
+}
+
+
+// Enum VkMicromapTypeEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapTypeEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+using VkMicromapTypeEXT :: enum s32 #specified
+{
+    VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT :: 0;
+
+    // Added for extension VK_NV_displacement_micromap
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+    VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV :: 1000397000;
+}
+
+
+// Enum VkBuildMicromapModeEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBuildMicromapModeEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+using VkBuildMicromapModeEXT :: enum s32 #specified
+{
+    VK_BUILD_MICROMAP_MODE_BUILD_EXT :: 0;
+}
+
+
+// Enum VkCopyMicromapModeEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyMicromapModeEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+using VkCopyMicromapModeEXT :: enum s32 #specified
+{
+    VK_COPY_MICROMAP_MODE_CLONE_EXT :: 0;
+    VK_COPY_MICROMAP_MODE_SERIALIZE_EXT :: 1;
+    VK_COPY_MICROMAP_MODE_DESERIALIZE_EXT :: 2;
+    VK_COPY_MICROMAP_MODE_COMPACT_EXT :: 3;
+}
+
+
+// Enum VkBuildMicromapFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBuildMicromapFlagBitsEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+using VkBuildMicromapFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT :: (1 << 0);
+    VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT :: (1 << 1);
+    VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT :: (1 << 2);
+}
+
+
+// Enum VkMicromapCreateFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapCreateFlagBitsEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+using VkMicromapCreateFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT :: (1 << 0);
+}
+
+
+// Enum VkOpacityMicromapFormatEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpacityMicromapFormatEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+using VkOpacityMicromapFormatEXT :: enum s32 #specified
+{
+    VK_OPACITY_MICROMAP_FORMAT_2_STATE_EXT :: 1;
+    VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT :: 2;
+}
+
+
+// Enum VkOpacityMicromapSpecialIndexEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpacityMicromapSpecialIndexEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+using VkOpacityMicromapSpecialIndexEXT :: enum s32 #specified
+{
+    VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_TRANSPARENT_EXT :: -1;
+    VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_OPAQUE_EXT :: -2;
+    VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_TRANSPARENT_EXT :: -3;
+    VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_OPAQUE_EXT :: -4;
+}
+
+
+// Enum VkDeviceFaultVendorBinaryHeaderVersionEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultVendorBinaryHeaderVersionEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+using VkDeviceFaultVendorBinaryHeaderVersionEXT :: enum s32 #specified
+{
+    VK_DEVICE_FAULT_VENDOR_BINARY_HEADER_VERSION_ONE_EXT :: 1;
+}
+
+
+// Enum VkMemoryDecompressionMethodFlagBitsNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryDecompressionMethodFlagBitsNV.html)
+// Referenced by VK_NV_memory_decompression
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+using VkMemoryDecompressionMethodFlagBitsNV :: enum_flags u64 #specified 
+{
+    VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV :: (1 << 0);
+}
+
+
+// Enum VkDirectDriverLoadingModeLUNARG
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDirectDriverLoadingModeLUNARG.html)
+// Referenced by VK_LUNARG_direct_driver_loading
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_LUNARG_direct_driver_loading.html)
+using VkDirectDriverLoadingModeLUNARG :: enum s32 #specified
+{
+    VK_DIRECT_DRIVER_LOADING_MODE_EXCLUSIVE_LUNARG :: 0;
+    VK_DIRECT_DRIVER_LOADING_MODE_INCLUSIVE_LUNARG :: 1;
+}
+
+
+// Enum VkDisplacementMicromapFormatNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDisplacementMicromapFormatNV.html)
+// Referenced by VK_NV_displacement_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+using VkDisplacementMicromapFormatNV :: enum s32 #specified
+{
+    VK_DISPLACEMENT_MICROMAP_FORMAT_64_TRIANGLES_64_BYTES_NV :: 1;
+    VK_DISPLACEMENT_MICROMAP_FORMAT_256_TRIANGLES_128_BYTES_NV :: 2;
+    VK_DISPLACEMENT_MICROMAP_FORMAT_1024_TRIANGLES_128_BYTES_NV :: 3;
+}
+
+
+// Enum VkShaderCreateFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateFlagBitsEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+using VkShaderCreateFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_SHADER_CREATE_LINK_STAGE_BIT_EXT :: (1 << 0);
+
+    // Added for extension VK_EXT_shader_object
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+    VK_SHADER_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT :: (1 << 1);
+    VK_SHADER_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT :: (1 << 2);
+    VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT :: (1 << 3);
+    VK_SHADER_CREATE_DISPATCH_BASE_BIT_EXT :: (1 << 4);
+    VK_SHADER_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_EXT :: (1 << 5);
+    VK_SHADER_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT :: (1 << 6);
+}
+
+
+// Enum VkShaderCodeTypeEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCodeTypeEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+using VkShaderCodeTypeEXT :: enum s32 #specified
+{
+    VK_SHADER_CODE_TYPE_BINARY_EXT :: 0;
+    VK_SHADER_CODE_TYPE_SPIRV_EXT :: 1;
 }
 
 
@@ -5066,7 +6151,7 @@ using VkPipelineColorBlendStateCreateFlagBits :: enum_flags u32 #specified
 using VkColorSpaceKHR :: enum s32 #specified
 {
     VK_COLOR_SPACE_SRGB_NONLINEAR_KHR :: 0;
-    VK_COLORSPACE_SRGB_NONLINEAR_KHR :: VK_COLOR_SPACE_SRGB_NONLINEAR_KHR; // Backwards-compatible alias containing a typo
+    VK_COLORSPACE_SRGB_NONLINEAR_KHR :: VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 
     // Added for extension VK_EXT_swapchain_colorspace
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_colorspace.html)
@@ -5084,7 +6169,7 @@ using VkColorSpaceKHR :: enum s32 #specified
     VK_COLOR_SPACE_ADOBERGB_NONLINEAR_EXT :: 1000104012;
     VK_COLOR_SPACE_PASS_THROUGH_EXT :: 1000104013;
     VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT :: 1000104014;
-    VK_COLOR_SPACE_DCI_P3_LINEAR_EXT :: VK_COLOR_SPACE_DISPLAY_P3_LINEAR_EXT; // Backwards-compatible alias containing a typo
+    VK_COLOR_SPACE_DCI_P3_LINEAR_EXT :: VK_COLOR_SPACE_DISPLAY_P3_LINEAR_EXT;
 
     // Added for extension VK_AMD_display_native_hdr
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_AMD_display_native_hdr.html)
@@ -5204,13 +6289,15 @@ using VkDebugReportObjectTypeEXT :: enum s32 #specified
     VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT :: 26;
     VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT :: 27;
     VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT :: 28;
-    VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT :: VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT; // Backwards-compatible alias containing a typo
+    VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT :: VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT;
     VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT :: 29;
     VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT :: 30;
-    VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT :: 31; // Removed NVX_device_generated_commands
-    VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT :: 32; // Removed NVX_device_generated_commands
+
+    // NVX_device_generated_commands formerly used these enum values, but that extension has been removed
+    // value 31 / name VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT
+    // value 32 / name VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT
     VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT :: 33;
-    VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT :: VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT; // Backwards-compatible alias containing a typo
+    VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT :: VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT;
 
     // Added for extension VK_EXT_debug_report
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_report.html)
@@ -5378,6 +6465,10 @@ using VkExternalMemoryHandleTypeFlagBits :: enum_flags u32 #specified
     // Added for extension VK_NV_external_memory_rdma
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_rdma.html)
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_RDMA_ADDRESS_BIT_NV :: (1 << 12);
+
+    // Added for extension VK_NV_external_memory_sci_buf
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+    VK_EXTERNAL_MEMORY_HANDLE_TYPE_SCI_BUF_BIT_NV :: (1 << 13);
 }
 
 
@@ -5433,6 +6524,10 @@ using VkExternalSemaphoreHandleTypeFlagBits :: enum_flags u32 #specified
     // Added for extension VK_FUCHSIA_external_semaphore
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_FUCHSIA_external_semaphore.html)
     VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA :: (1 << 7);
+
+    // Added for extension VK_NV_external_sci_sync
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+    VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SCI_SYNC_OBJ_BIT_NV :: (1 << 5);
 }
 
 
@@ -5498,6 +6593,11 @@ using VkExternalFenceHandleTypeFlagBits :: enum_flags u32 #specified
     VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR :: VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT;
     VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR :: VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT;
     VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT_KHR :: VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT;
+
+    // Added for extension VK_NV_external_sci_sync
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+    VK_EXTERNAL_FENCE_HANDLE_TYPE_SCI_SYNC_OBJ_BIT_NV :: (1 << 4);
+    VK_EXTERNAL_FENCE_HANDLE_TYPE_SCI_SYNC_FENCE_BIT_NV :: (1 << 5);
 }
 
 
@@ -5555,7 +6655,7 @@ VkFenceImportFlagBitsKHR :: VkFenceImportFlagBits;
 using VkSurfaceCounterFlagBitsEXT :: enum_flags u32 #specified 
 {
     VK_SURFACE_COUNTER_VBLANK_BIT_EXT :: (1 << 0);
-    VK_SURFACE_COUNTER_VBLANK_EXT :: VK_SURFACE_COUNTER_VBLANK_BIT_EXT; // Backwards-compatible alias containing a typo
+    VK_SURFACE_COUNTER_VBLANK_EXT :: VK_SURFACE_COUNTER_VBLANK_BIT_EXT;
 }
 
 
@@ -5622,7 +6722,7 @@ using VkMemoryAllocateFlagBits :: enum_flags u32 #specified
 {
     VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT :: (1 << 0); // Force allocation on specific devices
 
-    // Added in vulkan 1.2
+    // Added in vulkan,vulkansc 1.2
     VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT :: (1 << 1);
     VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT :: (1 << 2);
 
@@ -5672,6 +6772,10 @@ using VkSwapchainCreateFlagBitsKHR :: enum_flags u32 #specified
     // Added for extension VK_KHR_swapchain_mutable_format
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain_mutable_format.html)
     VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR :: (1 << 2);
+
+    // Added for extension VK_EXT_swapchain_maintenance1
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+    VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_EXT :: (1 << 3);
 }
 
 
@@ -5841,6 +6945,10 @@ using VkDebugUtilsMessageTypeFlagBitsEXT :: enum_flags u32 #specified
     VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT :: (1 << 0);
     VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT :: (1 << 1);
     VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT :: (1 << 2);
+
+    // Added for extension VK_EXT_device_address_binding_report
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_address_binding_report.html)
+    VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT :: (1 << 3);
 }
 
 
@@ -5910,6 +7018,143 @@ using VkSubmitFlagBits :: enum_flags u32 #specified
 VkSubmitFlagBitsKHR :: VkSubmitFlagBits;
 
 
+// Enum VkGraphicsPipelineLibraryFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGraphicsPipelineLibraryFlagBitsEXT.html)
+// Referenced by VK_EXT_graphics_pipeline_library
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+using VkGraphicsPipelineLibraryFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT :: (1 << 0);
+    VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT :: (1 << 1);
+    VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT :: (1 << 2);
+    VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT :: (1 << 3);
+}
+
+
+// Enum VkOpticalFlowGridSizeFlagBitsNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowGridSizeFlagBitsNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+using VkOpticalFlowGridSizeFlagBitsNV :: enum_flags u32 #specified 
+{
+    VK_OPTICAL_FLOW_GRID_SIZE_UNKNOWN_NV :: 0;
+    VK_OPTICAL_FLOW_GRID_SIZE_1X1_BIT_NV :: (1 << 0);
+    VK_OPTICAL_FLOW_GRID_SIZE_2X2_BIT_NV :: (1 << 1);
+    VK_OPTICAL_FLOW_GRID_SIZE_4X4_BIT_NV :: (1 << 2);
+    VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV :: (1 << 3);
+}
+
+
+// Enum VkOpticalFlowUsageFlagBitsNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowUsageFlagBitsNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+using VkOpticalFlowUsageFlagBitsNV :: enum_flags u32 #specified 
+{
+    VK_OPTICAL_FLOW_USAGE_UNKNOWN_NV :: 0;
+    VK_OPTICAL_FLOW_USAGE_INPUT_BIT_NV :: (1 << 0);
+    VK_OPTICAL_FLOW_USAGE_OUTPUT_BIT_NV :: (1 << 1);
+    VK_OPTICAL_FLOW_USAGE_HINT_BIT_NV :: (1 << 2);
+    VK_OPTICAL_FLOW_USAGE_COST_BIT_NV :: (1 << 3);
+    VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV :: (1 << 4);
+}
+
+
+// Enum VkOpticalFlowPerformanceLevelNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowPerformanceLevelNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+using VkOpticalFlowPerformanceLevelNV :: enum s32 #specified
+{
+    VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_UNKNOWN_NV :: 0;
+    VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_SLOW_NV :: 1;
+    VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_MEDIUM_NV :: 2;
+    VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_FAST_NV :: 3;
+}
+
+
+// Enum VkOpticalFlowSessionBindingPointNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowSessionBindingPointNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+using VkOpticalFlowSessionBindingPointNV :: enum s32 #specified
+{
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_UNKNOWN_NV :: 0;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_INPUT_NV :: 1;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_REFERENCE_NV :: 2;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_HINT_NV :: 3;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_FLOW_VECTOR_NV :: 4;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_FLOW_VECTOR_NV :: 5;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_COST_NV :: 6;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_COST_NV :: 7;
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_GLOBAL_FLOW_NV :: 8;
+}
+
+
+// Enum VkOpticalFlowSessionCreateFlagBitsNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowSessionCreateFlagBitsNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+using VkOpticalFlowSessionCreateFlagBitsNV :: enum_flags u32 #specified 
+{
+    VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_HINT_BIT_NV :: (1 << 0);
+    VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_COST_BIT_NV :: (1 << 1);
+    VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_GLOBAL_FLOW_BIT_NV :: (1 << 2);
+    VK_OPTICAL_FLOW_SESSION_CREATE_ALLOW_REGIONS_BIT_NV :: (1 << 3);
+    VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV :: (1 << 4);
+}
+
+
+// Enum VkOpticalFlowExecuteFlagBitsNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowExecuteFlagBitsNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+using VkOpticalFlowExecuteFlagBitsNV :: enum_flags u32 #specified 
+{
+    VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV :: (1 << 0);
+}
+
+
+// Enum VkDeviceFaultAddressTypeEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultAddressTypeEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+using VkDeviceFaultAddressTypeEXT :: enum s32 #specified
+{
+    VK_DEVICE_FAULT_ADDRESS_TYPE_NONE_EXT :: 0; // Currently unused
+    VK_DEVICE_FAULT_ADDRESS_TYPE_READ_INVALID_EXT :: 1;
+    VK_DEVICE_FAULT_ADDRESS_TYPE_WRITE_INVALID_EXT :: 2;
+    VK_DEVICE_FAULT_ADDRESS_TYPE_EXECUTE_INVALID_EXT :: 3;
+    VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_UNKNOWN_EXT :: 4;
+    VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_INVALID_EXT :: 5;
+    VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_FAULT_EXT :: 6;
+}
+
+
+// Enum VkPresentScalingFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPresentScalingFlagBitsEXT.html)
+// Referenced by VK_EXT_surface_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_surface_maintenance1.html)
+using VkPresentScalingFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_PRESENT_SCALING_ONE_TO_ONE_BIT_EXT :: (1 << 0);
+    VK_PRESENT_SCALING_ASPECT_RATIO_STRETCH_BIT_EXT :: (1 << 1);
+    VK_PRESENT_SCALING_STRETCH_BIT_EXT :: (1 << 2);
+}
+
+
+// Enum VkPresentGravityFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPresentGravityFlagBitsEXT.html)
+// Referenced by VK_EXT_surface_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_surface_maintenance1.html)
+using VkPresentGravityFlagBitsEXT :: enum_flags u32 #specified 
+{
+    VK_PRESENT_GRAVITY_MIN_BIT_EXT :: (1 << 0);
+    VK_PRESENT_GRAVITY_MAX_BIT_EXT :: (1 << 1);
+    VK_PRESENT_GRAVITY_CENTERED_BIT_EXT :: (1 << 2);
+}
+
+
 // Enum VkVendorId
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVendorId.html)
 using VkVendorId :: enum s32 #specified
@@ -5923,6 +7168,7 @@ using VkVendorId :: enum s32 #specified
     VK_VENDOR_ID_CODEPLAY :: 0x10004; // Codeplay Software Ltd. vendor ID
     VK_VENDOR_ID_MESA :: 0x10005; // Mesa vendor ID
     VK_VENDOR_ID_POCL :: 0x10006; // PoCL vendor ID
+    VK_VENDOR_ID_MOBILEYE :: 0x10007; // Mobileye vendor ID
 }
 
 
@@ -5955,6 +7201,9 @@ using VkDriverId :: enum s32 #specified
     VK_DRIVER_ID_MESA_PANVK :: 20; // Mesa open source project
     VK_DRIVER_ID_SAMSUNG_PROPRIETARY :: 21; // Samsung Electronics Co., Ltd.
     VK_DRIVER_ID_MESA_VENUS :: 22; // Mesa open source project
+    VK_DRIVER_ID_MESA_DOZEN :: 23; // Mesa open source project
+    VK_DRIVER_ID_MESA_NVK :: 24; // Mesa open source project
+    VK_DRIVER_ID_IMAGINATION_OPEN_SOURCE_MESA :: 25; // Imagination Technologies
 
     // Added for extension VK_KHR_driver_properties
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_driver_properties.html)
@@ -6033,7 +7282,7 @@ using VkPipelineExecutableStatisticFormatKHR :: enum s32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
 using VkVideoCodecOperationFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_CODEC_OPERATION_INVALID_BIT_KHR :: 0;
+    VK_VIDEO_CODEC_OPERATION_NONE_KHR :: 0;
 
     // Added for extension VK_EXT_video_encode_h264
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
@@ -6043,13 +7292,13 @@ using VkVideoCodecOperationFlagBitsKHR :: enum_flags u32 #specified
     // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
     VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_EXT :: (1 << 17);
 
-    // Added for extension VK_EXT_video_decode_h264
-    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-    VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_EXT :: (1 << 0);
+    // Added for extension VK_KHR_video_decode_h264
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+    VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_KHR :: (1 << 0);
 
-    // Added for extension VK_EXT_video_decode_h265
-    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-    VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_EXT :: (1 << 1);
+    // Added for extension VK_KHR_video_decode_h265
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+    VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_KHR :: (1 << 1);
 }
 
 
@@ -6059,7 +7308,7 @@ using VkVideoCodecOperationFlagBitsKHR :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
 using VkVideoChromaSubsamplingFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_BIT_KHR :: 0;
+    VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_KHR :: 0;
     VK_VIDEO_CHROMA_SUBSAMPLING_MONOCHROME_BIT_KHR :: (1 << 0);
     VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR :: (1 << 1);
     VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR :: (1 << 2);
@@ -6097,20 +7346,7 @@ using VkVideoCapabilityFlagBitsKHR :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
 using VkVideoSessionCreateFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_SESSION_CREATE_DEFAULT_KHR :: 0;
     VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR :: (1 << 0);
-}
-
-
-// Enum VkVideoCodingQualityPresetFlagBitsKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoCodingQualityPresetFlagBitsKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-using VkVideoCodingQualityPresetFlagBitsKHR :: enum_flags u32 #specified 
-{
-    VK_VIDEO_CODING_QUALITY_PRESET_NORMAL_BIT_KHR :: (1 << 0);
-    VK_VIDEO_CODING_QUALITY_PRESET_POWER_BIT_KHR :: (1 << 1);
-    VK_VIDEO_CODING_QUALITY_PRESET_QUALITY_BIT_KHR :: (1 << 2);
 }
 
 
@@ -6120,8 +7356,12 @@ using VkVideoCodingQualityPresetFlagBitsKHR :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
 using VkVideoCodingControlFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_CODING_CONTROL_DEFAULT_KHR :: 0;
     VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR :: (1 << 0);
+
+    // Added for extension VK_KHR_video_encode_queue
+    // (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+    VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR :: (1 << 1);
+    VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_LAYER_BIT_KHR :: (1 << 2);
 }
 
 
@@ -6137,48 +7377,101 @@ using VkQueryResultStatusKHR :: enum s32 #specified
 }
 
 
-// Enum VkVideoDecodeFlagBitsKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeFlagBitsKHR.html)
+// Enum VkVideoDecodeUsageFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeUsageFlagBitsKHR.html)
 // Referenced by VK_KHR_video_decode_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
-using VkVideoDecodeFlagBitsKHR :: enum_flags u32 #specified 
+using VkVideoDecodeUsageFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_DECODE_DEFAULT_KHR :: 0;
-    VK_VIDEO_DECODE_RESERVED_0_BIT_KHR :: (1 << 0);
+    VK_VIDEO_DECODE_USAGE_DEFAULT_KHR :: 0;
+    VK_VIDEO_DECODE_USAGE_TRANSCODING_BIT_KHR :: (1 << 0);
+    VK_VIDEO_DECODE_USAGE_OFFLINE_BIT_KHR :: (1 << 1);
+    VK_VIDEO_DECODE_USAGE_STREAMING_BIT_KHR :: (1 << 2);
 }
 
 
-// Enum VkVideoDecodeH264PictureLayoutFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264PictureLayoutFlagBitsEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-using VkVideoDecodeH264PictureLayoutFlagBitsEXT :: enum_flags u32 #specified 
+// Enum VkVideoDecodeCapabilityFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeCapabilityFlagBitsKHR.html)
+// Referenced by VK_KHR_video_decode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
+using VkVideoDecodeCapabilityFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_PROGRESSIVE_EXT :: 0;
-    VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_INTERLEAVED_LINES_BIT_EXT :: (1 << 0);
-    VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_EXT :: (1 << 1);
+    VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR :: (1 << 0);
+    VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_DISTINCT_BIT_KHR :: (1 << 1);
 }
 
 
-// Enum VkVideoEncodeFlagBitsKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeFlagBitsKHR.html)
+// Enum VkVideoDecodeH264PictureLayoutFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264PictureLayoutFlagBitsKHR.html)
+// Referenced by VK_KHR_video_decode_h264
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+using VkVideoDecodeH264PictureLayoutFlagBitsKHR :: enum_flags u32 #specified 
+{
+    VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_PROGRESSIVE_KHR :: 0;
+    VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_INTERLEAVED_LINES_BIT_KHR :: (1 << 0);
+    VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_KHR :: (1 << 1);
+}
+
+
+// Enum VkVideoEncodeUsageFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeUsageFlagBitsKHR.html)
 // Referenced by VK_KHR_video_encode_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
-using VkVideoEncodeFlagBitsKHR :: enum_flags u32 #specified 
+using VkVideoEncodeUsageFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_ENCODE_DEFAULT_KHR :: 0;
-    VK_VIDEO_ENCODE_RESERVED_0_BIT_KHR :: (1 << 0);
+    VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR :: 0;
+    VK_VIDEO_ENCODE_USAGE_TRANSCODING_BIT_KHR :: (1 << 0);
+    VK_VIDEO_ENCODE_USAGE_STREAMING_BIT_KHR :: (1 << 1);
+    VK_VIDEO_ENCODE_USAGE_RECORDING_BIT_KHR :: (1 << 2);
+    VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR :: (1 << 3);
 }
 
 
-// Enum VkVideoEncodeRateControlFlagBitsKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeRateControlFlagBitsKHR.html)
+// Enum VkVideoEncodeContentFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeContentFlagBitsKHR.html)
 // Referenced by VK_KHR_video_encode_queue
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
-using VkVideoEncodeRateControlFlagBitsKHR :: enum_flags u32 #specified 
+using VkVideoEncodeContentFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_ENCODE_RATE_CONTROL_DEFAULT_KHR :: 0;
-    VK_VIDEO_ENCODE_RATE_CONTROL_RESERVED_0_BIT_KHR :: (1 << 0);
+    VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR :: 0;
+    VK_VIDEO_ENCODE_CONTENT_CAMERA_BIT_KHR :: (1 << 0);
+    VK_VIDEO_ENCODE_CONTENT_DESKTOP_BIT_KHR :: (1 << 1);
+    VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR :: (1 << 2);
+}
+
+
+// Enum VkVideoEncodeTuningModeKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeTuningModeKHR.html)
+// Referenced by VK_KHR_video_encode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+using VkVideoEncodeTuningModeKHR :: enum s32 #specified
+{
+    VK_VIDEO_ENCODE_TUNING_MODE_DEFAULT_KHR :: 0;
+    VK_VIDEO_ENCODE_TUNING_MODE_HIGH_QUALITY_KHR :: 1;
+    VK_VIDEO_ENCODE_TUNING_MODE_LOW_LATENCY_KHR :: 2;
+    VK_VIDEO_ENCODE_TUNING_MODE_ULTRA_LOW_LATENCY_KHR :: 3;
+    VK_VIDEO_ENCODE_TUNING_MODE_LOSSLESS_KHR :: 4;
+}
+
+
+// Enum VkVideoEncodeCapabilityFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeCapabilityFlagBitsKHR.html)
+// Referenced by VK_KHR_video_encode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+using VkVideoEncodeCapabilityFlagBitsKHR :: enum_flags u32 #specified 
+{
+    VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR :: (1 << 0);
+}
+
+
+// Enum VkVideoEncodeFeedbackFlagBitsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeFeedbackFlagBitsKHR.html)
+// Referenced by VK_KHR_video_encode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+using VkVideoEncodeFeedbackFlagBitsKHR :: enum_flags u32 #specified 
+{
+    VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR :: (1 << 0);
+    VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BYTES_WRITTEN_BIT_KHR :: (1 << 1);
 }
 
 
@@ -6188,9 +7481,10 @@ using VkVideoEncodeRateControlFlagBitsKHR :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
 using VkVideoEncodeRateControlModeFlagBitsKHR :: enum_flags u32 #specified 
 {
-    VK_VIDEO_ENCODE_RATE_CONTROL_MODE_NONE_BIT_KHR :: 0;
-    VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR :: 1;
-    VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR :: 2;
+    VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR :: 0;
+    VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR :: (1 << 0);
+    VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR :: (1 << 1);
+    VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR :: (1 << 2);
 }
 
 
@@ -6200,88 +7494,92 @@ using VkVideoEncodeRateControlModeFlagBitsKHR :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
 using VkVideoEncodeH264CapabilityFlagBitsEXT :: enum_flags u32 #specified 
 {
-    VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT :: (1 << 1);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BI_PRED_IMPLICIT_BIT_EXT :: (1 << 2);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT :: (1 << 3);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT :: (1 << 4);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT :: (1 << 5);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT :: (1 << 6);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT :: (1 << 7);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT :: (1 << 8);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT :: (1 << 9);
-    VK_VIDEO_ENCODE_H264_CAPABILITY_EVENLY_DISTRIBUTED_SLICE_SIZE_BIT_EXT :: (1 << 10);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DIRECT_8X8_INFERENCE_ENABLED_BIT_EXT :: (1 << 0);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DIRECT_8X8_INFERENCE_DISABLED_BIT_EXT :: (1 << 1);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_SEPARATE_COLOUR_PLANE_BIT_EXT :: (1 << 2);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_QPPRIME_Y_ZERO_TRANSFORM_BYPASS_BIT_EXT :: (1 << 3);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_SCALING_LISTS_BIT_EXT :: (1 << 4);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_EXT :: (1 << 5);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT :: (1 << 6);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT :: (1 << 7);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_PIC_INIT_QP_MINUS26_BIT_EXT :: (1 << 8);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_PRED_BIT_EXT :: (1 << 9);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BIPRED_EXPLICIT_BIT_EXT :: (1 << 10);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BIPRED_IMPLICIT_BIT_EXT :: (1 << 11);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_PRED_NO_TABLE_BIT_EXT :: (1 << 12);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT :: (1 << 13);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT :: (1 << 14);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT :: (1 << 15);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT :: (1 << 16);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT :: (1 << 17);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT :: (1 << 18);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DISABLE_DIRECT_SPATIAL_MV_PRED_BIT_EXT :: (1 << 19);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT :: (1 << 20);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_SLICE_MB_COUNT_BIT_EXT :: (1 << 21);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_ROW_UNALIGNED_SLICE_BIT_EXT :: (1 << 22);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT :: (1 << 23);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT :: (1 << 24);
+    VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_REFERENCE_FINAL_LISTS_BIT_EXT :: (1 << 25);
 }
 
 
-// Enum VkVideoEncodeH264InputModeFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264InputModeFlagBitsEXT.html)
+// Enum VkVideoEncodeH264RateControlStructureEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264RateControlStructureEXT.html)
 // Referenced by VK_EXT_video_encode_h264
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-using VkVideoEncodeH264InputModeFlagBitsEXT :: enum_flags u32 #specified 
-{
-    VK_VIDEO_ENCODE_H264_INPUT_MODE_FRAME_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H264_INPUT_MODE_SLICE_BIT_EXT :: (1 << 1);
-    VK_VIDEO_ENCODE_H264_INPUT_MODE_NON_VCL_BIT_EXT :: (1 << 2);
-}
-
-
-// Enum VkVideoEncodeH264OutputModeFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264OutputModeFlagBitsEXT.html)
-// Referenced by VK_EXT_video_encode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-using VkVideoEncodeH264OutputModeFlagBitsEXT :: enum_flags u32 #specified 
-{
-    VK_VIDEO_ENCODE_H264_OUTPUT_MODE_FRAME_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H264_OUTPUT_MODE_SLICE_BIT_EXT :: (1 << 1);
-    VK_VIDEO_ENCODE_H264_OUTPUT_MODE_NON_VCL_BIT_EXT :: (1 << 2);
-}
-
-
-// Enum VkVideoEncodeH264CreateFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264CreateFlagBitsEXT.html)
-// Referenced by VK_EXT_video_encode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-using VkVideoEncodeH264CreateFlagBitsEXT :: enum_flags u32 #specified 
-{
-    VK_VIDEO_ENCODE_H264_CREATE_DEFAULT_EXT :: 0;
-    VK_VIDEO_ENCODE_H264_CREATE_RESERVED_0_BIT_EXT :: (1 << 0);
-}
-
-
-// Enum VkVideoEncodeH264RateControlStructureFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264RateControlStructureFlagBitsEXT.html)
-// Referenced by VK_EXT_video_encode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-using VkVideoEncodeH264RateControlStructureFlagBitsEXT :: enum_flags u32 #specified 
+using VkVideoEncodeH264RateControlStructureEXT :: enum s32 #specified
 {
     VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_UNKNOWN_EXT :: 0;
-    VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_FLAT_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_DYADIC_BIT_EXT :: (1 << 1);
+    VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_FLAT_EXT :: 1;
+    VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_DYADIC_EXT :: 2;
 }
 
 
-// Enum VkVideoEncodeH265InputModeFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265InputModeFlagBitsEXT.html)
+// Enum VkVideoEncodeH265CapabilityFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265CapabilityFlagBitsEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-using VkVideoEncodeH265InputModeFlagBitsEXT :: enum_flags u32 #specified 
+using VkVideoEncodeH265CapabilityFlagBitsEXT :: enum_flags u32 #specified 
 {
-    VK_VIDEO_ENCODE_H265_INPUT_MODE_FRAME_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H265_INPUT_MODE_SLICE_BIT_EXT :: (1 << 1);
-    VK_VIDEO_ENCODE_H265_INPUT_MODE_NON_VCL_BIT_EXT :: (1 << 2);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_SEPARATE_COLOUR_PLANE_BIT_EXT :: (1 << 0);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_SCALING_LISTS_BIT_EXT :: (1 << 1);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_SAMPLE_ADAPTIVE_OFFSET_ENABLED_BIT_EXT :: (1 << 2);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_PCM_ENABLE_BIT_EXT :: (1 << 3);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_SPS_TEMPORAL_MVP_ENABLED_BIT_EXT :: (1 << 4);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT :: (1 << 5);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_INIT_QP_MINUS26_BIT_EXT :: (1 << 6);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_LOG2_PARALLEL_MERGE_LEVEL_MINUS2_BIT_EXT :: (1 << 7);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_SIGN_DATA_HIDING_ENABLED_BIT_EXT :: (1 << 8);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSFORM_SKIP_ENABLED_BIT_EXT :: (1 << 9);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSFORM_SKIP_DISABLED_BIT_EXT :: (1 << 10);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_BIT_EXT :: (1 << 11);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_PRED_BIT_EXT :: (1 << 12);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_BIPRED_BIT_EXT :: (1 << 13);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_PRED_NO_TABLE_BIT_EXT :: (1 << 14);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSQUANT_BYPASS_ENABLED_BIT_EXT :: (1 << 15);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_ENTROPY_CODING_SYNC_ENABLED_BIT_EXT :: (1 << 16);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_DEBLOCKING_FILTER_OVERRIDE_ENABLED_BIT_EXT :: (1 << 17);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILE_PER_FRAME_BIT_EXT :: (1 << 18);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_SLICE_PER_TILE_BIT_EXT :: (1 << 19);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILE_PER_SLICE_BIT_EXT :: (1 << 20);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_SLICE_SEGMENT_CTB_COUNT_BIT_EXT :: (1 << 21);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_ROW_UNALIGNED_SLICE_SEGMENT_BIT_EXT :: (1 << 22);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_DEPENDENT_SLICE_SEGMENT_BIT_EXT :: (1 << 23);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT :: (1 << 24);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT :: (1 << 25);
+    VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_REFERENCE_FINAL_LISTS_BIT_EXT :: (1 << 26);
 }
 
 
-// Enum VkVideoEncodeH265OutputModeFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265OutputModeFlagBitsEXT.html)
+// Enum VkVideoEncodeH265RateControlStructureEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265RateControlStructureEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-using VkVideoEncodeH265OutputModeFlagBitsEXT :: enum_flags u32 #specified 
+using VkVideoEncodeH265RateControlStructureEXT :: enum s32 #specified
 {
-    VK_VIDEO_ENCODE_H265_OUTPUT_MODE_FRAME_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H265_OUTPUT_MODE_SLICE_BIT_EXT :: (1 << 1);
-    VK_VIDEO_ENCODE_H265_OUTPUT_MODE_NON_VCL_BIT_EXT :: (1 << 2);
+    VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_UNKNOWN_EXT :: 0;
+    VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_FLAT_EXT :: 1;
+    VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_DYADIC_EXT :: 2;
 }
 
 
@@ -6291,22 +7589,22 @@ using VkVideoEncodeH265OutputModeFlagBitsEXT :: enum_flags u32 #specified
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
 using VkVideoEncodeH265CtbSizeFlagBitsEXT :: enum_flags u32 #specified 
 {
-    VK_VIDEO_ENCODE_H265_CTB_SIZE_8_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT :: (1 << 1);
-    VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT :: (1 << 2);
-    VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT :: (1 << 3);
+    VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT :: (1 << 0);
+    VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT :: (1 << 1);
+    VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT :: (1 << 2);
 }
 
 
-// Enum VkVideoEncodeH265RateControlStructureFlagBitsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265RateControlStructureFlagBitsEXT.html)
+// Enum VkVideoEncodeH265TransformBlockSizeFlagBitsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265TransformBlockSizeFlagBitsEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-using VkVideoEncodeH265RateControlStructureFlagBitsEXT :: enum_flags u32 #specified 
+using VkVideoEncodeH265TransformBlockSizeFlagBitsEXT :: enum_flags u32 #specified 
 {
-    VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_UNKNOWN_EXT :: 0;
-    VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_FLAT_BIT_EXT :: (1 << 0);
-    VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_DYADIC_BIT_EXT :: (1 << 1);
+    VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT :: (1 << 0);
+    VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_8_BIT_EXT :: (1 << 1);
+    VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_16_BIT_EXT :: (1 << 2);
+    VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_EXT :: (1 << 3);
 }
 
 
@@ -6342,7 +7640,7 @@ VkFramebufferCreateFlags :: VkFramebufferCreateFlagBits;
 VkQueryPoolCreateFlags :: VkFlags;
 VkRenderPassCreateFlags :: VkRenderPassCreateFlagBits;
 VkSamplerCreateFlags :: VkSamplerCreateFlagBits;
-VkPipelineLayoutCreateFlags :: VkFlags;
+VkPipelineLayoutCreateFlags :: VkPipelineLayoutCreateFlagBits;
 VkPipelineCacheCreateFlags :: VkPipelineCacheCreateFlagBits;
 VkPipelineDepthStencilStateCreateFlags :: VkPipelineDepthStencilStateCreateFlagBits;
 VkPipelineDynamicStateCreateFlags :: VkFlags;
@@ -6356,7 +7654,7 @@ VkPipelineVertexInputStateCreateFlags :: VkFlags;
 VkPipelineShaderStageCreateFlags :: VkPipelineShaderStageCreateFlagBits;
 VkDescriptorSetLayoutCreateFlags :: VkDescriptorSetLayoutCreateFlagBits;
 VkBufferViewCreateFlags :: VkFlags;
-VkInstanceCreateFlags :: VkFlags;
+VkInstanceCreateFlags :: VkInstanceCreateFlagBits;
 VkDeviceCreateFlags :: VkFlags;
 VkDeviceQueueCreateFlags :: VkDeviceQueueCreateFlagBits;
 VkQueueFlags :: VkQueueFlagBits;
@@ -6405,7 +7703,7 @@ VkGeometryInstanceFlagsKHR :: VkGeometryInstanceFlagBitsKHR;
 VkGeometryInstanceFlagsNV :: VkGeometryInstanceFlagsKHR;
 VkBuildAccelerationStructureFlagsKHR :: VkBuildAccelerationStructureFlagBitsKHR;
 VkBuildAccelerationStructureFlagsNV :: VkBuildAccelerationStructureFlagsKHR;
-VkPrivateDataSlotCreateFlags :: VkPrivateDataSlotCreateFlagBits;
+VkPrivateDataSlotCreateFlags :: VkFlags;
 VkPrivateDataSlotCreateFlagsEXT :: VkPrivateDataSlotCreateFlags;
 VkAccelerationStructureCreateFlagsKHR :: VkAccelerationStructureCreateFlagBitsKHR;
 VkDescriptorUpdateTemplateCreateFlags :: VkFlags;
@@ -6419,6 +7717,7 @@ VkSemaphoreWaitFlagsKHR :: VkSemaphoreWaitFlags;
 VkPipelineCompilerControlFlagsAMD :: VkPipelineCompilerControlFlagBitsAMD;
 VkShaderCorePropertiesFlagsAMD :: VkShaderCorePropertiesFlagBitsAMD;
 VkDeviceDiagnosticsConfigFlagsNV :: VkDeviceDiagnosticsConfigFlagBitsNV;
+VkRefreshObjectFlagsKHR :: VkRefreshObjectFlagBitsKHR;
 VkAccessFlags2 :: VkAccessFlagBits2;
 VkAccessFlags2KHR :: VkAccessFlags2;
 VkPipelineStageFlags2 :: VkPipelineStageFlagBits2;
@@ -6428,7 +7727,11 @@ VkAccelerationStructureMotionInstanceFlagsNV :: VkFlags;
 VkFormatFeatureFlags2 :: VkFormatFeatureFlagBits2;
 VkFormatFeatureFlags2KHR :: VkFormatFeatureFlags2;
 VkRenderingFlags :: VkRenderingFlagBits;
+VkMemoryDecompressionMethodFlagsNV :: VkMemoryDecompressionMethodFlagBitsNV;
 VkRenderingFlagsKHR :: VkRenderingFlags;
+VkBuildMicromapFlagsEXT :: VkBuildMicromapFlagBitsEXT;
+VkMicromapCreateFlagsEXT :: VkMicromapCreateFlagBitsEXT;
+VkDirectDriverLoadingFlagsLUNARG :: VkFlags;
 VkCompositeAlphaFlagsKHR :: VkCompositeAlphaFlagBitsKHR;
 VkDisplayPlaneAlphaFlagsKHR :: VkDisplayPlaneAlphaFlagBitsKHR;
 VkSurfaceTransformFlagsKHR :: VkSurfaceTransformFlagBitsKHR;
@@ -6501,33 +7804,43 @@ VkSubmitFlags :: VkSubmitFlagBits;
 VkSubmitFlagsKHR :: VkSubmitFlags;
 VkImageFormatConstraintsFlagsFUCHSIA :: VkFlags;
 VkImageConstraintsInfoFlagsFUCHSIA :: VkImageConstraintsInfoFlagBitsFUCHSIA;
+VkGraphicsPipelineLibraryFlagsEXT :: VkGraphicsPipelineLibraryFlagBitsEXT;
+VkImageCompressionFlagsEXT :: VkImageCompressionFlagBitsEXT;
+VkImageCompressionFixedRateFlagsEXT :: VkImageCompressionFixedRateFlagBitsEXT;
+VkExportMetalObjectTypeFlagsEXT :: VkExportMetalObjectTypeFlagBitsEXT;
+VkDeviceAddressBindingFlagsEXT :: VkDeviceAddressBindingFlagBitsEXT;
+VkOpticalFlowGridSizeFlagsNV :: VkOpticalFlowGridSizeFlagBitsNV;
+VkOpticalFlowUsageFlagsNV :: VkOpticalFlowUsageFlagBitsNV;
+VkOpticalFlowSessionCreateFlagsNV :: VkOpticalFlowSessionCreateFlagBitsNV;
+VkOpticalFlowExecuteFlagsNV :: VkOpticalFlowExecuteFlagBitsNV;
+VkPresentScalingFlagsEXT :: VkPresentScalingFlagBitsEXT;
+VkPresentGravityFlagsEXT :: VkPresentGravityFlagBitsEXT;
+VkShaderCreateFlagsEXT :: VkShaderCreateFlagBitsEXT;
 VkVideoCodecOperationFlagsKHR :: VkVideoCodecOperationFlagBitsKHR;
 VkVideoCapabilityFlagsKHR :: VkVideoCapabilityFlagBitsKHR;
 VkVideoSessionCreateFlagsKHR :: VkVideoSessionCreateFlagBitsKHR;
+VkVideoSessionParametersCreateFlagsKHR :: VkFlags;
 VkVideoBeginCodingFlagsKHR :: VkFlags;
 VkVideoEndCodingFlagsKHR :: VkFlags;
-VkVideoCodingQualityPresetFlagsKHR :: VkVideoCodingQualityPresetFlagBitsKHR;
 VkVideoCodingControlFlagsKHR :: VkVideoCodingControlFlagBitsKHR;
-VkVideoDecodeFlagsKHR :: VkVideoDecodeFlagBitsKHR;
-VkVideoDecodeH264PictureLayoutFlagsEXT :: VkVideoDecodeH264PictureLayoutFlagBitsEXT;
-VkVideoDecodeH264CreateFlagsEXT :: VkFlags;
-VkVideoDecodeH265CreateFlagsEXT :: VkFlags;
-VkVideoEncodeFlagsKHR :: VkVideoEncodeFlagBitsKHR;
-VkVideoEncodeRateControlFlagsKHR :: VkVideoEncodeRateControlFlagBitsKHR;
+VkVideoDecodeUsageFlagsKHR :: VkVideoDecodeUsageFlagBitsKHR;
+VkVideoDecodeCapabilityFlagsKHR :: VkVideoDecodeCapabilityFlagBitsKHR;
+VkVideoDecodeFlagsKHR :: VkFlags;
+VkVideoDecodeH264PictureLayoutFlagsKHR :: VkVideoDecodeH264PictureLayoutFlagBitsKHR;
+VkVideoEncodeFlagsKHR :: VkFlags;
+VkVideoEncodeUsageFlagsKHR :: VkVideoEncodeUsageFlagBitsKHR;
+VkVideoEncodeContentFlagsKHR :: VkVideoEncodeContentFlagBitsKHR;
+VkVideoEncodeCapabilityFlagsKHR :: VkVideoEncodeCapabilityFlagBitsKHR;
+VkVideoEncodeFeedbackFlagsKHR :: VkVideoEncodeFeedbackFlagBitsKHR;
+VkVideoEncodeRateControlFlagsKHR :: VkFlags;
 VkVideoEncodeRateControlModeFlagsKHR :: VkVideoEncodeRateControlModeFlagBitsKHR;
 VkVideoChromaSubsamplingFlagsKHR :: VkVideoChromaSubsamplingFlagBitsKHR;
 VkVideoComponentBitDepthFlagsKHR :: VkVideoComponentBitDepthFlagBitsKHR;
 VkVideoEncodeH264CapabilityFlagsEXT :: VkVideoEncodeH264CapabilityFlagBitsEXT;
-VkVideoEncodeH264InputModeFlagsEXT :: VkVideoEncodeH264InputModeFlagBitsEXT;
-VkVideoEncodeH264OutputModeFlagsEXT :: VkVideoEncodeH264OutputModeFlagBitsEXT;
-VkVideoEncodeH264CreateFlagsEXT :: VkVideoEncodeH264CreateFlagBitsEXT;
-VkVideoEncodeH264RateControlStructureFlagsEXT :: VkVideoEncodeH264RateControlStructureFlagBitsEXT;
-VkVideoEncodeH265CapabilityFlagsEXT :: VkFlags;
-VkVideoEncodeH265InputModeFlagsEXT :: VkVideoEncodeH265InputModeFlagBitsEXT;
-VkVideoEncodeH265OutputModeFlagsEXT :: VkVideoEncodeH265OutputModeFlagBitsEXT;
-VkVideoEncodeH265CreateFlagsEXT :: VkFlags;
+VkVideoEncodeH265CapabilityFlagsEXT :: VkVideoEncodeH265CapabilityFlagBitsEXT;
 VkVideoEncodeH265CtbSizeFlagsEXT :: VkVideoEncodeH265CtbSizeFlagBitsEXT;
-VkVideoEncodeH265RateControlStructureFlagsEXT :: VkVideoEncodeH265RateControlStructureFlagBitsEXT;
+VkVideoEncodeH265TransformBlockSizeFlagsEXT :: VkVideoEncodeH265TransformBlockSizeFlagBitsEXT;
+VkMemoryUnmapFlagsKHR :: VkFlags;
 
 // Dispatchable Handle
 VkInstance_T :: struct {};
@@ -6684,6 +7997,18 @@ VkCuFunctionNVX_T :: struct {};
 VkCuFunctionNVX :: *VkCuFunctionNVX_T;
 
 // Non-Dispatchable Handle
+VkOpticalFlowSessionNV_T :: struct {};
+VkOpticalFlowSessionNV :: *VkOpticalFlowSessionNV_T;
+
+// Non-Dispatchable Handle
+VkMicromapEXT_T :: struct {};
+VkMicromapEXT :: *VkMicromapEXT_T;
+
+// Non-Dispatchable Handle
+VkShaderEXT_T :: struct {};
+VkShaderEXT :: *VkShaderEXT_T;
+
+// Non-Dispatchable Handle
 VkDisplayKHR_T :: struct {};
 VkDisplayKHR :: *VkDisplayKHR_T;
 
@@ -6714,6 +8039,10 @@ VkVideoSessionKHR :: *VkVideoSessionKHR_T;
 // Non-Dispatchable Handle
 VkVideoSessionParametersKHR_T :: struct {};
 VkVideoSessionParametersKHR :: *VkVideoSessionParametersKHR_T;
+
+// Non-Dispatchable Handle
+VkSemaphoreSciSyncPoolNV_T :: struct {};
+VkSemaphoreSciSyncPoolNV :: *VkSemaphoreSciSyncPoolNV_T;
 
 
 // Type VkBaseOutStructure
@@ -7368,6 +8697,33 @@ VkBufferImageCopy :: struct
 }
 
 
+// Type VkCopyMemoryIndirectCommandNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyMemoryIndirectCommandNV.html)
+// Referenced by VK_NV_copy_memory_indirect
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+VkCopyMemoryIndirectCommandNV :: struct
+{
+    srcAddress : VkDeviceAddress;
+    dstAddress : VkDeviceAddress;
+    size : VkDeviceSize; // Specified in bytes
+}
+
+
+// Type VkCopyMemoryToImageIndirectCommandNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyMemoryToImageIndirectCommandNV.html)
+// Referenced by VK_NV_copy_memory_indirect
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+VkCopyMemoryToImageIndirectCommandNV :: struct
+{
+    srcAddress : VkDeviceAddress;
+    bufferRowLength : u32; // Specified in texels
+    bufferImageHeight : u32;
+    imageSubresource : VkImageSubresourceLayers;
+    imageOffset : VkOffset3D; // Specified in pixels for both compressed and uncompressed images
+    imageExtent : VkExtent3D; // Specified in pixels for both compressed and uncompressed images
+}
+
+
 // Type VkImageResolve
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageResolve.html)
 VkImageResolve :: struct
@@ -7382,10 +8738,10 @@ VkImageResolve :: struct
 
 // Type VkShaderModuleCreateInfo
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderModuleCreateInfo.html)
-VkShaderModuleCreateInfo :: struct
+VkShaderModuleCreateInfo :: struct // Can be in the pNext chain of "VkPipelineShaderStageCreateInfo"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    pNext : *void;
+    pNext : *void; // noautovalidity because this structure can be either an explicit parameter, or passed in a pNext chain
     flags : VkShaderModuleCreateFlags;
     codeSize : u64; // Specified in bytes
     pCode : *u32; // Binary code of size codeSize
@@ -7730,6 +9086,45 @@ VkPipelineCacheHeaderVersionOne :: struct
     vendorID : u32;
     deviceID : u32;
     pipelineCacheUUID : [VK_UUID_SIZE] u8;
+}
+
+
+// Type VkPipelineCacheStageValidationIndexEntry
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCacheStageValidationIndexEntry.html)
+VkPipelineCacheStageValidationIndexEntry :: struct
+{
+    // The fields in this structure are non-normative since structure packing is implementation-defined in C. The specification defines the normative layout.
+    codeSize : u64;
+    codeOffset : u64;
+}
+
+
+// Type VkPipelineCacheSafetyCriticalIndexEntry
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCacheSafetyCriticalIndexEntry.html)
+VkPipelineCacheSafetyCriticalIndexEntry :: struct
+{
+    // The fields in this structure are non-normative since structure packing is implementation-defined in C. The specification defines the normative layout.
+    pipelineIdentifier : [VK_UUID_SIZE] u8;
+    pipelineMemorySize : u64;
+    jsonSize : u64;
+    jsonOffset : u64;
+    stageIndexCount : u32;
+    stageIndexStride : u32;
+    stageIndexOffset : u64;
+}
+
+
+// Type VkPipelineCacheHeaderVersionSafetyCriticalOne
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCacheHeaderVersionSafetyCriticalOne.html)
+VkPipelineCacheHeaderVersionSafetyCriticalOne :: struct
+{
+    // The fields in this structure are non-normative since structure packing is implementation-defined in C. The specification defines the normative layout.
+    headerVersionOne : VkPipelineCacheHeaderVersionOne;
+    validationVersion : VkPipelineCacheValidationVersion;
+    implementationData : u32;
+    pipelineIndexCount : u32;
+    pipelineIndexStride : u32;
+    pipelineIndexOffset : u64;
 }
 
 
@@ -8519,6 +9914,21 @@ VkValidationFeaturesEXT :: struct // Can be in the pNext chain of "VkInstanceCre
 }
 
 
+// Type VkApplicationParametersEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkApplicationParametersEXT.html)
+// Referenced by VK_EXT_application_parameters
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_application_parameters.html)
+VkApplicationParametersEXT :: struct // Can be in the pNext chain of "VkApplicationInfo,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_APPLICATION_PARAMETERS_EXT;
+    pNext : *void;
+    vendorID : u32;
+    deviceID : u32;
+    key : u32;
+    value : u64;
+}
+
+
 // Type VkPipelineRasterizationStateRasterizationOrderAMD
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineRasterizationStateRasterizationOrderAMD.html)
 // Referenced by VK_AMD_rasterization_order
@@ -8646,6 +10056,51 @@ VkExportMemoryAllocateInfoNV :: struct // Can be in the pNext chain of "VkMemory
     pNext : *void;
     handleTypes : VkExternalMemoryHandleTypeFlagsNV;
 }
+
+
+// Type VkMemoryGetSciBufInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryGetSciBufInfoNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+VkMemoryGetSciBufInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MEMORY_GET_SCI_BUF_INFO_NV;
+    pNext : *void;
+    memory : VkDeviceMemory;
+    handleType : VkExternalMemoryHandleTypeFlagBits;
+}
+
+
+// Type VkMemorySciBufPropertiesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemorySciBufPropertiesNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+VkMemorySciBufPropertiesNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MEMORY_SCI_BUF_PROPERTIES_NV;
+    pNext : *void;
+    memoryTypeBits : u32;
+}
+
+
+// Type VkPhysicalDeviceExternalMemorySciBufFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceExternalMemorySciBufFeaturesNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+VkPhysicalDeviceExternalMemorySciBufFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCI_BUF_FEATURES_NV;
+    pNext : *void;
+    sciBufImport : VkBool32;
+    sciBufExport : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceExternalSciBufFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceExternalSciBufFeaturesNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+VkPhysicalDeviceExternalSciBufFeaturesNV :: VkPhysicalDeviceExternalMemorySciBufFeaturesNV;
 
 
 // Type VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV
@@ -9543,6 +10998,118 @@ VkFenceGetFdInfoKHR :: struct
     pNext : *void;
     fence : VkFence;
     handleType : VkExternalFenceHandleTypeFlagBits;
+}
+
+
+// Type VkImportFenceSciSyncInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImportFenceSciSyncInfoNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkImportFenceSciSyncInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMPORT_FENCE_SCI_SYNC_INFO_NV;
+    pNext : *void;
+    fence : VkFence;
+    handleType : VkExternalFenceHandleTypeFlagBits;
+    handle : *void;
+}
+
+
+// Type VkFenceGetSciSyncInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFenceGetSciSyncInfoNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkFenceGetSciSyncInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_FENCE_GET_SCI_SYNC_INFO_NV;
+    pNext : *void;
+    fence : VkFence;
+    handleType : VkExternalFenceHandleTypeFlagBits;
+}
+
+
+// Type VkImportSemaphoreSciSyncInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImportSemaphoreSciSyncInfoNV.html)
+// Referenced by VK_NV_external_sci_sync
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+VkImportSemaphoreSciSyncInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_SCI_SYNC_INFO_NV;
+    pNext : *void;
+    semaphore : VkSemaphore;
+    handleType : VkExternalSemaphoreHandleTypeFlagBits;
+    handle : *void;
+}
+
+
+// Type VkSemaphoreGetSciSyncInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreGetSciSyncInfoNV.html)
+// Referenced by VK_NV_external_sci_sync
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+VkSemaphoreGetSciSyncInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_SCI_SYNC_INFO_NV;
+    pNext : *void;
+    semaphore : VkSemaphore;
+    handleType : VkExternalSemaphoreHandleTypeFlagBits;
+}
+
+
+// Type VkSciSyncAttributesInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSciSyncAttributesInfoNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkSciSyncAttributesInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SCI_SYNC_ATTRIBUTES_INFO_NV;
+    pNext : *void;
+    clientType : VkSciSyncClientTypeNV;
+    primitiveType : VkSciSyncPrimitiveTypeNV;
+}
+
+
+// Type VkPhysicalDeviceExternalSciSyncFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceExternalSciSyncFeaturesNV.html)
+// Referenced by VK_NV_external_sci_sync
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+VkPhysicalDeviceExternalSciSyncFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SCI_SYNC_FEATURES_NV;
+    pNext : *void;
+    sciSyncFence : VkBool32;
+    sciSyncSemaphore : VkBool32;
+    sciSyncImport : VkBool32;
+    sciSyncExport : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceExternalSciSync2FeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceExternalSciSync2FeaturesNV.html)
+// Referenced by VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkPhysicalDeviceExternalSciSync2FeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SCI_SYNC_2_FEATURES_NV;
+    pNext : *void;
+    sciSyncFence : VkBool32;
+    sciSyncSemaphore2 : VkBool32;
+    sciSyncImport : VkBool32;
+    sciSyncExport : VkBool32;
+}
+
+
+// Type VkDeviceSemaphoreSciSyncPoolReservationCreateInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceSemaphoreSciSyncPoolReservationCreateInfoNV.html)
+// Referenced by VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkDeviceSemaphoreSciSyncPoolReservationCreateInfoNV :: struct // Can be in the pNext chain of "VkDeviceObjectReservationCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DEVICE_SEMAPHORE_SCI_SYNC_POOL_RESERVATION_CREATE_INFO_NV;
+    pNext : *void;
+    semaphoreSciSyncPoolRequestCount : u32;
 }
 
 
@@ -10625,6 +12192,19 @@ VkImageViewUsageCreateInfo :: struct // Can be in the pNext chain of "VkImageVie
 }
 
 
+// Type VkImageViewSlicedCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewSlicedCreateInfoEXT.html)
+// Referenced by VK_EXT_image_sliced_view_of_3d
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_sliced_view_of_3d.html)
+VkImageViewSlicedCreateInfoEXT :: struct // Can be in the pNext chain of "VkImageViewCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMAGE_VIEW_SLICED_CREATE_INFO_EXT;
+    pNext : *void;
+    sliceOffset : u32;
+    sliceCount : u32;
+}
+
+
 // Type VkImageViewUsageCreateInfoKHR
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewUsageCreateInfoKHR.html)
 // Referenced by VK_KHR_maintenance2
@@ -10873,7 +12453,7 @@ VkSampleLocationEXT :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSampleLocationsInfoEXT.html)
 // Referenced by VK_EXT_sample_locations
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_sample_locations.html)
-VkSampleLocationsInfoEXT :: struct // Can be in the pNext chain of "VkImageMemoryBarrier,VkImageMemoryBarrier2KHR"
+VkSampleLocationsInfoEXT :: struct // Can be in the pNext chain of "VkImageMemoryBarrier,VkImageMemoryBarrier2"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT;
     pNext : *void;
@@ -11160,7 +12740,7 @@ VkValidationCacheCreateInfoEXT :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderModuleValidationCacheCreateInfoEXT.html)
 // Referenced by VK_EXT_validation_cache
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_validation_cache.html)
-VkShaderModuleValidationCacheCreateInfoEXT :: struct // Can be in the pNext chain of "VkShaderModuleCreateInfo"
+VkShaderModuleValidationCacheCreateInfoEXT :: struct // Can be in the pNext chain of "VkShaderModuleCreateInfo,VkPipelineShaderStageCreateInfo"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT;
     pNext : *void;
@@ -11419,7 +12999,7 @@ VkQueueFamilyGlobalPriorityPropertiesEXT :: VkQueueFamilyGlobalPriorityPropertie
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsObjectNameInfoEXT.html)
 // Referenced by VK_EXT_debug_utils
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)
-VkDebugUtilsObjectNameInfoEXT :: struct
+VkDebugUtilsObjectNameInfoEXT :: struct // Can be in the pNext chain of "VkPipelineShaderStageCreateInfo"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
     pNext : *void;
@@ -12455,12 +14035,7 @@ VkPhysicalDeviceComputeShaderDerivativesFeaturesNV :: struct // Can be in the pN
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV.html)
 // Referenced by VK_NV_fragment_shader_barycentric
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_fragment_shader_barycentric.html)
-VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV;
-    pNext : *void;
-    fragmentShaderBarycentric : VkBool32;
-}
+VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV :: VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR;
 
 
 // Type VkPhysicalDeviceShaderImageFootprintFeaturesNV
@@ -12484,6 +14059,55 @@ VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV :: struct // Can be i
     sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEDICATED_ALLOCATION_IMAGE_ALIASING_FEATURES_NV;
     pNext : *void;
     dedicatedAllocationImageAliasing : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceCopyMemoryIndirectFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceCopyMemoryIndirectFeaturesNV.html)
+// Referenced by VK_NV_copy_memory_indirect
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+VkPhysicalDeviceCopyMemoryIndirectFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV;
+    pNext : *void;
+    indirectCopy : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceCopyMemoryIndirectPropertiesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceCopyMemoryIndirectPropertiesNV.html)
+// Referenced by VK_NV_copy_memory_indirect
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+VkPhysicalDeviceCopyMemoryIndirectPropertiesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_PROPERTIES_NV;
+    pNext : *void;
+    supportedQueues : VkQueueFlags; // Bitfield of which queues are supported for indirect copy
+}
+
+
+// Type VkPhysicalDeviceMemoryDecompressionFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMemoryDecompressionFeaturesNV.html)
+// Referenced by VK_NV_memory_decompression
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+VkPhysicalDeviceMemoryDecompressionFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_FEATURES_NV;
+    pNext : *void;
+    memoryDecompression : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceMemoryDecompressionPropertiesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMemoryDecompressionPropertiesNV.html)
+// Referenced by VK_NV_memory_decompression
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+VkPhysicalDeviceMemoryDecompressionPropertiesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV;
+    pNext : *void;
+    decompressionMethods : VkMemoryDecompressionMethodFlagsNV;
+    maxDecompressionIndirectCount : u64;
 }
 
 
@@ -12635,6 +14259,73 @@ VkDrawMeshTasksIndirectCommandNV :: struct
 {
     taskCount : u32;
     firstTask : u32;
+}
+
+
+// Type VkPhysicalDeviceMeshShaderFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderFeaturesEXT.html)
+// Referenced by VK_EXT_mesh_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+VkPhysicalDeviceMeshShaderFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+    pNext : *void;
+    taskShader : VkBool32;
+    meshShader : VkBool32;
+    multiviewMeshShader : VkBool32;
+    primitiveFragmentShadingRateMeshShader : VkBool32;
+    meshShaderQueries : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceMeshShaderPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderPropertiesEXT.html)
+// Referenced by VK_EXT_mesh_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+VkPhysicalDeviceMeshShaderPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
+    pNext : *void;
+    maxTaskWorkGroupTotalCount : u32;
+    maxTaskWorkGroupCount : [3] u32;
+    maxTaskWorkGroupInvocations : u32;
+    maxTaskWorkGroupSize : [3] u32;
+    maxTaskPayloadSize : u32;
+    maxTaskSharedMemorySize : u32;
+    maxTaskPayloadAndSharedMemorySize : u32;
+    maxMeshWorkGroupTotalCount : u32;
+    maxMeshWorkGroupCount : [3] u32;
+    maxMeshWorkGroupInvocations : u32;
+    maxMeshWorkGroupSize : [3] u32;
+    maxMeshSharedMemorySize : u32;
+    maxMeshPayloadAndSharedMemorySize : u32;
+    maxMeshOutputMemorySize : u32;
+    maxMeshPayloadAndOutputMemorySize : u32;
+    maxMeshOutputComponents : u32;
+    maxMeshOutputVertices : u32;
+    maxMeshOutputPrimitives : u32;
+    maxMeshOutputLayers : u32;
+    maxMeshMultiviewViewCount : u32;
+    meshOutputPerVertexGranularity : u32;
+    meshOutputPerPrimitiveGranularity : u32;
+    maxPreferredTaskWorkGroupInvocations : u32;
+    maxPreferredMeshWorkGroupInvocations : u32;
+    prefersLocalInvocationVertexOutput : VkBool32;
+    prefersLocalInvocationPrimitiveOutput : VkBool32;
+    prefersCompactVertexOutput : VkBool32;
+    prefersCompactPrimitiveOutput : VkBool32;
+}
+
+
+// Type VkDrawMeshTasksIndirectCommandEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDrawMeshTasksIndirectCommandEXT.html)
+// Referenced by VK_EXT_mesh_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+VkDrawMeshTasksIndirectCommandEXT :: struct
+{
+    groupCountX : u32;
+    groupCountY : u32;
+    groupCountZ : u32;
 }
 
 
@@ -12982,6 +14673,42 @@ VkTraceRaysIndirectCommandKHR :: struct
     width : u32;
     height : u32;
     depth : u32;
+}
+
+
+// Type VkTraceRaysIndirectCommand2KHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkTraceRaysIndirectCommand2KHR.html)
+// Referenced by VK_KHR_ray_tracing_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+VkTraceRaysIndirectCommand2KHR :: struct
+{
+    raygenShaderRecordAddress : VkDeviceAddress;
+    raygenShaderRecordSize : VkDeviceSize;
+    missShaderBindingTableAddress : VkDeviceAddress;
+    missShaderBindingTableSize : VkDeviceSize;
+    missShaderBindingTableStride : VkDeviceSize;
+    hitShaderBindingTableAddress : VkDeviceAddress;
+    hitShaderBindingTableSize : VkDeviceSize;
+    hitShaderBindingTableStride : VkDeviceSize;
+    callableShaderBindingTableAddress : VkDeviceAddress;
+    callableShaderBindingTableSize : VkDeviceSize;
+    callableShaderBindingTableStride : VkDeviceSize;
+    width : u32;
+    height : u32;
+    depth : u32;
+}
+
+
+// Type VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR.html)
+// Referenced by VK_KHR_ray_tracing_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MAINTENANCE_1_FEATURES_KHR;
+    pNext : *void;
+    rayTracingMaintenance1 : VkBool32;
+    rayTracingPipelineTraceRaysIndirect2 : VkBool32;
 }
 
 
@@ -13646,6 +15373,42 @@ VkPipelineCreationFeedbackCreateInfo :: struct // Can be in the pNext chain of "
 VkPipelineCreationFeedbackCreateInfoEXT :: VkPipelineCreationFeedbackCreateInfo;
 
 
+// Type VkPhysicalDevicePresentBarrierFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePresentBarrierFeaturesNV.html)
+// Referenced by VK_NV_present_barrier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_present_barrier.html)
+VkPhysicalDevicePresentBarrierFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_BARRIER_FEATURES_NV;
+    pNext : *void;
+    presentBarrier : VkBool32;
+}
+
+
+// Type VkSurfaceCapabilitiesPresentBarrierNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfaceCapabilitiesPresentBarrierNV.html)
+// Referenced by VK_NV_present_barrier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_present_barrier.html)
+VkSurfaceCapabilitiesPresentBarrierNV :: struct // Can be in the pNext chain of "VkSurfaceCapabilities2KHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_PRESENT_BARRIER_NV;
+    pNext : *void;
+    presentBarrierSupported : VkBool32;
+}
+
+
+// Type VkSwapchainPresentBarrierCreateInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainPresentBarrierCreateInfoNV.html)
+// Referenced by VK_NV_present_barrier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_present_barrier.html)
+VkSwapchainPresentBarrierCreateInfoNV :: struct // Can be in the pNext chain of "VkSwapchainCreateInfoKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_BARRIER_CREATE_INFO_NV;
+    pNext : *void;
+    presentBarrierEnable : VkBool32;
+}
+
+
 // Type VkPhysicalDevicePerformanceQueryFeaturesKHR
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePerformanceQueryFeaturesKHR.html)
 // Referenced by VK_KHR_performance_query
@@ -13752,6 +15515,18 @@ VkPerformanceQuerySubmitInfoKHR :: struct // Can be in the pNext chain of "VkSub
     sType : VkStructureType = VK_STRUCTURE_TYPE_PERFORMANCE_QUERY_SUBMIT_INFO_KHR;
     pNext : *void;
     counterPassIndex : u32; // Index for which counter pass to submit
+}
+
+
+// Type VkPerformanceQueryReservationInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPerformanceQueryReservationInfoKHR.html)
+// Referenced by VK_KHR_performance_query
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_performance_query.html)
+VkPerformanceQueryReservationInfoKHR :: struct // Can be in the pNext chain of "VkDeviceObjectReservationCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PERFORMANCE_QUERY_RESERVATION_INFO_KHR;
+    pNext : *void;
+    maxPerformanceQueriesPerPool : u32; // Maximum number of VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR queries in a query pool
 }
 
 
@@ -14078,6 +15853,13 @@ VkPipelineInfoKHR :: struct
 }
 
 
+// Type VkPipelineInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineInfoEXT.html)
+// Referenced by VK_EXT_pipeline_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_properties.html)
+VkPipelineInfoEXT :: VkPipelineInfoKHR;
+
+
 // Type VkPipelineExecutablePropertiesKHR
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineExecutablePropertiesKHR.html)
 // Referenced by VK_KHR_pipeline_executable_properties
@@ -14239,7 +16021,7 @@ VkPhysicalDeviceSubgroupSizeControlPropertiesEXT :: VkPhysicalDeviceSubgroupSize
 
 // Type VkPipelineShaderStageRequiredSubgroupSizeCreateInfo
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineShaderStageRequiredSubgroupSizeCreateInfo.html)
-VkPipelineShaderStageRequiredSubgroupSizeCreateInfo :: struct // Can be in the pNext chain of "VkPipelineShaderStageCreateInfo"
+VkPipelineShaderStageRequiredSubgroupSizeCreateInfo :: struct // Can be in the pNext chain of "VkPipelineShaderStageCreateInfo,VkShaderCreateInfoEXT"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO;
     pNext : *void;
@@ -14252,6 +16034,13 @@ VkPipelineShaderStageRequiredSubgroupSizeCreateInfo :: struct // Can be in the p
 // Referenced by VK_EXT_subgroup_size_control
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subgroup_size_control.html)
 VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT :: VkPipelineShaderStageRequiredSubgroupSizeCreateInfo;
+
+
+// Type VkShaderRequiredSubgroupSizeCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderRequiredSubgroupSizeCreateInfoEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+VkShaderRequiredSubgroupSizeCreateInfoEXT :: VkPipelineShaderStageRequiredSubgroupSizeCreateInfo;
 
 
 // Type VkSubpassShadingPipelineCreateInfoHUAWEI
@@ -14276,6 +16065,21 @@ VkPhysicalDeviceSubpassShadingPropertiesHUAWEI :: struct // Can be in the pNext 
     sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_SHADING_PROPERTIES_HUAWEI;
     pNext : *void;
     maxSubpassShadingWorkgroupSizeAspectRatio : u32;
+}
+
+
+// Type VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI.html)
+// Referenced by VK_HUAWEI_cluster_culling_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_PROPERTIES_HUAWEI;
+    pNext : *void;
+    maxWorkGroupCount : [3] u32;
+    maxWorkGroupSize : [3] u32;
+    maxOutputClusterCount : u32;
+    indirectBufferOffsetAlignment : VkDeviceSize;
 }
 
 
@@ -14635,6 +16439,29 @@ VkPhysicalDeviceCoherentMemoryFeaturesAMD :: struct // Can be in the pNext chain
     sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COHERENT_MEMORY_FEATURES_AMD;
     pNext : *void;
     deviceCoherentMemory : VkBool32;
+}
+
+
+// Type VkFaultData
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFaultData.html)
+VkFaultData :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_FAULT_DATA;
+    pNext : *void;
+    faultLevel : VkFaultLevel;
+    faultType : VkFaultType;
+}
+
+
+// Type VkFaultCallbackInfo
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFaultCallbackInfo.html)
+VkFaultCallbackInfo :: struct // Can be in the pNext chain of "VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_FAULT_CALLBACK_INFO;
+    pNext : *void;
+    faultCount : u32;
+    pFaults : *VkFaultData;
+    pfnFaultCallback : PFN_vkFaultCallbackFunction;
 }
 
 
@@ -15008,12 +16835,37 @@ VkRayTracingPipelineInterfaceCreateInfoKHR :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLibraryCreateInfoKHR.html)
 // Referenced by VK_KHR_pipeline_library
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_pipeline_library.html)
-VkPipelineLibraryCreateInfoKHR :: struct
+VkPipelineLibraryCreateInfoKHR :: struct // Can be in the pNext chain of "VkGraphicsPipelineCreateInfo"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR;
     pNext : *void;
     libraryCount : u32;
     pLibraries : *VkPipeline;
+}
+
+
+// Type VkRefreshObjectKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRefreshObjectKHR.html)
+// Referenced by VK_KHR_object_refresh
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_object_refresh.html)
+VkRefreshObjectKHR :: struct
+{
+    objectType : VkObjectType;
+    objectHandle : u64;
+    flags : VkRefreshObjectFlagsKHR;
+}
+
+
+// Type VkRefreshObjectListKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRefreshObjectListKHR.html)
+// Referenced by VK_KHR_object_refresh
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_object_refresh.html)
+VkRefreshObjectListKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_REFRESH_OBJECT_LIST_KHR;
+    pNext : *void;
+    objectCount : u32;
+    pObjects : *VkRefreshObjectKHR;
 }
 
 
@@ -15043,6 +16895,91 @@ VkPhysicalDeviceExtendedDynamicState2FeaturesEXT :: struct // Can be in the pNex
 }
 
 
+// Type VkPhysicalDeviceExtendedDynamicState3FeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceExtendedDynamicState3FeaturesEXT.html)
+// Referenced by VK_EXT_extended_dynamic_state3
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+VkPhysicalDeviceExtendedDynamicState3FeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_3_FEATURES_EXT;
+    pNext : *void;
+    extendedDynamicState3TessellationDomainOrigin : VkBool32;
+    extendedDynamicState3DepthClampEnable : VkBool32;
+    extendedDynamicState3PolygonMode : VkBool32;
+    extendedDynamicState3RasterizationSamples : VkBool32;
+    extendedDynamicState3SampleMask : VkBool32;
+    extendedDynamicState3AlphaToCoverageEnable : VkBool32;
+    extendedDynamicState3AlphaToOneEnable : VkBool32;
+    extendedDynamicState3LogicOpEnable : VkBool32;
+    extendedDynamicState3ColorBlendEnable : VkBool32;
+    extendedDynamicState3ColorBlendEquation : VkBool32;
+    extendedDynamicState3ColorWriteMask : VkBool32;
+    extendedDynamicState3RasterizationStream : VkBool32;
+    extendedDynamicState3ConservativeRasterizationMode : VkBool32;
+    extendedDynamicState3ExtraPrimitiveOverestimationSize : VkBool32;
+    extendedDynamicState3DepthClipEnable : VkBool32;
+    extendedDynamicState3SampleLocationsEnable : VkBool32;
+    extendedDynamicState3ColorBlendAdvanced : VkBool32;
+    extendedDynamicState3ProvokingVertexMode : VkBool32;
+    extendedDynamicState3LineRasterizationMode : VkBool32;
+    extendedDynamicState3LineStippleEnable : VkBool32;
+    extendedDynamicState3DepthClipNegativeOneToOne : VkBool32;
+    extendedDynamicState3ViewportWScalingEnable : VkBool32;
+    extendedDynamicState3ViewportSwizzle : VkBool32;
+    extendedDynamicState3CoverageToColorEnable : VkBool32;
+    extendedDynamicState3CoverageToColorLocation : VkBool32;
+    extendedDynamicState3CoverageModulationMode : VkBool32;
+    extendedDynamicState3CoverageModulationTableEnable : VkBool32;
+    extendedDynamicState3CoverageModulationTable : VkBool32;
+    extendedDynamicState3CoverageReductionMode : VkBool32;
+    extendedDynamicState3RepresentativeFragmentTestEnable : VkBool32;
+    extendedDynamicState3ShadingRateImageEnable : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceExtendedDynamicState3PropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceExtendedDynamicState3PropertiesEXT.html)
+// Referenced by VK_EXT_extended_dynamic_state3
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+VkPhysicalDeviceExtendedDynamicState3PropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_3_PROPERTIES_EXT;
+    pNext : *void;
+    dynamicPrimitiveTopologyUnrestricted : VkBool32;
+}
+
+
+// Type VkColorBlendEquationEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorBlendEquationEXT.html)
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+VkColorBlendEquationEXT :: struct
+{
+    srcColorBlendFactor : VkBlendFactor;
+    dstColorBlendFactor : VkBlendFactor;
+    colorBlendOp : VkBlendOp;
+    srcAlphaBlendFactor : VkBlendFactor;
+    dstAlphaBlendFactor : VkBlendFactor;
+    alphaBlendOp : VkBlendOp;
+}
+
+
+// Type VkColorBlendAdvancedEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorBlendAdvancedEXT.html)
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+VkColorBlendAdvancedEXT :: struct
+{
+    advancedBlendOp : VkBlendOp;
+    srcPremultiplied : VkBool32;
+    dstPremultiplied : VkBool32;
+    blendOverlap : VkBlendOverlapEXT;
+    clampResults : VkBool32;
+}
+
+
 // Type VkRenderPassTransformBeginInfoQCOM
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderPassTransformBeginInfoQCOM.html)
 // Referenced by VK_QCOM_render_pass_transform
@@ -15059,7 +16996,7 @@ VkRenderPassTransformBeginInfoQCOM :: struct // Can be in the pNext chain of "Vk
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyCommandTransformInfoQCOM.html)
 // Referenced by VK_QCOM_rotated_copy_commands
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_rotated_copy_commands.html)
-VkCopyCommandTransformInfoQCOM :: struct // Can be in the pNext chain of "VkBufferImageCopy2KHR,VkImageBlit2KHR"
+VkCopyCommandTransformInfoQCOM :: struct // Can be in the pNext chain of "VkBufferImageCopy2,VkImageBlit2"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_COPY_COMMAND_TRANSFORM_INFO_QCOM;
     pNext : *void;
@@ -15101,6 +17038,18 @@ VkDeviceDiagnosticsConfigCreateInfoNV :: struct // Can be in the pNext chain of 
     sType : VkStructureType = VK_STRUCTURE_TYPE_DEVICE_DIAGNOSTICS_CONFIG_CREATE_INFO_NV;
     pNext : *void;
     flags : VkDeviceDiagnosticsConfigFlagsNV;
+}
+
+
+// Type VkPipelineOfflineCreateInfo
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineOfflineCreateInfo.html)
+VkPipelineOfflineCreateInfo :: struct // Can be in the pNext chain of "VkGraphicsPipelineCreateInfo,VkComputePipelineCreateInfo,VkRayTracingPipelineCreateInfoKHR,VkRayTracingPipelineCreateInfoNV"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PIPELINE_OFFLINE_CREATE_INFO;
+    pNext : *void;
+    pipelineIdentifier : [VK_UUID_SIZE] u8;
+    matchControl : VkPipelineMatchControl;
+    poolEntrySize : VkDeviceSize;
 }
 
 
@@ -15214,6 +17163,19 @@ VkPhysicalDeviceSubpassShadingFeaturesHUAWEI :: struct // Can be in the pNext ch
     sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_SHADING_FEATURES_HUAWEI;
     pNext : *void;
     subpassShading : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI.html)
+// Referenced by VK_HUAWEI_cluster_culling_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_FEATURES_HUAWEI;
+    pNext : *void;
+    clustercullingShader : VkBool32;
+    multiviewClusterCullingShader : VkBool32;
 }
 
 
@@ -15614,15 +17576,58 @@ VkAccelerationStructureBuildSizesInfoKHR :: struct
 }
 
 
+// Type VkPhysicalDeviceImage2DViewOf3DFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceImage2DViewOf3DFeaturesEXT.html)
+// Referenced by VK_EXT_image_2d_view_of_3d
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_2d_view_of_3d.html)
+VkPhysicalDeviceImage2DViewOf3DFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_2D_VIEW_OF_3D_FEATURES_EXT;
+    pNext : *void;
+    image2DViewOf3D : VkBool32;
+    sampler2DViewOf3D : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT.html)
+// Referenced by VK_EXT_image_sliced_view_of_3d
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_sliced_view_of_3d.html)
+VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_SLICED_VIEW_OF_3D_FEATURES_EXT;
+    pNext : *void;
+    imageSlicedViewOf3D : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT.html)
+// Referenced by VK_EXT_mutable_descriptor_type
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_EXT;
+    pNext : *void;
+    mutableDescriptorType : VkBool32;
+}
+
+
 // Type VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE.html)
 // Referenced by VK_VALVE_mutable_descriptor_type
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
-VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE :: VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT;
+
+
+// Type VkMutableDescriptorTypeListEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMutableDescriptorTypeListEXT.html)
+// Referenced by VK_EXT_mutable_descriptor_type
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+VkMutableDescriptorTypeListEXT :: struct
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE;
-    pNext : *void;
-    mutableDescriptorType : VkBool32;
+    descriptorTypeCount : u32;
+    pDescriptorTypes : *VkDescriptorType;
 }
 
 
@@ -15630,10 +17635,19 @@ VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE :: struct // Can be in the pN
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMutableDescriptorTypeListVALVE.html)
 // Referenced by VK_VALVE_mutable_descriptor_type
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
-VkMutableDescriptorTypeListVALVE :: struct
+VkMutableDescriptorTypeListVALVE :: VkMutableDescriptorTypeListEXT;
+
+
+// Type VkMutableDescriptorTypeCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMutableDescriptorTypeCreateInfoEXT.html)
+// Referenced by VK_EXT_mutable_descriptor_type
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+VkMutableDescriptorTypeCreateInfoEXT :: struct // Can be in the pNext chain of "VkDescriptorSetLayoutCreateInfo,VkDescriptorPoolCreateInfo"
 {
-    descriptorTypeCount : u32;
-    pDescriptorTypes : *VkDescriptorType;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_EXT;
+    pNext : *void;
+    mutableDescriptorTypeListCount : u32;
+    pMutableDescriptorTypeLists : *VkMutableDescriptorTypeListEXT;
 }
 
 
@@ -15641,13 +17655,7 @@ VkMutableDescriptorTypeListVALVE :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMutableDescriptorTypeCreateInfoVALVE.html)
 // Referenced by VK_VALVE_mutable_descriptor_type
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_mutable_descriptor_type.html)
-VkMutableDescriptorTypeCreateInfoVALVE :: struct // Can be in the pNext chain of "VkDescriptorSetLayoutCreateInfo,VkDescriptorPoolCreateInfo"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE;
-    pNext : *void;
-    mutableDescriptorTypeListCount : u32;
-    pMutableDescriptorTypeLists : *VkMutableDescriptorTypeListVALVE;
-}
+VkMutableDescriptorTypeCreateInfoVALVE :: VkMutableDescriptorTypeCreateInfoEXT;
 
 
 // Type VkPhysicalDeviceDepthClipControlFeaturesEXT
@@ -15700,8 +17708,9 @@ VkPhysicalDeviceExternalMemoryRDMAFeaturesNV :: struct // Can be in the pNext ch
 
 // Type VkVertexInputBindingDescription2EXT
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVertexInputBindingDescription2EXT.html)
-// Referenced by VK_EXT_vertex_input_dynamic_state
+// Referenced by VK_EXT_vertex_input_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 VkVertexInputBindingDescription2EXT :: struct
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VERTEX_INPUT_BINDING_DESCRIPTION_2_EXT;
@@ -15715,8 +17724,9 @@ VkVertexInputBindingDescription2EXT :: struct
 
 // Type VkVertexInputAttributeDescription2EXT
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVertexInputAttributeDescription2EXT.html)
-// Referenced by VK_EXT_vertex_input_dynamic_state
+// Referenced by VK_EXT_vertex_input_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 VkVertexInputAttributeDescription2EXT :: struct
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VERTEX_INPUT_ATTRIBUTE_DESCRIPTION_2_EXT;
@@ -15950,6 +17960,488 @@ VkPhysicalDeviceSynchronization2Features :: struct // Can be in the pNext chain 
 VkPhysicalDeviceSynchronization2FeaturesKHR :: VkPhysicalDeviceSynchronization2Features;
 
 
+// Type VkPhysicalDeviceVulkanSC10Properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkanSC10Properties.html)
+VkPhysicalDeviceVulkanSC10Properties :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_SC_1_0_PROPERTIES;
+    pNext : *void;
+    deviceNoDynamicHostAllocations : VkBool32;
+    deviceDestroyFreesMemory : VkBool32;
+    commandPoolMultipleCommandBuffersRecording : VkBool32;
+    commandPoolResetCommandBuffer : VkBool32;
+    commandBufferSimultaneousUse : VkBool32;
+    secondaryCommandBufferNullOrImagelessFramebuffer : VkBool32;
+    recycleDescriptorSetMemory : VkBool32;
+    recyclePipelineMemory : VkBool32;
+    maxRenderPassSubpasses : u32;
+    maxRenderPassDependencies : u32;
+    maxSubpassInputAttachments : u32;
+    maxSubpassPreserveAttachments : u32;
+    maxFramebufferAttachments : u32;
+    maxDescriptorSetLayoutBindings : u32;
+    maxQueryFaultCount : u32;
+    maxCallbackFaultCount : u32;
+    maxCommandPoolCommandBuffers : u32;
+    maxCommandBufferSize : VkDeviceSize;
+}
+
+
+// Type VkPipelinePoolSize
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelinePoolSize.html)
+VkPipelinePoolSize :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PIPELINE_POOL_SIZE;
+    pNext : *void;
+    poolEntrySize : VkDeviceSize;
+    poolEntryCount : u32;
+}
+
+
+// Type VkDeviceObjectReservationCreateInfo
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceObjectReservationCreateInfo.html)
+VkDeviceObjectReservationCreateInfo :: struct // Can be in the pNext chain of "VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DEVICE_OBJECT_RESERVATION_CREATE_INFO;
+    pNext : *void;
+    pipelineCacheCreateInfoCount : u32;
+    pPipelineCacheCreateInfos : *VkPipelineCacheCreateInfo;
+    pipelinePoolSizeCount : u32;
+    pPipelinePoolSizes : *VkPipelinePoolSize;
+    semaphoreRequestCount : u32;
+    commandBufferRequestCount : u32;
+    fenceRequestCount : u32;
+    deviceMemoryRequestCount : u32;
+    bufferRequestCount : u32;
+    imageRequestCount : u32;
+    eventRequestCount : u32;
+    queryPoolRequestCount : u32;
+    bufferViewRequestCount : u32;
+    imageViewRequestCount : u32;
+    layeredImageViewRequestCount : u32;
+    pipelineCacheRequestCount : u32;
+    pipelineLayoutRequestCount : u32;
+    renderPassRequestCount : u32;
+    graphicsPipelineRequestCount : u32;
+    computePipelineRequestCount : u32;
+    descriptorSetLayoutRequestCount : u32;
+    samplerRequestCount : u32;
+    descriptorPoolRequestCount : u32;
+    descriptorSetRequestCount : u32;
+    framebufferRequestCount : u32;
+    commandPoolRequestCount : u32;
+    samplerYcbcrConversionRequestCount : u32;
+    surfaceRequestCount : u32;
+    swapchainRequestCount : u32;
+    displayModeRequestCount : u32;
+    subpassDescriptionRequestCount : u32;
+    attachmentDescriptionRequestCount : u32;
+    descriptorSetLayoutBindingRequestCount : u32;
+    descriptorSetLayoutBindingLimit : u32;
+    maxImageViewMipLevels : u32;
+    maxImageViewArrayLayers : u32;
+    maxLayeredImageViewMipLevels : u32;
+    maxOcclusionQueriesPerPool : u32;
+    maxPipelineStatisticsQueriesPerPool : u32;
+    maxTimestampQueriesPerPool : u32;
+    maxImmutableSamplersPerDescriptorSetLayout : u32;
+}
+
+
+// Type VkCommandPoolMemoryReservationCreateInfo
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolMemoryReservationCreateInfo.html)
+VkCommandPoolMemoryReservationCreateInfo :: struct // Can be in the pNext chain of "VkCommandPoolCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_COMMAND_POOL_MEMORY_RESERVATION_CREATE_INFO;
+    pNext : *void;
+    commandPoolReservedSize : VkDeviceSize;
+    commandPoolMaxCommandBuffers : u32;
+}
+
+
+// Type VkCommandPoolMemoryConsumption
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolMemoryConsumption.html)
+VkCommandPoolMemoryConsumption :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_COMMAND_POOL_MEMORY_CONSUMPTION;
+    pNext : *void;
+    commandPoolAllocated : VkDeviceSize;
+    commandPoolReservedSize : VkDeviceSize;
+    commandBufferAllocated : VkDeviceSize;
+}
+
+
+// Type VkPhysicalDeviceVulkanSC10Features
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkanSC10Features.html)
+VkPhysicalDeviceVulkanSC10Features :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_SC_1_0_FEATURES;
+    pNext : *void;
+    shaderAtomicInstructions : VkBool32;
+}
+
+
+// Type VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT.html)
+// Referenced by VK_EXT_primitives_generated_query
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_primitives_generated_query.html)
+VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVES_GENERATED_QUERY_FEATURES_EXT;
+    pNext : *void;
+    primitivesGeneratedQuery : VkBool32;
+    primitivesGeneratedQueryWithRasterizerDiscard : VkBool32;
+    primitivesGeneratedQueryWithNonZeroStreams : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceLegacyDitheringFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceLegacyDitheringFeaturesEXT.html)
+// Referenced by VK_EXT_legacy_dithering
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_legacy_dithering.html)
+VkPhysicalDeviceLegacyDitheringFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_DITHERING_FEATURES_EXT;
+    pNext : *void;
+    legacyDithering : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT.html)
+// Referenced by VK_EXT_multisampled_render_to_single_sampled
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_multisampled_render_to_single_sampled.html)
+VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_FEATURES_EXT;
+    pNext : *void;
+    multisampledRenderToSingleSampled : VkBool32;
+}
+
+
+// Type VkSubpassResolvePerformanceQueryEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubpassResolvePerformanceQueryEXT.html)
+// Referenced by VK_EXT_multisampled_render_to_single_sampled
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_multisampled_render_to_single_sampled.html)
+VkSubpassResolvePerformanceQueryEXT :: struct // Can be in the pNext chain of "VkFormatProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SUBPASS_RESOLVE_PERFORMANCE_QUERY_EXT;
+    pNext : *void;
+    optimal : VkBool32;
+}
+
+
+// Type VkMultisampledRenderToSingleSampledInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMultisampledRenderToSingleSampledInfoEXT.html)
+// Referenced by VK_EXT_multisampled_render_to_single_sampled
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_multisampled_render_to_single_sampled.html)
+VkMultisampledRenderToSingleSampledInfoEXT :: struct // Can be in the pNext chain of "VkSubpassDescription2,VkRenderingInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_INFO_EXT;
+    pNext : *void;
+    multisampledRenderToSingleSampledEnable : VkBool32;
+    rasterizationSamples : VkSampleCountFlagBits;
+}
+
+
+// Type VkPhysicalDevicePipelineProtectedAccessFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePipelineProtectedAccessFeaturesEXT.html)
+// Referenced by VK_EXT_pipeline_protected_access
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_protected_access.html)
+VkPhysicalDevicePipelineProtectedAccessFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES_EXT;
+    pNext : *void;
+    pipelineProtectedAccess : VkBool32;
+}
+
+
+// Type VkQueueFamilyVideoPropertiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFamilyVideoPropertiesKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkQueueFamilyVideoPropertiesKHR :: struct // Can be in the pNext chain of "VkQueueFamilyProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_VIDEO_PROPERTIES_KHR;
+    pNext : *void;
+    videoCodecOperations : VkVideoCodecOperationFlagsKHR;
+}
+
+
+// Type VkQueueFamilyQueryResultStatusPropertiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFamilyQueryResultStatusPropertiesKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkQueueFamilyQueryResultStatusPropertiesKHR :: struct // Can be in the pNext chain of "VkQueueFamilyProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_KHR;
+    pNext : *void;
+    queryResultStatusSupport : VkBool32;
+}
+
+
+// Type VkVideoProfileListInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoProfileListInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoProfileListInfoKHR :: struct // Can be in the pNext chain of "VkPhysicalDeviceImageFormatInfo2,VkPhysicalDeviceVideoFormatInfoKHR,VkImageCreateInfo,VkBufferCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR;
+    pNext : *void;
+    profileCount : u32;
+    pProfiles : *VkVideoProfileInfoKHR;
+}
+
+
+// Type VkPhysicalDeviceVideoFormatInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVideoFormatInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkPhysicalDeviceVideoFormatInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_FORMAT_INFO_KHR;
+    pNext : *void;
+    imageUsage : VkImageUsageFlags;
+}
+
+
+// Type VkVideoFormatPropertiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoFormatPropertiesKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoFormatPropertiesKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_FORMAT_PROPERTIES_KHR;
+    pNext : *void;
+    format : VkFormat;
+    componentMapping : VkComponentMapping;
+    imageCreateFlags : VkImageCreateFlags;
+    imageType : VkImageType;
+    imageTiling : VkImageTiling;
+    imageUsageFlags : VkImageUsageFlags;
+}
+
+
+// Type VkVideoProfileInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoProfileInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoProfileInfoKHR :: struct // Can be in the pNext chain of "VkQueryPoolCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR;
+    pNext : *void;
+    videoCodecOperation : VkVideoCodecOperationFlagBitsKHR;
+    chromaSubsampling : VkVideoChromaSubsamplingFlagsKHR;
+    lumaBitDepth : VkVideoComponentBitDepthFlagsKHR;
+    chromaBitDepth : VkVideoComponentBitDepthFlagsKHR;
+}
+
+
+// Type VkVideoCapabilitiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoCapabilitiesKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoCapabilitiesKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_CAPABILITIES_KHR;
+    pNext : *void;
+    flags : VkVideoCapabilityFlagsKHR;
+    minBitstreamBufferOffsetAlignment : VkDeviceSize;
+    minBitstreamBufferSizeAlignment : VkDeviceSize;
+    pictureAccessGranularity : VkExtent2D;
+    minCodedExtent : VkExtent2D;
+    maxCodedExtent : VkExtent2D;
+    maxDpbSlots : u32;
+    maxActiveReferencePictures : u32;
+    stdHeaderVersion : VkExtensionProperties;
+}
+
+
+// Type VkVideoSessionMemoryRequirementsKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoSessionMemoryRequirementsKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoSessionMemoryRequirementsKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_SESSION_MEMORY_REQUIREMENTS_KHR;
+    pNext : *void;
+    memoryBindIndex : u32;
+    memoryRequirements : VkMemoryRequirements;
+}
+
+
+// Type VkBindVideoSessionMemoryInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBindVideoSessionMemoryInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkBindVideoSessionMemoryInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_BIND_VIDEO_SESSION_MEMORY_INFO_KHR;
+    pNext : *void;
+    memoryBindIndex : u32;
+    memory : VkDeviceMemory;
+    memoryOffset : VkDeviceSize;
+    memorySize : VkDeviceSize;
+}
+
+
+// Type VkVideoPictureResourceInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoPictureResourceInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoPictureResourceInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_PICTURE_RESOURCE_INFO_KHR;
+    pNext : *void;
+    codedOffset : VkOffset2D; // The offset to be used for the picture resource, currently only used in field mode
+    codedExtent : VkExtent2D; // The extent to be used for the picture resource
+    baseArrayLayer : u32; // The first array layer to be accessed for the Decode or Encode Operations
+    imageViewBinding : VkImageView; // The ImageView binding of the resource
+}
+
+
+// Type VkVideoReferenceSlotInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoReferenceSlotInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoReferenceSlotInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_REFERENCE_SLOT_INFO_KHR;
+    pNext : *void;
+    slotIndex : s32; // The reference slot index
+    pPictureResource : *VkVideoPictureResourceInfoKHR; // The reference picture resource
+}
+
+
+// Type VkVideoDecodeCapabilitiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeCapabilitiesKHR.html)
+// Referenced by VK_KHR_video_decode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
+VkVideoDecodeCapabilitiesKHR :: struct // Can be in the pNext chain of "VkVideoCapabilitiesKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_CAPABILITIES_KHR;
+    pNext : *void;
+    flags : VkVideoDecodeCapabilityFlagsKHR;
+}
+
+
+// Type VkVideoDecodeUsageInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeUsageInfoKHR.html)
+// Referenced by VK_KHR_video_decode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
+VkVideoDecodeUsageInfoKHR :: struct // Can be in the pNext chain of "VkVideoProfileInfoKHR,VkQueryPoolCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR;
+    pNext : *void;
+    videoUsageHints : VkVideoDecodeUsageFlagsKHR;
+}
+
+
+// Type VkVideoDecodeInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeInfoKHR.html)
+// Referenced by VK_KHR_video_decode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
+VkVideoDecodeInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_INFO_KHR;
+    pNext : *void;
+    flags : VkVideoDecodeFlagsKHR;
+    srcBuffer : VkBuffer;
+    srcBufferOffset : VkDeviceSize;
+    srcBufferRange : VkDeviceSize;
+    dstPictureResource : VkVideoPictureResourceInfoKHR;
+    pSetupReferenceSlot : *VkVideoReferenceSlotInfoKHR;
+    referenceSlotCount : u32;
+    pReferenceSlots : *VkVideoReferenceSlotInfoKHR;
+}
+
+
+// Type VkVideoSessionCreateInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoSessionCreateInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoSessionCreateInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_SESSION_CREATE_INFO_KHR;
+    pNext : *void;
+    queueFamilyIndex : u32;
+    flags : VkVideoSessionCreateFlagsKHR;
+    pVideoProfile : *VkVideoProfileInfoKHR;
+    pictureFormat : VkFormat;
+    maxCodedExtent : VkExtent2D;
+    referencePictureFormat : VkFormat;
+    maxDpbSlots : u32;
+    maxActiveReferencePictures : u32;
+    pStdHeaderVersion : *VkExtensionProperties;
+}
+
+
+// Type VkVideoSessionParametersCreateInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoSessionParametersCreateInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoSessionParametersCreateInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_CREATE_INFO_KHR;
+    pNext : *void;
+    flags : VkVideoSessionParametersCreateFlagsKHR;
+    videoSessionParametersTemplate : VkVideoSessionParametersKHR;
+    videoSession : VkVideoSessionKHR;
+}
+
+
+// Type VkVideoSessionParametersUpdateInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoSessionParametersUpdateInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoSessionParametersUpdateInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_UPDATE_INFO_KHR;
+    pNext : *void;
+    updateSequenceCount : u32;
+}
+
+
+// Type VkVideoBeginCodingInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoBeginCodingInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoBeginCodingInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_BEGIN_CODING_INFO_KHR;
+    pNext : *void;
+    flags : VkVideoBeginCodingFlagsKHR;
+    videoSession : VkVideoSessionKHR;
+    videoSessionParameters : VkVideoSessionParametersKHR;
+    referenceSlotCount : u32;
+    pReferenceSlots : *VkVideoReferenceSlotInfoKHR;
+}
+
+
+// Type VkVideoEndCodingInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEndCodingInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoEndCodingInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_END_CODING_INFO_KHR;
+    pNext : *void;
+    flags : VkVideoEndCodingFlagsKHR;
+}
+
+
+// Type VkVideoCodingControlInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoCodingControlInfoKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+VkVideoCodingControlInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_CODING_CONTROL_INFO_KHR;
+    pNext : *void;
+    flags : VkVideoCodingControlFlagsKHR;
+}
+
+
 // Type VkPhysicalDeviceInheritedViewportScissorFeaturesNV
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceInheritedViewportScissorFeaturesNV.html)
 // Referenced by VK_NV_inherited_viewport_scissor
@@ -16075,6 +18567,221 @@ VkCuLaunchInfoNVX :: struct
 }
 
 
+// Type VkPhysicalDeviceDescriptorBufferFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferFeaturesEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkPhysicalDeviceDescriptorBufferFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_FEATURES_EXT;
+    pNext : *void;
+    descriptorBuffer : VkBool32;
+    descriptorBufferCaptureReplay : VkBool32;
+    descriptorBufferImageLayoutIgnored : VkBool32;
+    descriptorBufferPushDescriptors : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceDescriptorBufferPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferPropertiesEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkPhysicalDeviceDescriptorBufferPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_PROPERTIES_EXT;
+    pNext : *void;
+    combinedImageSamplerDescriptorSingleArray : VkBool32;
+    bufferlessPushDescriptors : VkBool32;
+    allowSamplerImageViewPostSubmitCreation : VkBool32;
+    descriptorBufferOffsetAlignment : VkDeviceSize;
+    maxDescriptorBufferBindings : u32;
+    maxResourceDescriptorBufferBindings : u32;
+    maxSamplerDescriptorBufferBindings : u32;
+    maxEmbeddedImmutableSamplerBindings : u32;
+    maxEmbeddedImmutableSamplers : u32;
+    bufferCaptureReplayDescriptorDataSize : u64;
+    imageCaptureReplayDescriptorDataSize : u64;
+    imageViewCaptureReplayDescriptorDataSize : u64;
+    samplerCaptureReplayDescriptorDataSize : u64;
+    accelerationStructureCaptureReplayDescriptorDataSize : u64;
+    samplerDescriptorSize : u64;
+    combinedImageSamplerDescriptorSize : u64;
+    sampledImageDescriptorSize : u64;
+    storageImageDescriptorSize : u64;
+    uniformTexelBufferDescriptorSize : u64;
+    robustUniformTexelBufferDescriptorSize : u64;
+    storageTexelBufferDescriptorSize : u64;
+    robustStorageTexelBufferDescriptorSize : u64;
+    uniformBufferDescriptorSize : u64;
+    robustUniformBufferDescriptorSize : u64;
+    storageBufferDescriptorSize : u64;
+    robustStorageBufferDescriptorSize : u64;
+    inputAttachmentDescriptorSize : u64;
+    accelerationStructureDescriptorSize : u64;
+    maxSamplerDescriptorBufferRange : VkDeviceSize;
+    maxResourceDescriptorBufferRange : VkDeviceSize;
+    samplerDescriptorBufferAddressSpaceSize : VkDeviceSize;
+    resourceDescriptorBufferAddressSpaceSize : VkDeviceSize;
+    descriptorBufferAddressSpaceSize : VkDeviceSize;
+}
+
+
+// Type VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_DENSITY_MAP_PROPERTIES_EXT;
+    pNext : *void;
+    combinedImageSamplerDensityMapDescriptorSize : u64;
+}
+
+
+// Type VkDescriptorAddressInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorAddressInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkDescriptorAddressInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DESCRIPTOR_ADDRESS_INFO_EXT;
+    pNext : *void;
+    address : VkDeviceAddress;
+    range : VkDeviceSize;
+    format : VkFormat;
+}
+
+
+// Type VkDescriptorBufferBindingInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorBufferBindingInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkDescriptorBufferBindingInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
+    pNext : *void;
+    address : VkDeviceAddress;
+    usage : VkBufferUsageFlags;
+}
+
+
+// Type VkDescriptorBufferBindingPushDescriptorBufferHandleEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorBufferBindingPushDescriptorBufferHandleEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkDescriptorBufferBindingPushDescriptorBufferHandleEXT :: struct // Can be in the pNext chain of "VkDescriptorBufferBindingInfoEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_PUSH_DESCRIPTOR_BUFFER_HANDLE_EXT;
+    pNext : *void;
+    buffer : VkBuffer;
+}
+
+
+// Type VkDescriptorDataEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorDataEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkDescriptorDataEXT :: union
+{
+    pSampler : *VkSampler;
+    pCombinedImageSampler : *VkDescriptorImageInfo;
+    pInputAttachmentImage : *VkDescriptorImageInfo;
+    pSampledImage : *VkDescriptorImageInfo;
+    pStorageImage : *VkDescriptorImageInfo;
+    pUniformTexelBuffer : *VkDescriptorAddressInfoEXT;
+    pStorageTexelBuffer : *VkDescriptorAddressInfoEXT;
+    pUniformBuffer : *VkDescriptorAddressInfoEXT;
+    pStorageBuffer : *VkDescriptorAddressInfoEXT;
+    accelerationStructure : VkDeviceAddress;
+}
+
+
+// Type VkDescriptorGetInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorGetInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkDescriptorGetInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DESCRIPTOR_GET_INFO_EXT;
+    pNext : *void;
+    type : VkDescriptorType;
+    data : VkDescriptorDataEXT;
+}
+
+
+// Type VkBufferCaptureDescriptorDataInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCaptureDescriptorDataInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkBufferCaptureDescriptorDataInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_BUFFER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+    pNext : *void;
+    buffer : VkBuffer;
+}
+
+
+// Type VkImageCaptureDescriptorDataInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCaptureDescriptorDataInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkImageCaptureDescriptorDataInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMAGE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+    pNext : *void;
+    image : VkImage;
+}
+
+
+// Type VkImageViewCaptureDescriptorDataInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCaptureDescriptorDataInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkImageViewCaptureDescriptorDataInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+    pNext : *void;
+    imageView : VkImageView;
+}
+
+
+// Type VkSamplerCaptureDescriptorDataInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCaptureDescriptorDataInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkSamplerCaptureDescriptorDataInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SAMPLER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+    pNext : *void;
+    sampler : VkSampler;
+}
+
+
+// Type VkAccelerationStructureCaptureDescriptorDataInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureCaptureDescriptorDataInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkAccelerationStructureCaptureDescriptorDataInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+    pNext : *void;
+    accelerationStructure : VkAccelerationStructureKHR;
+    accelerationStructureNV : VkAccelerationStructureNV;
+}
+
+
+// Type VkOpaqueCaptureDescriptorDataCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpaqueCaptureDescriptorDataCreateInfoEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VkOpaqueCaptureDescriptorDataCreateInfoEXT :: struct // Can be in the pNext chain of "VkBufferCreateInfo,VkImageCreateInfo,VkImageViewCreateInfo,VkSamplerCreateInfo,VkAccelerationStructureCreateInfoKHR,VkAccelerationStructureCreateInfoNV"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_OPAQUE_CAPTURE_DESCRIPTOR_DATA_CREATE_INFO_EXT;
+    pNext : *void;
+    opaqueCaptureDescriptorData : *void;
+}
+
+
 // Type VkPhysicalDeviceShaderIntegerDotProductFeatures
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderIntegerDotProductFeatures.html)
 VkPhysicalDeviceShaderIntegerDotProductFeatures :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
@@ -16152,6 +18859,30 @@ VkPhysicalDeviceDrmPropertiesEXT :: struct // Can be in the pNext chain of "VkPh
     primaryMinor : s64;
     renderMajor : s64;
     renderMinor : s64;
+}
+
+
+// Type VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR.html)
+// Referenced by VK_KHR_fragment_shader_barycentric
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_fragment_shader_barycentric.html)
+VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_KHR;
+    pNext : *void;
+    fragmentShaderBarycentric : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR.html)
+// Referenced by VK_KHR_fragment_shader_barycentric
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_fragment_shader_barycentric.html)
+VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_PROPERTIES_KHR;
+    pNext : *void;
+    triStripVertexOrderIndependentOfProvokingVertex : VkBool32;
 }
 
 
@@ -16381,8 +19112,9 @@ VkRenderingInfo :: struct
 
 // Type VkRenderingInfoKHR
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingInfoKHR.html)
-// Referenced by VK_KHR_dynamic_rendering
+// Referenced by VK_KHR_dynamic_rendering, VK_QCOM_tile_properties
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_dynamic_rendering.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_tile_properties.html)
 VkRenderingInfoKHR :: VkRenderingInfo;
 
 
@@ -16535,18 +19267,25 @@ VkImageViewMinLodCreateInfoEXT :: struct // Can be in the pNext chain of "VkImag
 }
 
 
-// Type VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM.html)
-// Referenced by VK_ARM_rasterization_order_attachment_access
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
-VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+// Type VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT.html)
+// Referenced by VK_EXT_rasterization_order_attachment_access
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
+VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_ARM;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_EXT;
     pNext : *void;
     rasterizationOrderColorAttachmentAccess : VkBool32;
     rasterizationOrderDepthAttachmentAccess : VkBool32;
     rasterizationOrderStencilAttachmentAccess : VkBool32;
 }
+
+
+// Type VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM.html)
+// Referenced by VK_ARM_rasterization_order_attachment_access
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_rasterization_order_attachment_access.html)
+VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM :: VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT;
 
 
 // Type VkPhysicalDeviceLinearColorAttachmentFeaturesNV
@@ -16558,6 +19297,1274 @@ VkPhysicalDeviceLinearColorAttachmentFeaturesNV :: struct // Can be in the pNext
     sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINEAR_COLOR_ATTACHMENT_FEATURES_NV;
     pNext : *void;
     linearColorAttachment : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT.html)
+// Referenced by VK_EXT_graphics_pipeline_library
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_FEATURES_EXT;
+    pNext : *void;
+    graphicsPipelineLibrary : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT.html)
+// Referenced by VK_EXT_graphics_pipeline_library
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_PROPERTIES_EXT;
+    pNext : *void;
+    graphicsPipelineLibraryFastLinking : VkBool32;
+    graphicsPipelineLibraryIndependentInterpolationDecoration : VkBool32;
+}
+
+
+// Type VkGraphicsPipelineLibraryCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGraphicsPipelineLibraryCreateInfoEXT.html)
+// Referenced by VK_EXT_graphics_pipeline_library
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+VkGraphicsPipelineLibraryCreateInfoEXT :: struct // Can be in the pNext chain of "VkGraphicsPipelineCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT;
+    pNext : *void;
+    flags : VkGraphicsPipelineLibraryFlagsEXT;
+}
+
+
+// Type VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE.html)
+// Referenced by VK_VALVE_descriptor_set_host_mapping
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_descriptor_set_host_mapping.html)
+VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_SET_HOST_MAPPING_FEATURES_VALVE;
+    pNext : *void;
+    descriptorSetHostMapping : VkBool32;
+}
+
+
+// Type VkDescriptorSetBindingReferenceVALVE
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetBindingReferenceVALVE.html)
+// Referenced by VK_VALVE_descriptor_set_host_mapping
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_descriptor_set_host_mapping.html)
+VkDescriptorSetBindingReferenceVALVE :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_BINDING_REFERENCE_VALVE;
+    pNext : *void;
+    descriptorSetLayout : VkDescriptorSetLayout;
+    binding : u32;
+}
+
+
+// Type VkDescriptorSetLayoutHostMappingInfoVALVE
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutHostMappingInfoVALVE.html)
+// Referenced by VK_VALVE_descriptor_set_host_mapping
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_descriptor_set_host_mapping.html)
+VkDescriptorSetLayoutHostMappingInfoVALVE :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_HOST_MAPPING_INFO_VALVE;
+    pNext : *void;
+    descriptorOffset : u64;
+    descriptorSize : u32;
+}
+
+
+// Type VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT.html)
+// Referenced by VK_EXT_shader_module_identifier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MODULE_IDENTIFIER_FEATURES_EXT;
+    pNext : *void;
+    shaderModuleIdentifier : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT.html)
+// Referenced by VK_EXT_shader_module_identifier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MODULE_IDENTIFIER_PROPERTIES_EXT;
+    pNext : *void;
+    shaderModuleIdentifierAlgorithmUUID : [VK_UUID_SIZE] u8;
+}
+
+
+// Type VkPipelineShaderStageModuleIdentifierCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineShaderStageModuleIdentifierCreateInfoEXT.html)
+// Referenced by VK_EXT_shader_module_identifier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+VkPipelineShaderStageModuleIdentifierCreateInfoEXT :: struct // Can be in the pNext chain of "VkPipelineShaderStageCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_MODULE_IDENTIFIER_CREATE_INFO_EXT;
+    pNext : *void;
+    identifierSize : u32;
+    pIdentifier : *u8;
+}
+
+
+// Type VkShaderModuleIdentifierEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderModuleIdentifierEXT.html)
+// Referenced by VK_EXT_shader_module_identifier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+VkShaderModuleIdentifierEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SHADER_MODULE_IDENTIFIER_EXT;
+    pNext : *void;
+    identifierSize : u32;
+    identifier : [VK_MAX_SHADER_MODULE_IDENTIFIER_SIZE_EXT] u8;
+}
+
+
+// Type VkImageCompressionControlEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCompressionControlEXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+VkImageCompressionControlEXT :: struct // Can be in the pNext chain of "VkImageCreateInfo,VkSwapchainCreateInfoKHR,VkPhysicalDeviceImageFormatInfo2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_CONTROL_EXT;
+    pNext : *void;
+    flags : VkImageCompressionFlagsEXT;
+    compressionControlPlaneCount : u32;
+    pFixedRateFlags : *VkImageCompressionFixedRateFlagsEXT;
+}
+
+
+// Type VkPhysicalDeviceImageCompressionControlFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceImageCompressionControlFeaturesEXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+VkPhysicalDeviceImageCompressionControlFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_FEATURES_EXT;
+    pNext : *void;
+    imageCompressionControl : VkBool32;
+}
+
+
+// Type VkImageCompressionPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCompressionPropertiesEXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+VkImageCompressionPropertiesEXT :: struct // Can be in the pNext chain of "VkImageFormatProperties2,VkSurfaceFormat2KHR,VkSubresourceLayout2EXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_PROPERTIES_EXT;
+    pNext : *void;
+    imageCompressionFlags : VkImageCompressionFlagsEXT;
+    imageCompressionFixedRateFlags : VkImageCompressionFixedRateFlagsEXT;
+}
+
+
+// Type VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT.html)
+// Referenced by VK_EXT_image_compression_control_swapchain
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control_swapchain.html)
+VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_FEATURES_EXT;
+    pNext : *void;
+    imageCompressionControlSwapchain : VkBool32;
+}
+
+
+// Type VkImageSubresource2EXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageSubresource2EXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+VkImageSubresource2EXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2_EXT;
+    pNext : *void;
+    imageSubresource : VkImageSubresource;
+}
+
+
+// Type VkSubresourceLayout2EXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubresourceLayout2EXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+VkSubresourceLayout2EXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2_EXT;
+    pNext : *void;
+    subresourceLayout : VkSubresourceLayout;
+}
+
+
+// Type VkRenderPassCreationControlEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderPassCreationControlEXT.html)
+// Referenced by VK_EXT_subpass_merge_feedback
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+VkRenderPassCreationControlEXT :: struct // Can be in the pNext chain of "VkRenderPassCreateInfo2,VkSubpassDescription2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATION_CONTROL_EXT;
+    pNext : *void;
+    disallowMerging : VkBool32;
+}
+
+
+// Type VkRenderPassCreationFeedbackInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderPassCreationFeedbackInfoEXT.html)
+// Referenced by VK_EXT_subpass_merge_feedback
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+VkRenderPassCreationFeedbackInfoEXT :: struct
+{
+    postMergeSubpassCount : u32;
+}
+
+
+// Type VkRenderPassCreationFeedbackCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderPassCreationFeedbackCreateInfoEXT.html)
+// Referenced by VK_EXT_subpass_merge_feedback
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+VkRenderPassCreationFeedbackCreateInfoEXT :: struct // Can be in the pNext chain of "VkRenderPassCreateInfo2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATION_FEEDBACK_CREATE_INFO_EXT;
+    pNext : *void;
+    pRenderPassFeedback : *VkRenderPassCreationFeedbackInfoEXT;
+}
+
+
+// Type VkRenderPassSubpassFeedbackInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderPassSubpassFeedbackInfoEXT.html)
+// Referenced by VK_EXT_subpass_merge_feedback
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+VkRenderPassSubpassFeedbackInfoEXT :: struct
+{
+    subpassMergeStatus : VkSubpassMergeStatusEXT;
+    description : [VK_MAX_DESCRIPTION_SIZE] u8;
+    postMergeIndex : u32;
+}
+
+
+// Type VkRenderPassSubpassFeedbackCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderPassSubpassFeedbackCreateInfoEXT.html)
+// Referenced by VK_EXT_subpass_merge_feedback
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+VkRenderPassSubpassFeedbackCreateInfoEXT :: struct // Can be in the pNext chain of "VkSubpassDescription2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_RENDER_PASS_SUBPASS_FEEDBACK_CREATE_INFO_EXT;
+    pNext : *void;
+    pSubpassFeedback : *VkRenderPassSubpassFeedbackInfoEXT;
+}
+
+
+// Type VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT.html)
+// Referenced by VK_EXT_subpass_merge_feedback
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_MERGE_FEEDBACK_FEATURES_EXT;
+    pNext : *void;
+    subpassMergeFeedback : VkBool32;
+}
+
+
+// Type VkMicromapBuildInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapBuildInfoEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkMicromapBuildInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MICROMAP_BUILD_INFO_EXT;
+    pNext : *void;
+    type : VkMicromapTypeEXT;
+    flags : VkBuildMicromapFlagsEXT;
+    mode : VkBuildMicromapModeEXT;
+    dstMicromap : VkMicromapEXT;
+    usageCountsCount : u32;
+    pUsageCounts : *VkMicromapUsageEXT;
+    ppUsageCounts : **VkMicromapUsageEXT;
+    data : VkDeviceOrHostAddressConstKHR;
+    scratchData : VkDeviceOrHostAddressKHR;
+    triangleArray : VkDeviceOrHostAddressConstKHR;
+    triangleArrayStride : VkDeviceSize;
+}
+
+
+// Type VkMicromapCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapCreateInfoEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkMicromapCreateInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MICROMAP_CREATE_INFO_EXT;
+    pNext : *void;
+    createFlags : VkMicromapCreateFlagsEXT;
+    buffer : VkBuffer;
+    offset : VkDeviceSize; // Specified in bytes
+    size : VkDeviceSize;
+    type : VkMicromapTypeEXT;
+    deviceAddress : VkDeviceAddress;
+}
+
+
+// Type VkMicromapVersionInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapVersionInfoEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkMicromapVersionInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MICROMAP_VERSION_INFO_EXT;
+    pNext : *void;
+    pVersionData : *u8;
+}
+
+
+// Type VkCopyMicromapInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyMicromapInfoEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkCopyMicromapInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_COPY_MICROMAP_INFO_EXT;
+    pNext : *void;
+    src : VkMicromapEXT;
+    dst : VkMicromapEXT;
+    mode : VkCopyMicromapModeEXT;
+}
+
+
+// Type VkCopyMicromapToMemoryInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyMicromapToMemoryInfoEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkCopyMicromapToMemoryInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_COPY_MICROMAP_TO_MEMORY_INFO_EXT;
+    pNext : *void;
+    src : VkMicromapEXT;
+    dst : VkDeviceOrHostAddressKHR;
+    mode : VkCopyMicromapModeEXT;
+}
+
+
+// Type VkCopyMemoryToMicromapInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyMemoryToMicromapInfoEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkCopyMemoryToMicromapInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_COPY_MEMORY_TO_MICROMAP_INFO_EXT;
+    pNext : *void;
+    src : VkDeviceOrHostAddressConstKHR;
+    dst : VkMicromapEXT;
+    mode : VkCopyMicromapModeEXT;
+}
+
+
+// Type VkMicromapBuildSizesInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapBuildSizesInfoEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkMicromapBuildSizesInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MICROMAP_BUILD_SIZES_INFO_EXT;
+    pNext : *void;
+    micromapSize : VkDeviceSize;
+    buildScratchSize : VkDeviceSize;
+    discardable : VkBool32;
+}
+
+
+// Type VkMicromapUsageEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapUsageEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkMicromapUsageEXT :: struct
+{
+    count : u32;
+    subdivisionLevel : u32;
+    format : u32; // Interpretation depends on parent type
+}
+
+
+// Type VkMicromapTriangleEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMicromapTriangleEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkMicromapTriangleEXT :: struct
+{
+    dataOffset : u32; // Specified in bytes
+    subdivisionLevel : u16;
+    format : u16;
+}
+
+
+// Type VkPhysicalDeviceOpacityMicromapFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceOpacityMicromapFeaturesEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkPhysicalDeviceOpacityMicromapFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_FEATURES_EXT;
+    pNext : *void;
+    micromap : VkBool32;
+    micromapCaptureReplay : VkBool32;
+    micromapHostCommands : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceOpacityMicromapPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceOpacityMicromapPropertiesEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkPhysicalDeviceOpacityMicromapPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_PROPERTIES_EXT;
+    pNext : *void;
+    maxOpacity2StateSubdivisionLevel : u32;
+    maxOpacity4StateSubdivisionLevel : u32;
+}
+
+
+// Type VkAccelerationStructureTrianglesOpacityMicromapEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureTrianglesOpacityMicromapEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VkAccelerationStructureTrianglesOpacityMicromapEXT :: struct // Can be in the pNext chain of "VkAccelerationStructureGeometryTrianglesDataKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_OPACITY_MICROMAP_EXT;
+    pNext : *void;
+    indexType : VkIndexType;
+    indexBuffer : VkDeviceOrHostAddressConstKHR;
+    indexStride : VkDeviceSize;
+    baseTriangle : u32;
+    usageCountsCount : u32;
+    pUsageCounts : *VkMicromapUsageEXT;
+    ppUsageCounts : **VkMicromapUsageEXT;
+    micromap : VkMicromapEXT;
+}
+
+
+// Type VkPipelinePropertiesIdentifierEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelinePropertiesIdentifierEXT.html)
+// Referenced by VK_EXT_pipeline_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_properties.html)
+VkPipelinePropertiesIdentifierEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PIPELINE_PROPERTIES_IDENTIFIER_EXT;
+    pNext : *void;
+    pipelineIdentifier : [VK_UUID_SIZE] u8;
+}
+
+
+// Type VkPhysicalDevicePipelinePropertiesFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePipelinePropertiesFeaturesEXT.html)
+// Referenced by VK_EXT_pipeline_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_properties.html)
+VkPhysicalDevicePipelinePropertiesFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT;
+    pNext : *void;
+    pipelinePropertiesIdentifier : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD.html)
+// Referenced by VK_AMD_shader_early_and_late_fragment_tests
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_AMD_shader_early_and_late_fragment_tests.html)
+VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_FEATURES_AMD;
+    pNext : *void;
+    shaderEarlyAndLateFragmentTests : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT.html)
+// Referenced by VK_EXT_non_seamless_cube_map
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_non_seamless_cube_map.html)
+VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NON_SEAMLESS_CUBE_MAP_FEATURES_EXT;
+    pNext : *void;
+    nonSeamlessCubeMap : VkBool32;
+}
+
+
+// Type VkPhysicalDevicePipelineRobustnessFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePipelineRobustnessFeaturesEXT.html)
+// Referenced by VK_EXT_pipeline_robustness
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_robustness.html)
+VkPhysicalDevicePipelineRobustnessFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_ROBUSTNESS_FEATURES_EXT;
+    pNext : *void;
+    pipelineRobustness : VkBool32;
+}
+
+
+// Type VkPipelineRobustnessCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineRobustnessCreateInfoEXT.html)
+// Referenced by VK_EXT_pipeline_robustness
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_robustness.html)
+VkPipelineRobustnessCreateInfoEXT :: struct // Can be in the pNext chain of "VkGraphicsPipelineCreateInfo,VkComputePipelineCreateInfo,VkPipelineShaderStageCreateInfo,VkRayTracingPipelineCreateInfoKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PIPELINE_ROBUSTNESS_CREATE_INFO_EXT;
+    pNext : *void;
+    storageBuffers : VkPipelineRobustnessBufferBehaviorEXT;
+    uniformBuffers : VkPipelineRobustnessBufferBehaviorEXT;
+    vertexInputs : VkPipelineRobustnessBufferBehaviorEXT;
+    images : VkPipelineRobustnessImageBehaviorEXT;
+}
+
+
+// Type VkPhysicalDevicePipelineRobustnessPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePipelineRobustnessPropertiesEXT.html)
+// Referenced by VK_EXT_pipeline_robustness
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_robustness.html)
+VkPhysicalDevicePipelineRobustnessPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_ROBUSTNESS_PROPERTIES_EXT;
+    pNext : *void;
+    defaultRobustnessStorageBuffers : VkPipelineRobustnessBufferBehaviorEXT;
+    defaultRobustnessUniformBuffers : VkPipelineRobustnessBufferBehaviorEXT;
+    defaultRobustnessVertexInputs : VkPipelineRobustnessBufferBehaviorEXT;
+    defaultRobustnessImages : VkPipelineRobustnessImageBehaviorEXT;
+}
+
+
+// Type VkImageViewSampleWeightCreateInfoQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewSampleWeightCreateInfoQCOM.html)
+// Referenced by VK_QCOM_image_processing
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+VkImageViewSampleWeightCreateInfoQCOM :: struct // Can be in the pNext chain of "VkImageViewCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMAGE_VIEW_SAMPLE_WEIGHT_CREATE_INFO_QCOM;
+    pNext : *void;
+    filterCenter : VkOffset2D;
+    filterSize : VkExtent2D;
+    numPhases : u32;
+}
+
+
+// Type VkPhysicalDeviceImageProcessingFeaturesQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceImageProcessingFeaturesQCOM.html)
+// Referenced by VK_QCOM_image_processing
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+VkPhysicalDeviceImageProcessingFeaturesQCOM :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_FEATURES_QCOM;
+    pNext : *void;
+    textureSampleWeighted : VkBool32;
+    textureBoxFilter : VkBool32;
+    textureBlockMatch : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceImageProcessingPropertiesQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceImageProcessingPropertiesQCOM.html)
+// Referenced by VK_QCOM_image_processing
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+VkPhysicalDeviceImageProcessingPropertiesQCOM :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_PROPERTIES_QCOM;
+    pNext : *void;
+    maxWeightFilterPhases : u32;
+    maxWeightFilterDimension : VkExtent2D;
+    maxBlockMatchRegion : VkExtent2D;
+    maxBoxFilterBlockSize : VkExtent2D;
+}
+
+
+// Type VkPhysicalDeviceTilePropertiesFeaturesQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceTilePropertiesFeaturesQCOM.html)
+// Referenced by VK_QCOM_tile_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_tile_properties.html)
+VkPhysicalDeviceTilePropertiesFeaturesQCOM :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_PROPERTIES_FEATURES_QCOM;
+    pNext : *void;
+    tileProperties : VkBool32;
+}
+
+
+// Type VkTilePropertiesQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkTilePropertiesQCOM.html)
+// Referenced by VK_QCOM_tile_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_tile_properties.html)
+VkTilePropertiesQCOM :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_TILE_PROPERTIES_QCOM;
+    pNext : *void;
+    tileSize : VkExtent3D;
+    apronSize : VkExtent2D;
+    origin : VkOffset2D;
+}
+
+
+// Type VkPhysicalDeviceAmigoProfilingFeaturesSEC
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAmigoProfilingFeaturesSEC.html)
+// Referenced by VK_SEC_amigo_profiling
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_SEC_amigo_profiling.html)
+VkPhysicalDeviceAmigoProfilingFeaturesSEC :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_AMIGO_PROFILING_FEATURES_SEC;
+    pNext : *void;
+    amigoProfiling : VkBool32;
+}
+
+
+// Type VkAmigoProfilingSubmitInfoSEC
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAmigoProfilingSubmitInfoSEC.html)
+// Referenced by VK_SEC_amigo_profiling
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_SEC_amigo_profiling.html)
+VkAmigoProfilingSubmitInfoSEC :: struct // Can be in the pNext chain of "VkSubmitInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_AMIGO_PROFILING_SUBMIT_INFO_SEC;
+    pNext : *void;
+    firstDrawTimestamp : u64;
+    swapBufferTimestamp : u64;
+}
+
+
+// Type VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT.html)
+// Referenced by VK_EXT_attachment_feedback_loop_layout
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_attachment_feedback_loop_layout.html)
+VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ATTACHMENT_FEEDBACK_LOOP_LAYOUT_FEATURES_EXT;
+    pNext : *void;
+    attachmentFeedbackLoopLayout : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceDepthClampZeroOneFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDepthClampZeroOneFeaturesEXT.html)
+// Referenced by VK_EXT_depth_clamp_zero_one
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_depth_clamp_zero_one.html)
+VkPhysicalDeviceDepthClampZeroOneFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT;
+    pNext : *void;
+    depthClampZeroOne : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceAddressBindingReportFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAddressBindingReportFeaturesEXT.html)
+// Referenced by VK_EXT_device_address_binding_report
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_address_binding_report.html)
+VkPhysicalDeviceAddressBindingReportFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ADDRESS_BINDING_REPORT_FEATURES_EXT;
+    pNext : *void;
+    reportAddressBinding : VkBool32;
+}
+
+
+// Type VkDeviceAddressBindingCallbackDataEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceAddressBindingCallbackDataEXT.html)
+// Referenced by VK_EXT_device_address_binding_report
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_address_binding_report.html)
+VkDeviceAddressBindingCallbackDataEXT :: struct // Can be in the pNext chain of "VkDebugUtilsMessengerCallbackDataEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DEVICE_ADDRESS_BINDING_CALLBACK_DATA_EXT;
+    pNext : *void;
+    flags : VkDeviceAddressBindingFlagsEXT;
+    baseAddress : VkDeviceAddress;
+    size : VkDeviceSize;
+    bindingType : VkDeviceAddressBindingTypeEXT;
+}
+
+
+// Type VkPhysicalDeviceOpticalFlowFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceOpticalFlowFeaturesNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VkPhysicalDeviceOpticalFlowFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_FEATURES_NV;
+    pNext : *void;
+    opticalFlow : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceOpticalFlowPropertiesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceOpticalFlowPropertiesNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VkPhysicalDeviceOpticalFlowPropertiesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_PROPERTIES_NV;
+    pNext : *void;
+    supportedOutputGridSizes : VkOpticalFlowGridSizeFlagsNV;
+    supportedHintGridSizes : VkOpticalFlowGridSizeFlagsNV;
+    hintSupported : VkBool32;
+    costSupported : VkBool32;
+    bidirectionalFlowSupported : VkBool32;
+    globalFlowSupported : VkBool32;
+    minWidth : u32;
+    minHeight : u32;
+    maxWidth : u32;
+    maxHeight : u32;
+    maxNumRegionsOfInterest : u32;
+}
+
+
+// Type VkOpticalFlowImageFormatInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowImageFormatInfoNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VkOpticalFlowImageFormatInfoNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceImageFormatInfo2,VkImageCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_INFO_NV;
+    pNext : *void;
+    usage : VkOpticalFlowUsageFlagsNV;
+}
+
+
+// Type VkOpticalFlowImageFormatPropertiesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowImageFormatPropertiesNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VkOpticalFlowImageFormatPropertiesNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_PROPERTIES_NV;
+    pNext : *void;
+    format : VkFormat;
+}
+
+
+// Type VkOpticalFlowSessionCreateInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowSessionCreateInfoNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VkOpticalFlowSessionCreateInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_INFO_NV;
+    pNext : *void;
+    width : u32;
+    height : u32;
+    imageFormat : VkFormat;
+    flowVectorFormat : VkFormat;
+    costFormat : VkFormat;
+    outputGridSize : VkOpticalFlowGridSizeFlagsNV;
+    hintGridSize : VkOpticalFlowGridSizeFlagsNV;
+    performanceLevel : VkOpticalFlowPerformanceLevelNV;
+    flags : VkOpticalFlowSessionCreateFlagsNV;
+}
+
+
+// Type VkOpticalFlowSessionCreatePrivateDataInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowSessionCreatePrivateDataInfoNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VkOpticalFlowSessionCreatePrivateDataInfoNV :: struct // Can be in the pNext chain of "VkOpticalFlowSessionCreateInfoNV"
+{
+    // NV internal use only
+    sType : VkStructureType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_PRIVATE_DATA_INFO_NV;
+    pNext : *void;
+    id : u32;
+    size : u32;
+    pPrivateData : *void;
+}
+
+
+// Type VkOpticalFlowExecuteInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowExecuteInfoNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VkOpticalFlowExecuteInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_EXECUTE_INFO_NV;
+    pNext : *void;
+    flags : VkOpticalFlowExecuteFlagsNV;
+    regionCount : u32;
+    pRegions : *VkRect2D;
+}
+
+
+// Type VkPhysicalDeviceFaultFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFaultFeaturesEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+VkPhysicalDeviceFaultFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FAULT_FEATURES_EXT;
+    pNext : *void;
+    deviceFault : VkBool32;
+    deviceFaultVendorBinary : VkBool32;
+}
+
+
+// Type VkDeviceFaultAddressInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultAddressInfoEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+VkDeviceFaultAddressInfoEXT :: struct
+{
+    addressType : VkDeviceFaultAddressTypeEXT;
+    reportedAddress : VkDeviceAddress;
+    addressPrecision : VkDeviceSize;
+}
+
+
+// Type VkDeviceFaultVendorInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultVendorInfoEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+VkDeviceFaultVendorInfoEXT :: struct
+{
+    description : [VK_MAX_DESCRIPTION_SIZE] u8; // Free-form description of the fault
+    vendorFaultCode : u64;
+    vendorFaultData : u64;
+}
+
+
+// Type VkDeviceFaultCountsEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultCountsEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+VkDeviceFaultCountsEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DEVICE_FAULT_COUNTS_EXT;
+    pNext : *void;
+    addressInfoCount : u32;
+    vendorInfoCount : u32;
+    vendorBinarySize : VkDeviceSize; // Specified in bytes
+}
+
+
+// Type VkDeviceFaultInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultInfoEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+VkDeviceFaultInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DEVICE_FAULT_INFO_EXT;
+    pNext : *void;
+    description : [VK_MAX_DESCRIPTION_SIZE] u8; // Free-form description of the fault
+    pAddressInfos : *VkDeviceFaultAddressInfoEXT;
+    pVendorInfos : *VkDeviceFaultVendorInfoEXT;
+    pVendorBinaryData : *void;
+}
+
+
+// Type VkDeviceFaultVendorBinaryHeaderVersionOneEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultVendorBinaryHeaderVersionOneEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+VkDeviceFaultVendorBinaryHeaderVersionOneEXT :: struct
+{
+    // The fields in this structure are non-normative since structure packing is implementation-defined in C. The specification defines the normative layout.
+    headerSize : u32;
+    headerVersion : VkDeviceFaultVendorBinaryHeaderVersionEXT;
+    vendorID : u32;
+    deviceID : u32;
+    driverVersion : u32;
+    pipelineCacheUUID : [VK_UUID_SIZE] u8;
+    applicationNameOffset : u32;
+    applicationVersion : u32;
+    engineNameOffset : u32;
+    engineVersion : u32;
+    apiVersion : u32;
+}
+
+
+// Type VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT.html)
+// Referenced by VK_EXT_pipeline_library_group_handles
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_library_group_handles.html)
+VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_LIBRARY_GROUP_HANDLES_FEATURES_EXT;
+    pNext : *void;
+    pipelineLibraryGroupHandles : VkBool32;
+}
+
+
+// Type VkDecompressMemoryRegionNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDecompressMemoryRegionNV.html)
+// Referenced by VK_NV_memory_decompression
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+VkDecompressMemoryRegionNV :: struct
+{
+    srcAddress : VkDeviceAddress;
+    dstAddress : VkDeviceAddress;
+    compressedSize : VkDeviceSize; // Specified in bytes
+    decompressedSize : VkDeviceSize; // Specified in bytes
+    decompressionMethod : VkMemoryDecompressionMethodFlagsNV;
+}
+
+
+// Type VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM.html)
+// Referenced by VK_ARM_shader_core_builtins
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_shader_core_builtins.html)
+VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_PROPERTIES_ARM;
+    pNext : *void;
+    shaderCoreMask : u64;
+    shaderCoreCount : u32;
+    shaderWarpsPerCore : u32;
+}
+
+
+// Type VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM.html)
+// Referenced by VK_ARM_shader_core_builtins
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_shader_core_builtins.html)
+VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_FEATURES_ARM;
+    pNext : *void;
+    shaderCoreBuiltins : VkBool32;
+}
+
+
+// Type VkSurfacePresentModeEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfacePresentModeEXT.html)
+// Referenced by VK_EXT_surface_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_surface_maintenance1.html)
+VkSurfacePresentModeEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceSurfaceInfo2KHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_EXT;
+    pNext : *void;
+    presentMode : VkPresentModeKHR;
+}
+
+
+// Type VkSurfacePresentScalingCapabilitiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfacePresentScalingCapabilitiesEXT.html)
+// Referenced by VK_EXT_surface_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_surface_maintenance1.html)
+VkSurfacePresentScalingCapabilitiesEXT :: struct // Can be in the pNext chain of "VkSurfaceCapabilities2KHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_SCALING_CAPABILITIES_EXT;
+    pNext : *void;
+    supportedPresentScaling : VkPresentScalingFlagsEXT;
+    supportedPresentGravityX : VkPresentGravityFlagsEXT;
+    supportedPresentGravityY : VkPresentGravityFlagsEXT;
+    minScaledImageExtent : VkExtent2D; // Supported minimum image width and height for the surface when scaling is used
+    maxScaledImageExtent : VkExtent2D; // Supported maximum image width and height for the surface when scaling is used
+}
+
+
+// Type VkSurfacePresentModeCompatibilityEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfacePresentModeCompatibilityEXT.html)
+// Referenced by VK_EXT_surface_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_surface_maintenance1.html)
+VkSurfacePresentModeCompatibilityEXT :: struct // Can be in the pNext chain of "VkSurfaceCapabilities2KHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_COMPATIBILITY_EXT;
+    pNext : *void;
+    presentModeCount : u32;
+    pPresentModes : *VkPresentModeKHR; // Output list of present modes compatible with the one specified in VkSurfacePresentModeEXT
+}
+
+
+// Type VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT.html)
+// Referenced by VK_EXT_swapchain_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT;
+    pNext : *void;
+    swapchainMaintenance1 : VkBool32;
+}
+
+
+// Type VkSwapchainPresentFenceInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainPresentFenceInfoEXT.html)
+// Referenced by VK_EXT_swapchain_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+VkSwapchainPresentFenceInfoEXT :: struct // Can be in the pNext chain of "VkPresentInfoKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT;
+    pNext : *void;
+    swapchainCount : u32; // Copy of VkPresentInfoKHR::swapchainCount
+    pFences : *VkFence; // Fence to signal for each swapchain
+}
+
+
+// Type VkSwapchainPresentModesCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainPresentModesCreateInfoEXT.html)
+// Referenced by VK_EXT_swapchain_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+VkSwapchainPresentModesCreateInfoEXT :: struct // Can be in the pNext chain of "VkSwapchainCreateInfoKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT;
+    pNext : *void;
+    presentModeCount : u32;
+
+    // Length of the pPresentModes array
+    pPresentModes : *VkPresentModeKHR;
+}
+
+
+// Type VkSwapchainPresentModeInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainPresentModeInfoEXT.html)
+// Referenced by VK_EXT_swapchain_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+VkSwapchainPresentModeInfoEXT :: struct // Can be in the pNext chain of "VkPresentInfoKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT;
+    pNext : *void;
+    swapchainCount : u32; // Copy of VkPresentInfoKHR::swapchainCount
+    pPresentModes : *VkPresentModeKHR; // Presentation mode for each swapchain
+}
+
+
+// Type VkSwapchainPresentScalingCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainPresentScalingCreateInfoEXT.html)
+// Referenced by VK_EXT_swapchain_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+VkSwapchainPresentScalingCreateInfoEXT :: struct // Can be in the pNext chain of "VkSwapchainCreateInfoKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT;
+    pNext : *void;
+    scalingBehavior : VkPresentScalingFlagsEXT;
+    presentGravityX : VkPresentGravityFlagsEXT;
+    presentGravityY : VkPresentGravityFlagsEXT;
+}
+
+
+// Type VkReleaseSwapchainImagesInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkReleaseSwapchainImagesInfoEXT.html)
+// Referenced by VK_EXT_swapchain_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+VkReleaseSwapchainImagesInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_RELEASE_SWAPCHAIN_IMAGES_INFO_EXT;
+    pNext : *void;
+    swapchain : VkSwapchainKHR; // Swapchain for which images are being released
+    imageIndexCount : u32; // Number of indices to release
+    pImageIndices : *u32; // Indices of which presentable images to release
+}
+
+
+// Type VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV.html)
+// Referenced by VK_NV_ray_tracing_invocation_reorder
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_invocation_reorder.html)
+VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_NV;
+    pNext : *void;
+    rayTracingInvocationReorder : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV.html)
+// Referenced by VK_NV_ray_tracing_invocation_reorder
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_invocation_reorder.html)
+VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_PROPERTIES_NV;
+    pNext : *void;
+    rayTracingInvocationReorderReorderingHint : VkRayTracingInvocationReorderModeNV;
+}
+
+
+// Type VkDirectDriverLoadingInfoLUNARG
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDirectDriverLoadingInfoLUNARG.html)
+// Referenced by VK_LUNARG_direct_driver_loading
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_LUNARG_direct_driver_loading.html)
+VkDirectDriverLoadingInfoLUNARG :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DIRECT_DRIVER_LOADING_INFO_LUNARG;
+    pNext : *void;
+    flags : VkDirectDriverLoadingFlagsLUNARG;
+    pfnGetInstanceProcAddr : PFN_vkGetInstanceProcAddrLUNARG;
+}
+
+
+// Type VkDirectDriverLoadingListLUNARG
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDirectDriverLoadingListLUNARG.html)
+// Referenced by VK_LUNARG_direct_driver_loading
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_LUNARG_direct_driver_loading.html)
+VkDirectDriverLoadingListLUNARG :: struct // Can be in the pNext chain of "VkInstanceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_DIRECT_DRIVER_LOADING_LIST_LUNARG;
+    pNext : *void;
+    mode : VkDirectDriverLoadingModeLUNARG;
+    driverCount : u32;
+    pDrivers : *VkDirectDriverLoadingInfoLUNARG;
+}
+
+
+// Type VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM.html)
+// Referenced by VK_QCOM_multiview_per_view_viewports
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_multiview_per_view_viewports.html)
+VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_VIEWPORTS_FEATURES_QCOM;
+    pNext : *void;
+    multiviewPerViewViewports : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceShaderCorePropertiesARM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderCorePropertiesARM.html)
+// Referenced by VK_ARM_shader_core_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_shader_core_properties.html)
+VkPhysicalDeviceShaderCorePropertiesARM :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_ARM;
+    pNext : *void;
+    pixelRate : u32;
+    texelRate : u32;
+    fmaRate : u32;
+}
+
+
+// Type VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM.html)
+// Referenced by VK_QCOM_multiview_per_view_render_areas
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_multiview_per_view_render_areas.html)
+VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_RENDER_AREAS_FEATURES_QCOM;
+    pNext : *void;
+    multiviewPerViewRenderAreas : VkBool32;
+}
+
+
+// Type VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM.html)
+// Referenced by VK_QCOM_multiview_per_view_render_areas
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_multiview_per_view_render_areas.html)
+VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM :: struct // Can be in the pNext chain of "VkRenderPassBeginInfo,VkRenderingInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MULTIVIEW_PER_VIEW_RENDER_AREAS_RENDER_PASS_BEGIN_INFO_QCOM;
+    pNext : *void;
+    perViewRenderAreaCount : u32;
+    pPerViewRenderAreas : *VkRect2D;
+}
+
+
+// Type VkQueryLowLatencySupportNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryLowLatencySupportNV.html)
+// Referenced by VK_NV_low_latency
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_low_latency.html)
+VkQueryLowLatencySupportNV :: struct // Can be in the pNext chain of "VkSemaphoreCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_QUERY_LOW_LATENCY_SUPPORT_NV;
+    pNext : *void;
+    pQueriedLowLatencyData : *void;
+}
+
+
+// Type VkMemoryMapInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryMapInfoKHR.html)
+// Referenced by VK_KHR_map_memory2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)
+VkMemoryMapInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MEMORY_MAP_INFO_KHR;
+    pNext : *void;
+    flags : VkMemoryMapFlags;
+    memory : VkDeviceMemory;
+    offset : VkDeviceSize;
+    size : VkDeviceSize;
+}
+
+
+// Type VkMemoryUnmapInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryUnmapInfoKHR.html)
+// Referenced by VK_KHR_map_memory2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)
+VkMemoryUnmapInfoKHR :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_MEMORY_UNMAP_INFO_KHR;
+    pNext : *void;
+    flags : VkMemoryUnmapFlagsKHR;
+    memory : VkDeviceMemory;
+}
+
+
+// Type VkPhysicalDeviceShaderObjectFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderObjectFeaturesEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+VkPhysicalDeviceShaderObjectFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT;
+    pNext : *void;
+    shaderObject : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceShaderObjectPropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderObjectPropertiesEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+VkPhysicalDeviceShaderObjectPropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT;
+    pNext : *void;
+    shaderBinaryUUID : [VK_UUID_SIZE] u8;
+    shaderBinaryVersion : u32;
+}
+
+
+// Type VkShaderCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateInfoEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+VkShaderCreateInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT;
+    pNext : *void;
+    flags : VkShaderCreateFlagsEXT;
+    stage : VkShaderStageFlagBits;
+    nextStage : VkShaderStageFlags;
+    codeType : VkShaderCodeTypeEXT;
+    codeSize : u64;
+    pCode : *void;
+    pName : *u8;
+    setLayoutCount : u32;
+    pSetLayouts : *VkDescriptorSetLayout;
+    pushConstantRangeCount : u32;
+    pPushConstantRanges : *VkPushConstantRange;
+    pSpecializationInfo : *VkSpecializationInfo;
+}
+
+
+// Type VkPhysicalDeviceShaderTileImageFeaturesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderTileImageFeaturesEXT.html)
+// Referenced by VK_EXT_shader_tile_image
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_tile_image.html)
+VkPhysicalDeviceShaderTileImageFeaturesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_FEATURES_EXT;
+    pNext : *void;
+    shaderTileImageColorReadAccess : VkBool32;
+    shaderTileImageDepthReadAccess : VkBool32;
+    shaderTileImageStencilReadAccess : VkBool32;
+}
+
+
+// Type VkPhysicalDeviceShaderTileImagePropertiesEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderTileImagePropertiesEXT.html)
+// Referenced by VK_EXT_shader_tile_image
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_tile_image.html)
+VkPhysicalDeviceShaderTileImagePropertiesEXT :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_PROPERTIES_EXT;
+    pNext : *void;
+    shaderTileImageCoherentReadAccelerated : VkBool32;
+    shaderTileImageReadSampleFromPixelRateInvocation : VkBool32;
+    shaderTileImageReadFromHelperInvocation : VkBool32;
 }
 
 
@@ -16629,12 +20636,27 @@ PFN_vkDebugUtilsMessengerCallbackEXT :: #type (messageSeverity : VkDebugUtilsMes
                                                pUserData : *void) -> VkBool32 #c_call;
 
 
+// Procedure Pointer Type PFN_vkFaultCallbackFunction
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/PFN_vkFaultCallbackFunction.html)
+PFN_vkFaultCallbackFunction :: #type (unrecordedFaults : VkBool32,
+                                      faultCount : u32,
+                                      pFaults : *VkFaultData) #c_call;
+
+
 // Procedure Pointer Type PFN_vkDeviceMemoryReportCallbackEXT
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/PFN_vkDeviceMemoryReportCallbackEXT.html)
 // Referenced by VK_EXT_device_memory_report
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_memory_report.html)
 PFN_vkDeviceMemoryReportCallbackEXT :: #type (pCallbackData : *VkDeviceMemoryReportCallbackDataEXT,
                                               pUserData : *void) #c_call;
+
+
+// Procedure Pointer Type PFN_vkGetInstanceProcAddrLUNARG
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/PFN_vkGetInstanceProcAddrLUNARG.html)
+// Referenced by VK_LUNARG_direct_driver_loading
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_LUNARG_direct_driver_loading.html)
+PFN_vkGetInstanceProcAddrLUNARG :: #type (instance : VkInstance,
+                                          pName : *u8) -> PFN_vkVoidFunction #c_call;
 
 
 // Command vkCreateInstance (Loader Command)
@@ -17345,6 +21367,15 @@ PFN_vkGetPhysicalDeviceToolProperties :: #type (physicalDevice : VkPhysicalDevic
 PFN_vkGetPhysicalDeviceToolPropertiesEXT :: PFN_vkGetPhysicalDeviceToolProperties;
 
 
+// Command vkGetPhysicalDeviceRefreshableObjectTypesKHR (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceRefreshableObjectTypesKHR.html)
+// Referenced by VK_KHR_object_refresh
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_object_refresh.html)
+PFN_vkGetPhysicalDeviceRefreshableObjectTypesKHR :: #type (physicalDevice : VkPhysicalDevice,
+                                                           pRefreshableObjectTypeCount : *u32,
+                                                           pRefreshableObjectTypes : *VkObjectType) -> VkResult #foreign;
+
+
 // Command vkGetPhysicalDeviceFragmentShadingRatesKHR (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFragmentShadingRatesKHR.html)
 // Referenced by VK_KHR_fragment_shading_rate
@@ -17352,6 +21383,25 @@ PFN_vkGetPhysicalDeviceToolPropertiesEXT :: PFN_vkGetPhysicalDeviceToolPropertie
 PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR :: #type (physicalDevice : VkPhysicalDevice,
                                                          pFragmentShadingRateCount : *u32,
                                                          pFragmentShadingRates : *VkPhysicalDeviceFragmentShadingRateKHR) -> VkResult #foreign;
+
+
+// Command vkGetPhysicalDeviceVideoCapabilitiesKHR (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoCapabilitiesKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkGetPhysicalDeviceVideoCapabilitiesKHR :: #type (physicalDevice : VkPhysicalDevice,
+                                                      pVideoProfile : *VkVideoProfileInfoKHR,
+                                                      pCapabilities : *VkVideoCapabilitiesKHR) -> VkResult #foreign;
+
+
+// Command vkGetPhysicalDeviceVideoFormatPropertiesKHR (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoFormatPropertiesKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkGetPhysicalDeviceVideoFormatPropertiesKHR :: #type (physicalDevice : VkPhysicalDevice,
+                                                          pVideoFormatInfo : *VkPhysicalDeviceVideoFormatInfoKHR,
+                                                          pVideoFormatPropertyCount : *u32,
+                                                          pVideoFormatProperties : *VkVideoFormatPropertiesKHR) -> VkResult #foreign;
 
 
 // Command vkAcquireDrmDisplayEXT (Instance Command)
@@ -17371,6 +21421,16 @@ PFN_vkGetDrmDisplayEXT :: #type (physicalDevice : VkPhysicalDevice,
                                  drmFd : s32,
                                  connectorId : u32,
                                  display : *VkDisplayKHR) -> VkResult #foreign;
+
+
+// Command vkGetPhysicalDeviceOpticalFlowImageFormatsNV (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceOpticalFlowImageFormatsNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+PFN_vkGetPhysicalDeviceOpticalFlowImageFormatsNV :: #type (physicalDevice : VkPhysicalDevice,
+                                                           pOpticalFlowImageFormatInfo : *VkOpticalFlowImageFormatInfoNV,
+                                                           pFormatCount : *u32,
+                                                           pImageFormatProperties : *VkOpticalFlowImageFormatPropertiesNV) -> VkResult #foreign;
 
 
 // Command vkDestroyDevice (Device Command)
@@ -18213,6 +22273,31 @@ PFN_vkCmdDispatchIndirect :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdSubpassShadingHUAWEI :: #type (commandBuffer : VkCommandBuffer) #foreign;
 
 
+// Command vkCmdDrawClusterHUAWEI (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawClusterHUAWEI.html)
+// Can be submitted to a Graphics queue
+// Has to be used inside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_HUAWEI_cluster_culling_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+PFN_vkCmdDrawClusterHUAWEI :: #type (commandBuffer : VkCommandBuffer,
+                                     groupCountX : u32,
+                                     groupCountY : u32,
+                                     groupCountZ : u32) #foreign;
+
+
+// Command vkCmdDrawClusterIndirectHUAWEI (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawClusterIndirectHUAWEI.html)
+// Can be submitted to a Graphics queue
+// Has to be used inside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_HUAWEI_cluster_culling_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+PFN_vkCmdDrawClusterIndirectHUAWEI :: #type (commandBuffer : VkCommandBuffer,
+                                             buffer : VkBuffer,
+                                             offset : VkDeviceSize) #foreign;
+
+
 // Command vkCmdCopyBuffer (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBuffer.html)
 // Can be submitted to a Transfer, Graphics and Compute queues
@@ -18278,6 +22363,35 @@ PFN_vkCmdCopyImageToBuffer :: #type (commandBuffer : VkCommandBuffer,
                                      dstBuffer : VkBuffer,
                                      regionCount : u32,
                                      pRegions : *VkBufferImageCopy) #foreign;
+
+
+// Command vkCmdCopyMemoryIndirectNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryIndirectNV.html)
+// Can be submitted to a Transfer, Graphics and Compute queues
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_NV_copy_memory_indirect
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+PFN_vkCmdCopyMemoryIndirectNV :: #type (commandBuffer : VkCommandBuffer,
+                                        copyBufferAddress : VkDeviceAddress,
+                                        copyCount : u32,
+                                        stride : u32) #foreign;
+
+
+// Command vkCmdCopyMemoryToImageIndirectNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToImageIndirectNV.html)
+// Can be submitted to a Transfer, Graphics and Compute queues
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_NV_copy_memory_indirect
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+PFN_vkCmdCopyMemoryToImageIndirectNV :: #type (commandBuffer : VkCommandBuffer,
+                                               copyBufferAddress : VkDeviceAddress,
+                                               copyCount : u32,
+                                               stride : u32,
+                                               dstImage : VkImage,
+                                               dstImageLayout : VkImageLayout,
+                                               pImageSubresources : *VkImageSubresourceLayers) #foreign;
 
 
 // Command vkCmdUpdateBuffer (Device Command)
@@ -18358,7 +22472,7 @@ PFN_vkCmdResolveImage :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetEvent (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetEvent.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetEvent :: #type (commandBuffer : VkCommandBuffer,
@@ -18368,7 +22482,7 @@ PFN_vkCmdSetEvent :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdResetEvent (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResetEvent.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdResetEvent :: #type (commandBuffer : VkCommandBuffer,
@@ -18378,7 +22492,7 @@ PFN_vkCmdResetEvent :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdWaitEvents (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWaitEvents.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdWaitEvents :: #type (commandBuffer : VkCommandBuffer,
@@ -18396,7 +22510,7 @@ PFN_vkCmdWaitEvents :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdPipelineBarrier (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier.html)
-// Can be submitted to a Transfer, Graphics and Compute queues
+// Can be submitted to a Transfer, Graphics, Compute, Decode and Encode queues
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdPipelineBarrier :: #type (commandBuffer : VkCommandBuffer,
@@ -18455,7 +22569,7 @@ PFN_vkCmdEndConditionalRenderingEXT :: #type (commandBuffer : VkCommandBuffer) #
 
 // Command vkCmdResetQueryPool (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResetQueryPool.html)
-// Can be submitted to a Graphics, Compute, Decode and Encode queues
+// Can be submitted to a Graphics, Compute, Decode, Encode and Optical Flow queues
 // Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdResetQueryPool :: #type (commandBuffer : VkCommandBuffer,
@@ -18466,7 +22580,7 @@ PFN_vkCmdResetQueryPool :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdWriteTimestamp (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp.html)
-// Can be submitted to a Transfer, Graphics, Compute, Decode and Encode queues
+// Can be submitted to a Transfer, Graphics, Compute, Decode, Encode and Optical Flow queues
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdWriteTimestamp :: #type (commandBuffer : VkCommandBuffer,
@@ -18803,6 +22917,70 @@ PFN_vkImportFenceFdKHR :: #type (device : VkDevice,
                                  pImportFenceFdInfo : *VkImportFenceFdInfoKHR) -> VkResult #foreign;
 
 
+// Command vkGetFenceSciSyncFenceNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncFenceNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+PFN_vkGetFenceSciSyncFenceNV :: #type (device : VkDevice,
+                                       pGetSciSyncHandleInfo : *VkFenceGetSciSyncInfoNV,
+                                       pHandle : *void) -> VkResult #foreign;
+
+
+// Command vkGetFenceSciSyncObjNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncObjNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+PFN_vkGetFenceSciSyncObjNV :: #type (device : VkDevice,
+                                     pGetSciSyncHandleInfo : *VkFenceGetSciSyncInfoNV,
+                                     pHandle : *void) -> VkResult #foreign;
+
+
+// Command vkImportFenceSciSyncFenceNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncFenceNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+PFN_vkImportFenceSciSyncFenceNV :: #type (device : VkDevice,
+                                          pImportFenceSciSyncInfo : *VkImportFenceSciSyncInfoNV) -> VkResult #foreign;
+
+
+// Command vkImportFenceSciSyncObjNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncObjNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+PFN_vkImportFenceSciSyncObjNV :: #type (device : VkDevice,
+                                        pImportFenceSciSyncInfo : *VkImportFenceSciSyncInfoNV) -> VkResult #foreign;
+
+
+// Command vkGetSemaphoreSciSyncObjNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreSciSyncObjNV.html)
+// Referenced by VK_NV_external_sci_sync
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+PFN_vkGetSemaphoreSciSyncObjNV :: #type (device : VkDevice,
+                                         pGetSciSyncInfo : *VkSemaphoreGetSciSyncInfoNV,
+                                         pHandle : *void) -> VkResult #foreign;
+
+
+// Command vkImportSemaphoreSciSyncObjNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreSciSyncObjNV.html)
+// Referenced by VK_NV_external_sci_sync
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+PFN_vkImportSemaphoreSciSyncObjNV :: #type (device : VkDevice,
+                                            pImportSemaphoreSciSyncInfo : *VkImportSemaphoreSciSyncInfoNV) -> VkResult #foreign;
+
+
+// Command vkDestroySemaphoreSciSyncPoolNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySemaphoreSciSyncPoolNV.html)
+// Referenced by VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+PFN_vkDestroySemaphoreSciSyncPoolNV :: #type (device : VkDevice,
+                                              semaphorePool : VkSemaphoreSciSyncPoolNV,
+                                              pAllocator : *VkAllocationCallbacks) #foreign;
+
+
 // Command vkDisplayPowerControlEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDisplayPowerControlEXT.html)
 // Referenced by VK_EXT_display_control
@@ -19074,6 +23252,28 @@ PFN_vkCmdSetDiscardRectangleEXT :: #type (commandBuffer : VkCommandBuffer,
                                           firstDiscardRectangle : u32,
                                           discardRectangleCount : u32,
                                           pDiscardRectangles : *VkRect2D) #foreign;
+
+
+// Command vkCmdSetDiscardRectangleEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_discard_rectangles
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_discard_rectangles.html)
+PFN_vkCmdSetDiscardRectangleEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                discardRectangleEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetDiscardRectangleModeEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleModeEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_discard_rectangles
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_discard_rectangles.html)
+PFN_vkCmdSetDiscardRectangleModeEXT :: #type (commandBuffer : VkCommandBuffer,
+                                              discardRectangleMode : VkDiscardRectangleModeEXT) #foreign;
 
 
 // Command vkCmdSetSampleLocationsEXT (Device Command)
@@ -19545,7 +23745,7 @@ PFN_vkCmdEndTransformFeedbackEXT :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdBeginQueryIndexedEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginQueryIndexedEXT.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_transform_feedback
@@ -19559,7 +23759,7 @@ PFN_vkCmdBeginQueryIndexedEXT :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdEndQueryIndexedEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndQueryIndexedEXT.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 // Referenced by VK_EXT_transform_feedback
@@ -19597,6 +23797,19 @@ PFN_vkCmdSetExclusiveScissorNV :: #type (commandBuffer : VkCommandBuffer,
                                          firstExclusiveScissor : u32,
                                          exclusiveScissorCount : u32,
                                          pExclusiveScissors : *VkRect2D) #foreign;
+
+
+// Command vkCmdSetExclusiveScissorEnableNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetExclusiveScissorEnableNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_NV_scissor_exclusive
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_scissor_exclusive.html)
+PFN_vkCmdSetExclusiveScissorEnableNV :: #type (commandBuffer : VkCommandBuffer,
+                                               firstExclusiveScissor : u32,
+                                               exclusiveScissorCount : u32,
+                                               pExclusiveScissorEnables : *VkBool32) #foreign;
 
 
 // Command vkCmdBindShadingRateImageNV (Device Command)
@@ -19677,6 +23890,49 @@ PFN_vkCmdDrawMeshTasksIndirectCountNV :: #type (commandBuffer : VkCommandBuffer,
                                                 countBufferOffset : VkDeviceSize,
                                                 maxDrawCount : u32,
                                                 stride : u32) #foreign;
+
+
+// Command vkCmdDrawMeshTasksEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksEXT.html)
+// Can be submitted to a Graphics queue
+// Has to be used inside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_mesh_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+PFN_vkCmdDrawMeshTasksEXT :: #type (commandBuffer : VkCommandBuffer,
+                                    groupCountX : u32,
+                                    groupCountY : u32,
+                                    groupCountZ : u32) #foreign;
+
+
+// Command vkCmdDrawMeshTasksIndirectEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectEXT.html)
+// Can be submitted to a Graphics queue
+// Has to be used inside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_mesh_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+PFN_vkCmdDrawMeshTasksIndirectEXT :: #type (commandBuffer : VkCommandBuffer,
+                                            buffer : VkBuffer,
+                                            offset : VkDeviceSize,
+                                            drawCount : u32,
+                                            stride : u32) #foreign;
+
+
+// Command vkCmdDrawMeshTasksIndirectCountEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCountEXT.html)
+// Can be submitted to a Graphics queue
+// Has to be used inside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_mesh_shader
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+PFN_vkCmdDrawMeshTasksIndirectCountEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                 buffer : VkBuffer,
+                                                 offset : VkDeviceSize,
+                                                 countBuffer : VkBuffer,
+                                                 countBufferOffset : VkDeviceSize,
+                                                 maxDrawCount : u32,
+                                                 stride : u32) #foreign;
 
 
 // Command vkCompileDeferredNV (Device Command)
@@ -20002,6 +24258,17 @@ PFN_vkCmdTraceRaysIndirectKHR :: #type (commandBuffer : VkCommandBuffer,
                                         indirectDeviceAddress : VkDeviceAddress) #foreign;
 
 
+// Command vkCmdTraceRaysIndirect2KHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysIndirect2KHR.html)
+// Can be submitted to a Compute queue
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_KHR_ray_tracing_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+PFN_vkCmdTraceRaysIndirect2KHR :: #type (commandBuffer : VkCommandBuffer,
+                                         indirectDeviceAddress : VkDeviceAddress) #foreign;
+
+
 // Command vkGetDeviceAccelerationStructureCompatibilityKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceAccelerationStructureCompatibilityKHR.html)
 // Referenced by VK_KHR_acceleration_structure
@@ -20243,6 +24510,15 @@ PFN_vkCmdSetLineStippleEXT :: #type (commandBuffer : VkCommandBuffer,
                                      lineStipplePattern : u16) #foreign;
 
 
+// Command vkGetFaultData (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetFaultData.html)
+PFN_vkGetFaultData :: #type (device : VkDevice,
+                             faultQueryBehavior : VkFaultQueryBehavior,
+                             pUnrecordedFaults : *VkBool32,
+                             pFaultCount : *u32,
+                             pFaults : *VkFaultData) -> VkResult #foreign;
+
+
 // Command vkCreateAccelerationStructureKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructureKHR.html)
 // Referenced by VK_KHR_acceleration_structure
@@ -20353,8 +24629,9 @@ PFN_vkCmdSetCullMode :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetCullModeEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCullModeEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetCullModeEXT :: PFN_vkCmdSetCullMode;
 
 
@@ -20369,8 +24646,9 @@ PFN_vkCmdSetFrontFace :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetFrontFaceEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetFrontFaceEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetFrontFaceEXT :: PFN_vkCmdSetFrontFace;
 
 
@@ -20385,8 +24663,9 @@ PFN_vkCmdSetPrimitiveTopology :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetPrimitiveTopologyEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveTopologyEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetPrimitiveTopologyEXT :: PFN_vkCmdSetPrimitiveTopology;
 
 
@@ -20402,8 +24681,9 @@ PFN_vkCmdSetViewportWithCount :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetViewportWithCountEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWithCountEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetViewportWithCountEXT :: PFN_vkCmdSetViewportWithCount;
 
 
@@ -20419,8 +24699,9 @@ PFN_vkCmdSetScissorWithCount :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetScissorWithCountEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissorWithCountEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetScissorWithCountEXT :: PFN_vkCmdSetScissorWithCount;
 
 
@@ -20440,8 +24721,9 @@ PFN_vkCmdBindVertexBuffers2 :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdBindVertexBuffers2EXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers2EXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdBindVertexBuffers2EXT :: PFN_vkCmdBindVertexBuffers2;
 
 
@@ -20456,8 +24738,9 @@ PFN_vkCmdSetDepthTestEnable :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetDepthTestEnableEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthTestEnableEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetDepthTestEnableEXT :: PFN_vkCmdSetDepthTestEnable;
 
 
@@ -20472,8 +24755,9 @@ PFN_vkCmdSetDepthWriteEnable :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetDepthWriteEnableEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthWriteEnableEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetDepthWriteEnableEXT :: PFN_vkCmdSetDepthWriteEnable;
 
 
@@ -20488,8 +24772,9 @@ PFN_vkCmdSetDepthCompareOp :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetDepthCompareOpEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthCompareOpEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetDepthCompareOpEXT :: PFN_vkCmdSetDepthCompareOp;
 
 
@@ -20504,8 +24789,9 @@ PFN_vkCmdSetDepthBoundsTestEnable :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetDepthBoundsTestEnableEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBoundsTestEnableEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetDepthBoundsTestEnableEXT :: PFN_vkCmdSetDepthBoundsTestEnable;
 
 
@@ -20520,8 +24806,9 @@ PFN_vkCmdSetStencilTestEnable :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetStencilTestEnableEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilTestEnableEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetStencilTestEnableEXT :: PFN_vkCmdSetStencilTestEnable;
 
 
@@ -20540,8 +24827,9 @@ PFN_vkCmdSetStencilOp :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetStencilOpEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilOpEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state
+// Referenced by VK_EXT_extended_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetStencilOpEXT :: PFN_vkCmdSetStencilOp;
 
 
@@ -20550,8 +24838,9 @@ PFN_vkCmdSetStencilOpEXT :: PFN_vkCmdSetStencilOp;
 // Can be submitted to a Graphics queue
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
-// Referenced by VK_EXT_extended_dynamic_state2
+// Referenced by VK_EXT_extended_dynamic_state2, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state2.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetPatchControlPointsEXT :: #type (commandBuffer : VkCommandBuffer,
                                             patchControlPoints : u32) #foreign;
 
@@ -20567,8 +24856,9 @@ PFN_vkCmdSetRasterizerDiscardEnable :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetRasterizerDiscardEnableEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizerDiscardEnableEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state2
+// Referenced by VK_EXT_extended_dynamic_state2, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state2.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetRasterizerDiscardEnableEXT :: PFN_vkCmdSetRasterizerDiscardEnable;
 
 
@@ -20583,8 +24873,9 @@ PFN_vkCmdSetDepthBiasEnable :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetDepthBiasEnableEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBiasEnableEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state2
+// Referenced by VK_EXT_extended_dynamic_state2, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state2.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetDepthBiasEnableEXT :: PFN_vkCmdSetDepthBiasEnable;
 
 
@@ -20593,8 +24884,9 @@ PFN_vkCmdSetDepthBiasEnableEXT :: PFN_vkCmdSetDepthBiasEnable;
 // Can be submitted to a Graphics queue
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
-// Referenced by VK_EXT_extended_dynamic_state2
+// Referenced by VK_EXT_extended_dynamic_state2, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state2.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetLogicOpEXT :: #type (commandBuffer : VkCommandBuffer,
                                  logicOp : VkLogicOp) #foreign;
 
@@ -20610,9 +24902,394 @@ PFN_vkCmdSetPrimitiveRestartEnable :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetPrimitiveRestartEnableEXT (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveRestartEnableEXT.html)
-// Referenced by VK_EXT_extended_dynamic_state2
+// Referenced by VK_EXT_extended_dynamic_state2, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state2.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetPrimitiveRestartEnableEXT :: PFN_vkCmdSetPrimitiveRestartEnable;
+
+
+// Command vkCmdSetTessellationDomainOriginEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetTessellationDomainOriginEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetTessellationDomainOriginEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                  domainOrigin : VkTessellationDomainOrigin) #foreign;
+
+
+// Command vkCmdSetDepthClampEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClampEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetDepthClampEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                          depthClampEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetPolygonModeEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetPolygonModeEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetPolygonModeEXT :: #type (commandBuffer : VkCommandBuffer,
+                                     polygonMode : VkPolygonMode) #foreign;
+
+
+// Command vkCmdSetRasterizationSamplesEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationSamplesEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetRasterizationSamplesEXT :: #type (commandBuffer : VkCommandBuffer,
+                                              rasterizationSamples : VkSampleCountFlagBits) #foreign;
+
+
+// Command vkCmdSetSampleMaskEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleMaskEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetSampleMaskEXT :: #type (commandBuffer : VkCommandBuffer,
+                                    samples : VkSampleCountFlagBits,
+                                    pSampleMask : *VkSampleMask) #foreign;
+
+
+// Command vkCmdSetAlphaToCoverageEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetAlphaToCoverageEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetAlphaToCoverageEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                               alphaToCoverageEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetAlphaToOneEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetAlphaToOneEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetAlphaToOneEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                          alphaToOneEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetLogicOpEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetLogicOpEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetLogicOpEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                       logicOpEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetColorBlendEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetColorBlendEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                          firstAttachment : u32,
+                                          attachmentCount : u32,
+                                          pColorBlendEnables : *VkBool32) #foreign;
+
+
+// Command vkCmdSetColorBlendEquationEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEquationEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetColorBlendEquationEXT :: #type (commandBuffer : VkCommandBuffer,
+                                            firstAttachment : u32,
+                                            attachmentCount : u32,
+                                            pColorBlendEquations : *VkColorBlendEquationEXT) #foreign;
+
+
+// Command vkCmdSetColorWriteMaskEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorWriteMaskEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetColorWriteMaskEXT :: #type (commandBuffer : VkCommandBuffer,
+                                        firstAttachment : u32,
+                                        attachmentCount : u32,
+                                        pColorWriteMasks : *VkColorComponentFlags) #foreign;
+
+
+// Command vkCmdSetRasterizationStreamEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationStreamEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetRasterizationStreamEXT :: #type (commandBuffer : VkCommandBuffer,
+                                             rasterizationStream : u32) #foreign;
+
+
+// Command vkCmdSetConservativeRasterizationModeEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetConservativeRasterizationModeEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetConservativeRasterizationModeEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                       conservativeRasterizationMode : VkConservativeRasterizationModeEXT) #foreign;
+
+
+// Command vkCmdSetExtraPrimitiveOverestimationSizeEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetExtraPrimitiveOverestimationSizeEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetExtraPrimitiveOverestimationSizeEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                          extraPrimitiveOverestimationSize : float32) #foreign;
+
+
+// Command vkCmdSetDepthClipEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClipEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetDepthClipEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                         depthClipEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetSampleLocationsEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleLocationsEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetSampleLocationsEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                               sampleLocationsEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetColorBlendAdvancedEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendAdvancedEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetColorBlendAdvancedEXT :: #type (commandBuffer : VkCommandBuffer,
+                                            firstAttachment : u32,
+                                            attachmentCount : u32,
+                                            pColorBlendAdvanced : *VkColorBlendAdvancedEXT) #foreign;
+
+
+// Command vkCmdSetProvokingVertexModeEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetProvokingVertexModeEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetProvokingVertexModeEXT :: #type (commandBuffer : VkCommandBuffer,
+                                             provokingVertexMode : VkProvokingVertexModeEXT) #foreign;
+
+
+// Command vkCmdSetLineRasterizationModeEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineRasterizationModeEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetLineRasterizationModeEXT :: #type (commandBuffer : VkCommandBuffer,
+                                               lineRasterizationMode : VkLineRasterizationModeEXT) #foreign;
+
+
+// Command vkCmdSetLineStippleEnableEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineStippleEnableEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetLineStippleEnableEXT :: #type (commandBuffer : VkCommandBuffer,
+                                           stippledLineEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetDepthClipNegativeOneToOneEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClipNegativeOneToOneEXT.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetDepthClipNegativeOneToOneEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                   negativeOneToOne : VkBool32) #foreign;
+
+
+// Command vkCmdSetViewportWScalingEnableNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWScalingEnableNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetViewportWScalingEnableNV :: #type (commandBuffer : VkCommandBuffer,
+                                               viewportWScalingEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetViewportSwizzleNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportSwizzleNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetViewportSwizzleNV :: #type (commandBuffer : VkCommandBuffer,
+                                        firstViewport : u32,
+                                        viewportCount : u32,
+                                        pViewportSwizzles : *VkViewportSwizzleNV) #foreign;
+
+
+// Command vkCmdSetCoverageToColorEnableNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageToColorEnableNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetCoverageToColorEnableNV :: #type (commandBuffer : VkCommandBuffer,
+                                              coverageToColorEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetCoverageToColorLocationNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageToColorLocationNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetCoverageToColorLocationNV :: #type (commandBuffer : VkCommandBuffer,
+                                                coverageToColorLocation : u32) #foreign;
+
+
+// Command vkCmdSetCoverageModulationModeNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationModeNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetCoverageModulationModeNV :: #type (commandBuffer : VkCommandBuffer,
+                                               coverageModulationMode : VkCoverageModulationModeNV) #foreign;
+
+
+// Command vkCmdSetCoverageModulationTableEnableNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationTableEnableNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetCoverageModulationTableEnableNV :: #type (commandBuffer : VkCommandBuffer,
+                                                      coverageModulationTableEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetCoverageModulationTableNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationTableNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetCoverageModulationTableNV :: #type (commandBuffer : VkCommandBuffer,
+                                                coverageModulationTableCount : u32,
+                                                pCoverageModulationTable : *float32) #foreign;
+
+
+// Command vkCmdSetShadingRateImageEnableNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetShadingRateImageEnableNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetShadingRateImageEnableNV :: #type (commandBuffer : VkCommandBuffer,
+                                               shadingRateImageEnable : VkBool32) #foreign;
+
+
+// Command vkCmdSetCoverageReductionModeNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageReductionModeNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetCoverageReductionModeNV :: #type (commandBuffer : VkCommandBuffer,
+                                              coverageReductionMode : VkCoverageReductionModeNV) #foreign;
+
+
+// Command vkCmdSetRepresentativeFragmentTestEnableNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetRepresentativeFragmentTestEnableNV.html)
+// Can be submitted to a Graphics queue
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_extended_dynamic_state3, VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdSetRepresentativeFragmentTestEnableNV :: #type (commandBuffer : VkCommandBuffer,
+                                                         representativeFragmentTestEnable : VkBool32) #foreign;
 
 
 // Command vkCreatePrivateDataSlot (Device Command)
@@ -20772,6 +25449,17 @@ PFN_vkCmdResolveImage2 :: #type (commandBuffer : VkCommandBuffer,
 PFN_vkCmdResolveImage2KHR :: PFN_vkCmdResolveImage2;
 
 
+// Command vkCmdRefreshObjectsKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdRefreshObjectsKHR.html)
+// Can be submitted to a Graphics, Compute and Transfer queues
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_KHR_object_refresh
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_object_refresh.html)
+PFN_vkCmdRefreshObjectsKHR :: #type (commandBuffer : VkCommandBuffer,
+                                     pRefreshObjects : *VkRefreshObjectListKHR) #foreign;
+
+
 // Command vkCmdSetFragmentShadingRateKHR (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetFragmentShadingRateKHR.html)
 // Can be submitted to a Graphics queue
@@ -20812,8 +25500,9 @@ PFN_vkGetAccelerationStructureBuildSizesKHR :: #type (device : VkDevice,
 // Can be submitted to a Graphics queue
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
-// Referenced by VK_EXT_vertex_input_dynamic_state
+// Referenced by VK_EXT_vertex_input_dynamic_state, VK_EXT_shader_object
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
 PFN_vkCmdSetVertexInputEXT :: #type (commandBuffer : VkCommandBuffer,
                                      vertexBindingDescriptionCount : u32,
                                      pVertexBindingDescriptions : *VkVertexInputBindingDescription2EXT,
@@ -20835,7 +25524,7 @@ PFN_vkCmdSetColorWriteEnableEXT :: #type (commandBuffer : VkCommandBuffer,
 
 // Command vkCmdSetEvent2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetEvent2.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdSetEvent2 :: #type (commandBuffer : VkCommandBuffer,
@@ -20852,7 +25541,7 @@ PFN_vkCmdSetEvent2KHR :: PFN_vkCmdSetEvent2;
 
 // Command vkCmdResetEvent2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdResetEvent2.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Has to be used outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdResetEvent2 :: #type (commandBuffer : VkCommandBuffer,
@@ -20869,7 +25558,7 @@ PFN_vkCmdResetEvent2KHR :: PFN_vkCmdResetEvent2;
 
 // Command vkCmdWaitEvents2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWaitEvents2.html)
-// Can be submitted to a Graphics and Compute queues
+// Can be submitted to a Graphics, Compute, Decode and Encode queues
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdWaitEvents2 :: #type (commandBuffer : VkCommandBuffer,
@@ -20887,7 +25576,7 @@ PFN_vkCmdWaitEvents2KHR :: PFN_vkCmdWaitEvents2;
 
 // Command vkCmdPipelineBarrier2 (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier2.html)
-// Can be submitted to a Transfer, Graphics and Compute queues
+// Can be submitted to a Transfer, Graphics, Compute, Decode and Encode queues
 // Can be used both inside and outside a renderpass
 // Can be recorded to both a primary and secondary command buffer
 PFN_vkCmdPipelineBarrier2 :: #type (commandBuffer : VkCommandBuffer,
@@ -20957,6 +25646,150 @@ PFN_vkGetQueueCheckpointData2NV :: #type (queue : VkQueue,
                                           pCheckpointData : *VkCheckpointData2NV) #foreign;
 
 
+// Command vkGetCommandPoolMemoryConsumption (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetCommandPoolMemoryConsumption.html)
+PFN_vkGetCommandPoolMemoryConsumption :: #type (device : VkDevice,
+                                                commandPool : VkCommandPool,
+                                                commandBuffer : VkCommandBuffer,
+                                                pConsumption : *VkCommandPoolMemoryConsumption) #foreign;
+
+
+// Command vkCreateVideoSessionKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkCreateVideoSessionKHR :: #type (device : VkDevice,
+                                      pCreateInfo : *VkVideoSessionCreateInfoKHR,
+                                      pAllocator : *VkAllocationCallbacks,
+                                      pVideoSession : *VkVideoSessionKHR) -> VkResult #foreign;
+
+
+// Command vkDestroyVideoSessionKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkDestroyVideoSessionKHR :: #type (device : VkDevice,
+                                       videoSession : VkVideoSessionKHR,
+                                       pAllocator : *VkAllocationCallbacks) #foreign;
+
+
+// Command vkCreateVideoSessionParametersKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionParametersKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkCreateVideoSessionParametersKHR :: #type (device : VkDevice,
+                                                pCreateInfo : *VkVideoSessionParametersCreateInfoKHR,
+                                                pAllocator : *VkAllocationCallbacks,
+                                                pVideoSessionParameters : *VkVideoSessionParametersKHR) -> VkResult #foreign;
+
+
+// Command vkUpdateVideoSessionParametersKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkUpdateVideoSessionParametersKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkUpdateVideoSessionParametersKHR :: #type (device : VkDevice,
+                                                videoSessionParameters : VkVideoSessionParametersKHR,
+                                                pUpdateInfo : *VkVideoSessionParametersUpdateInfoKHR) -> VkResult #foreign;
+
+
+// Command vkDestroyVideoSessionParametersKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionParametersKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkDestroyVideoSessionParametersKHR :: #type (device : VkDevice,
+                                                 videoSessionParameters : VkVideoSessionParametersKHR,
+                                                 pAllocator : *VkAllocationCallbacks) #foreign;
+
+
+// Command vkGetVideoSessionMemoryRequirementsKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetVideoSessionMemoryRequirementsKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkGetVideoSessionMemoryRequirementsKHR :: #type (device : VkDevice,
+                                                     videoSession : VkVideoSessionKHR,
+                                                     pMemoryRequirementsCount : *u32,
+                                                     pMemoryRequirements : *VkVideoSessionMemoryRequirementsKHR) -> VkResult #foreign;
+
+
+// Command vkBindVideoSessionMemoryKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindVideoSessionMemoryKHR.html)
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkBindVideoSessionMemoryKHR :: #type (device : VkDevice,
+                                          videoSession : VkVideoSessionKHR,
+                                          bindSessionMemoryInfoCount : u32,
+                                          pBindSessionMemoryInfos : *VkBindVideoSessionMemoryInfoKHR) -> VkResult #foreign;
+
+
+// Command vkCmdDecodeVideoKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDecodeVideoKHR.html)
+// Can be submitted to a Decode queue
+// Has to be used outside a renderpass
+// Has to be recorded to a primary command buffer
+// Referenced by VK_KHR_video_decode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
+PFN_vkCmdDecodeVideoKHR :: #type (commandBuffer : VkCommandBuffer,
+                                  pDecodeInfo : *VkVideoDecodeInfoKHR) #foreign;
+
+
+// Command vkCmdBeginVideoCodingKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginVideoCodingKHR.html)
+// Can be submitted to a Decode and Encode queues
+// Has to be used outside a renderpass
+// Has to be recorded to a primary command buffer
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkCmdBeginVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
+                                       pBeginInfo : *VkVideoBeginCodingInfoKHR) #foreign;
+
+
+// Command vkCmdControlVideoCodingKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdControlVideoCodingKHR.html)
+// Can be submitted to a Decode and Encode queues
+// Has to be used outside a renderpass
+// Has to be recorded to a primary command buffer
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkCmdControlVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
+                                         pCodingControlInfo : *VkVideoCodingControlInfoKHR) #foreign;
+
+
+// Command vkCmdEndVideoCodingKHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndVideoCodingKHR.html)
+// Can be submitted to a Decode and Encode queues
+// Has to be used outside a renderpass
+// Has to be recorded to a primary command buffer
+// Referenced by VK_KHR_video_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
+PFN_vkCmdEndVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
+                                     pEndCodingInfo : *VkVideoEndCodingInfoKHR) #foreign;
+
+
+// Command vkCmdDecompressMemoryNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryNV.html)
+// Can be submitted to a Graphics and Compute queues
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_NV_memory_decompression
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+PFN_vkCmdDecompressMemoryNV :: #type (commandBuffer : VkCommandBuffer,
+                                      decompressRegionCount : u32,
+                                      pDecompressMemoryRegions : *VkDecompressMemoryRegionNV) #foreign;
+
+
+// Command vkCmdDecompressMemoryIndirectCountNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryIndirectCountNV.html)
+// Can be submitted to a Graphics and Compute queues
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_NV_memory_decompression
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+PFN_vkCmdDecompressMemoryIndirectCountNV :: #type (commandBuffer : VkCommandBuffer,
+                                                   indirectCommandsAddress : VkDeviceAddress,
+                                                   indirectCommandsCountAddress : VkDeviceAddress,
+                                                   stride : u32) #foreign;
+
+
 // Command vkCreateCuModuleNVX (Device Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateCuModuleNVX.html)
 // Referenced by VK_NVX_binary_import
@@ -21004,6 +25837,121 @@ PFN_vkDestroyCuFunctionNVX :: #type (device : VkDevice,
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NVX_binary_import.html)
 PFN_vkCmdCuLaunchKernelNVX :: #type (commandBuffer : VkCommandBuffer,
                                      pLaunchInfo : *VkCuLaunchInfoNVX) #foreign;
+
+
+// Command vkGetDescriptorSetLayoutSizeEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutSizeEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetDescriptorSetLayoutSizeEXT :: #type (device : VkDevice,
+                                              layout : VkDescriptorSetLayout,
+                                              pLayoutSizeInBytes : *VkDeviceSize) #foreign;
+
+
+// Command vkGetDescriptorSetLayoutBindingOffsetEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutBindingOffsetEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetDescriptorSetLayoutBindingOffsetEXT :: #type (device : VkDevice,
+                                                       layout : VkDescriptorSetLayout,
+                                                       binding : u32,
+                                                       pOffset : *VkDeviceSize) #foreign;
+
+
+// Command vkGetDescriptorEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetDescriptorEXT :: #type (device : VkDevice,
+                                 pDescriptorInfo : *VkDescriptorGetInfoEXT,
+                                 dataSize : u64,
+                                 pDescriptor : *void) #foreign;
+
+
+// Command vkCmdBindDescriptorBuffersEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBuffersEXT.html)
+// Can be submitted to a Graphics and Compute queues
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkCmdBindDescriptorBuffersEXT :: #type (commandBuffer : VkCommandBuffer,
+                                            bufferCount : u32,
+                                            pBindingInfos : *VkDescriptorBufferBindingInfoEXT) #foreign;
+
+
+// Command vkCmdSetDescriptorBufferOffsetsEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDescriptorBufferOffsetsEXT.html)
+// Can be submitted to a Graphics and Compute queues
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkCmdSetDescriptorBufferOffsetsEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                 pipelineBindPoint : VkPipelineBindPoint,
+                                                 layout : VkPipelineLayout,
+                                                 firstSet : u32,
+                                                 setCount : u32,
+                                                 pBufferIndices : *u32,
+                                                 pOffsets : *VkDeviceSize) #foreign;
+
+
+// Command vkCmdBindDescriptorBufferEmbeddedSamplersEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBufferEmbeddedSamplersEXT.html)
+// Can be submitted to a Graphics and Compute queues
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkCmdBindDescriptorBufferEmbeddedSamplersEXT :: #type (commandBuffer : VkCommandBuffer,
+                                                           pipelineBindPoint : VkPipelineBindPoint,
+                                                           layout : VkPipelineLayout,
+                                                           set : u32) #foreign;
+
+
+// Command vkGetBufferOpaqueCaptureDescriptorDataEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetBufferOpaqueCaptureDescriptorDataEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetBufferOpaqueCaptureDescriptorDataEXT :: #type (device : VkDevice,
+                                                        pInfo : *VkBufferCaptureDescriptorDataInfoEXT,
+                                                        pData : *void) -> VkResult #foreign;
+
+
+// Command vkGetImageOpaqueCaptureDescriptorDataEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetImageOpaqueCaptureDescriptorDataEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetImageOpaqueCaptureDescriptorDataEXT :: #type (device : VkDevice,
+                                                       pInfo : *VkImageCaptureDescriptorDataInfoEXT,
+                                                       pData : *void) -> VkResult #foreign;
+
+
+// Command vkGetImageViewOpaqueCaptureDescriptorDataEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetImageViewOpaqueCaptureDescriptorDataEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetImageViewOpaqueCaptureDescriptorDataEXT :: #type (device : VkDevice,
+                                                           pInfo : *VkImageViewCaptureDescriptorDataInfoEXT,
+                                                           pData : *void) -> VkResult #foreign;
+
+
+// Command vkGetSamplerOpaqueCaptureDescriptorDataEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetSamplerOpaqueCaptureDescriptorDataEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetSamplerOpaqueCaptureDescriptorDataEXT :: #type (device : VkDevice,
+                                                         pInfo : *VkSamplerCaptureDescriptorDataInfoEXT,
+                                                         pData : *void) -> VkResult #foreign;
+
+
+// Command vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT.html)
+// Referenced by VK_EXT_descriptor_buffer
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+PFN_vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT :: #type (device : VkDevice,
+                                                                       pInfo : *VkAccelerationStructureCaptureDescriptorDataInfoEXT,
+                                                                       pData : *void) -> VkResult #foreign;
 
 
 // Command vkSetDeviceMemoryPriorityEXT (Device Command)
@@ -21054,6 +26002,347 @@ PFN_vkCmdEndRendering :: #type (commandBuffer : VkCommandBuffer) #foreign;
 // Referenced by VK_KHR_dynamic_rendering
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_dynamic_rendering.html)
 PFN_vkCmdEndRenderingKHR :: PFN_vkCmdEndRendering;
+
+
+// Command vkGetDescriptorSetLayoutHostMappingInfoVALVE (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutHostMappingInfoVALVE.html)
+// Referenced by VK_VALVE_descriptor_set_host_mapping
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_descriptor_set_host_mapping.html)
+PFN_vkGetDescriptorSetLayoutHostMappingInfoVALVE :: #type (device : VkDevice,
+                                                           pBindingReference : *VkDescriptorSetBindingReferenceVALVE,
+                                                           pHostMapping : *VkDescriptorSetLayoutHostMappingInfoVALVE) #foreign;
+
+
+// Command vkGetDescriptorSetHostMappingVALVE (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetHostMappingVALVE.html)
+// Referenced by VK_VALVE_descriptor_set_host_mapping
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_descriptor_set_host_mapping.html)
+PFN_vkGetDescriptorSetHostMappingVALVE :: #type (device : VkDevice,
+                                                 descriptorSet : VkDescriptorSet,
+                                                 ppData : **void) #foreign;
+
+
+// Command vkCreateMicromapEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateMicromapEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCreateMicromapEXT :: #type (device : VkDevice,
+                                  pCreateInfo : *VkMicromapCreateInfoEXT,
+                                  pAllocator : *VkAllocationCallbacks,
+                                  pMicromap : *VkMicromapEXT) -> VkResult #foreign;
+
+
+// Command vkCmdBuildMicromapsEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBuildMicromapsEXT.html)
+// Can be submitted to a Compute queue
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCmdBuildMicromapsEXT :: #type (commandBuffer : VkCommandBuffer,
+                                     infoCount : u32,
+                                     pInfos : *VkMicromapBuildInfoEXT) #foreign;
+
+
+// Command vkBuildMicromapsEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBuildMicromapsEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkBuildMicromapsEXT :: #type (device : VkDevice,
+                                  deferredOperation : VkDeferredOperationKHR,
+                                  infoCount : u32,
+                                  pInfos : *VkMicromapBuildInfoEXT) -> VkResult #foreign;
+
+
+// Command vkDestroyMicromapEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyMicromapEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkDestroyMicromapEXT :: #type (device : VkDevice,
+                                   micromap : VkMicromapEXT,
+                                   pAllocator : *VkAllocationCallbacks) #foreign;
+
+
+// Command vkCmdCopyMicromapEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMicromapEXT.html)
+// Can be submitted to a Compute queue
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCmdCopyMicromapEXT :: #type (commandBuffer : VkCommandBuffer,
+                                   pInfo : *VkCopyMicromapInfoEXT) #foreign;
+
+
+// Command vkCopyMicromapEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCopyMicromapEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCopyMicromapEXT :: #type (device : VkDevice,
+                                deferredOperation : VkDeferredOperationKHR,
+                                pInfo : *VkCopyMicromapInfoEXT) -> VkResult #foreign;
+
+
+// Command vkCmdCopyMicromapToMemoryEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMicromapToMemoryEXT.html)
+// Can be submitted to a Compute queue
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCmdCopyMicromapToMemoryEXT :: #type (commandBuffer : VkCommandBuffer,
+                                           pInfo : *VkCopyMicromapToMemoryInfoEXT) #foreign;
+
+
+// Command vkCopyMicromapToMemoryEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCopyMicromapToMemoryEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCopyMicromapToMemoryEXT :: #type (device : VkDevice,
+                                        deferredOperation : VkDeferredOperationKHR,
+                                        pInfo : *VkCopyMicromapToMemoryInfoEXT) -> VkResult #foreign;
+
+
+// Command vkCmdCopyMemoryToMicromapEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToMicromapEXT.html)
+// Can be submitted to a Compute queue
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCmdCopyMemoryToMicromapEXT :: #type (commandBuffer : VkCommandBuffer,
+                                           pInfo : *VkCopyMemoryToMicromapInfoEXT) #foreign;
+
+
+// Command vkCopyMemoryToMicromapEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCopyMemoryToMicromapEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCopyMemoryToMicromapEXT :: #type (device : VkDevice,
+                                        deferredOperation : VkDeferredOperationKHR,
+                                        pInfo : *VkCopyMemoryToMicromapInfoEXT) -> VkResult #foreign;
+
+
+// Command vkCmdWriteMicromapsPropertiesEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteMicromapsPropertiesEXT.html)
+// Can be submitted to a Compute queue
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkCmdWriteMicromapsPropertiesEXT :: #type (commandBuffer : VkCommandBuffer,
+                                               micromapCount : u32,
+                                               pMicromaps : *VkMicromapEXT,
+                                               queryType : VkQueryType,
+                                               queryPool : VkQueryPool,
+                                               firstQuery : u32) #foreign;
+
+
+// Command vkWriteMicromapsPropertiesEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkWriteMicromapsPropertiesEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkWriteMicromapsPropertiesEXT :: #type (device : VkDevice,
+                                            micromapCount : u32,
+                                            pMicromaps : *VkMicromapEXT,
+                                            queryType : VkQueryType,
+                                            dataSize : u64,
+                                            pData : *void,
+                                            stride : u64) -> VkResult #foreign;
+
+
+// Command vkGetDeviceMicromapCompatibilityEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceMicromapCompatibilityEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkGetDeviceMicromapCompatibilityEXT :: #type (device : VkDevice,
+                                                  pVersionInfo : *VkMicromapVersionInfoEXT,
+                                                  pCompatibility : *VkAccelerationStructureCompatibilityKHR) #foreign;
+
+
+// Command vkGetMicromapBuildSizesEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetMicromapBuildSizesEXT.html)
+// Referenced by VK_EXT_opacity_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+PFN_vkGetMicromapBuildSizesEXT :: #type (device : VkDevice,
+                                         buildType : VkAccelerationStructureBuildTypeKHR,
+                                         pBuildInfo : *VkMicromapBuildInfoEXT,
+                                         pSizeInfo : *VkMicromapBuildSizesInfoEXT) #foreign;
+
+
+// Command vkGetShaderModuleIdentifierEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetShaderModuleIdentifierEXT.html)
+// Referenced by VK_EXT_shader_module_identifier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+PFN_vkGetShaderModuleIdentifierEXT :: #type (device : VkDevice,
+                                             shaderModule : VkShaderModule,
+                                             pIdentifier : *VkShaderModuleIdentifierEXT) #foreign;
+
+
+// Command vkGetShaderModuleCreateInfoIdentifierEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetShaderModuleCreateInfoIdentifierEXT.html)
+// Referenced by VK_EXT_shader_module_identifier
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+PFN_vkGetShaderModuleCreateInfoIdentifierEXT :: #type (device : VkDevice,
+                                                       pCreateInfo : *VkShaderModuleCreateInfo,
+                                                       pIdentifier : *VkShaderModuleIdentifierEXT) #foreign;
+
+
+// Command vkGetImageSubresourceLayout2EXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetImageSubresourceLayout2EXT.html)
+// Referenced by VK_EXT_image_compression_control
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+PFN_vkGetImageSubresourceLayout2EXT :: #type (device : VkDevice,
+                                              image : VkImage,
+                                              pSubresource : *VkImageSubresource2EXT,
+                                              pLayout : *VkSubresourceLayout2EXT) #foreign;
+
+
+// Command vkGetPipelinePropertiesEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPipelinePropertiesEXT.html)
+// Referenced by VK_EXT_pipeline_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_properties.html)
+PFN_vkGetPipelinePropertiesEXT :: #type (device : VkDevice,
+                                         pPipelineInfo : *VkPipelineInfoEXT,
+                                         pPipelineProperties : *VkBaseOutStructure) -> VkResult #foreign;
+
+
+// Command vkGetFramebufferTilePropertiesQCOM (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetFramebufferTilePropertiesQCOM.html)
+// Referenced by VK_QCOM_tile_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_tile_properties.html)
+PFN_vkGetFramebufferTilePropertiesQCOM :: #type (device : VkDevice,
+                                                 framebuffer : VkFramebuffer,
+                                                 pPropertiesCount : *u32,
+                                                 pProperties : *VkTilePropertiesQCOM) -> VkResult #foreign;
+
+
+// Command vkGetDynamicRenderingTilePropertiesQCOM (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDynamicRenderingTilePropertiesQCOM.html)
+// Referenced by VK_QCOM_tile_properties
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_tile_properties.html)
+PFN_vkGetDynamicRenderingTilePropertiesQCOM :: #type (device : VkDevice,
+                                                      pRenderingInfo : *VkRenderingInfo,
+                                                      pProperties : *VkTilePropertiesQCOM) -> VkResult #foreign;
+
+
+// Command vkCreateOpticalFlowSessionNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateOpticalFlowSessionNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+PFN_vkCreateOpticalFlowSessionNV :: #type (device : VkDevice,
+                                           pCreateInfo : *VkOpticalFlowSessionCreateInfoNV,
+                                           pAllocator : *VkAllocationCallbacks,
+                                           pSession : *VkOpticalFlowSessionNV) -> VkResult #foreign;
+
+
+// Command vkDestroyOpticalFlowSessionNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyOpticalFlowSessionNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+PFN_vkDestroyOpticalFlowSessionNV :: #type (device : VkDevice,
+                                            session : VkOpticalFlowSessionNV,
+                                            pAllocator : *VkAllocationCallbacks) #foreign;
+
+
+// Command vkBindOpticalFlowSessionImageNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindOpticalFlowSessionImageNV.html)
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+PFN_vkBindOpticalFlowSessionImageNV :: #type (device : VkDevice,
+                                              session : VkOpticalFlowSessionNV,
+                                              bindingPoint : VkOpticalFlowSessionBindingPointNV,
+                                              view : VkImageView,
+                                              layout : VkImageLayout) -> VkResult #foreign;
+
+
+// Command vkCmdOpticalFlowExecuteNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdOpticalFlowExecuteNV.html)
+// Can be submitted to a Optical Flow queue
+// Has to be used outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_NV_optical_flow
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+PFN_vkCmdOpticalFlowExecuteNV :: #type (commandBuffer : VkCommandBuffer,
+                                        session : VkOpticalFlowSessionNV,
+                                        pExecuteInfo : *VkOpticalFlowExecuteInfoNV) #foreign;
+
+
+// Command vkGetDeviceFaultInfoEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceFaultInfoEXT.html)
+// Referenced by VK_EXT_device_fault
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+PFN_vkGetDeviceFaultInfoEXT :: #type (device : VkDevice,
+                                      pFaultCounts : *VkDeviceFaultCountsEXT,
+                                      pFaultInfo : *VkDeviceFaultInfoEXT) -> VkResult #foreign;
+
+
+// Command vkReleaseSwapchainImagesEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkReleaseSwapchainImagesEXT.html)
+// Referenced by VK_EXT_swapchain_maintenance1
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+PFN_vkReleaseSwapchainImagesEXT :: #type (device : VkDevice,
+                                          pReleaseInfo : *VkReleaseSwapchainImagesInfoEXT) -> VkResult #foreign;
+
+
+// Command vkMapMemory2KHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkMapMemory2KHR.html)
+// Referenced by VK_KHR_map_memory2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)
+PFN_vkMapMemory2KHR :: #type (device : VkDevice,
+                              pMemoryMapInfo : *VkMemoryMapInfoKHR,
+                              ppData : **void) -> VkResult #foreign;
+
+
+// Command vkUnmapMemory2KHR (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkUnmapMemory2KHR.html)
+// Referenced by VK_KHR_map_memory2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)
+PFN_vkUnmapMemory2KHR :: #type (device : VkDevice,
+                                pMemoryUnmapInfo : *VkMemoryUnmapInfoKHR) -> VkResult #foreign;
+
+
+// Command vkCreateShadersEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateShadersEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCreateShadersEXT :: #type (device : VkDevice,
+                                 createInfoCount : u32,
+                                 pCreateInfos : *VkShaderCreateInfoEXT,
+                                 pAllocator : *VkAllocationCallbacks,
+                                 pShaders : *VkShaderEXT) -> VkResult #foreign;
+
+
+// Command vkDestroyShaderEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkDestroyShaderEXT :: #type (device : VkDevice,
+                                 shader : VkShaderEXT,
+                                 pAllocator : *VkAllocationCallbacks) #foreign;
+
+
+// Command vkGetShaderBinaryDataEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetShaderBinaryDataEXT.html)
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkGetShaderBinaryDataEXT :: #type (device : VkDevice,
+                                       shader : VkShaderEXT,
+                                       pDataSize : *u64,
+                                       pData : *void) -> VkResult #foreign;
+
+
+// Command vkCmdBindShadersEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindShadersEXT.html)
+// Can be submitted to a Graphics and Compute queues
+// Can be used both inside and outside a renderpass
+// Can be recorded to both a primary and secondary command buffer
+// Referenced by VK_EXT_shader_object
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+PFN_vkCmdBindShadersEXT :: #type (commandBuffer : VkCommandBuffer,
+                                  stageCount : u32,
+                                  pStages : *VkShaderStageFlagBits,
+                                  pShaders : *VkShaderEXT) #foreign;
 
 
 #if VULKAN_PLATFORM == .X11
@@ -22166,6 +27455,159 @@ VkMetalSurfaceCreateInfoEXT :: struct
 }
 
 
+// Type VkExportMetalObjectCreateInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalObjectCreateInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalObjectCreateInfoEXT :: struct // Can be in the pNext chain of "VkInstanceCreateInfo,VkMemoryAllocateInfo,VkImageCreateInfo,VkImageViewCreateInfo,VkBufferViewCreateInfo,VkSemaphoreCreateInfo,VkEventCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;
+    pNext : *void;
+    exportObjectType : VkExportMetalObjectTypeFlagBitsEXT;
+}
+
+
+// Type VkExportMetalObjectsInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalObjectsInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalObjectsInfoEXT :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECTS_INFO_EXT;
+    pNext : *void;
+}
+
+
+// Type VkExportMetalDeviceInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalDeviceInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalDeviceInfoEXT :: struct // Can be in the pNext chain of "VkExportMetalObjectsInfoEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_DEVICE_INFO_EXT;
+    pNext : *void;
+    mtlDevice : MTLDevice_id;
+}
+
+
+// Type VkExportMetalCommandQueueInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalCommandQueueInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalCommandQueueInfoEXT :: struct // Can be in the pNext chain of "VkExportMetalObjectsInfoEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_COMMAND_QUEUE_INFO_EXT;
+    pNext : *void;
+    queue : VkQueue;
+    mtlCommandQueue : MTLCommandQueue_id;
+}
+
+
+// Type VkExportMetalBufferInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalBufferInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalBufferInfoEXT :: struct // Can be in the pNext chain of "VkExportMetalObjectsInfoEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_BUFFER_INFO_EXT;
+    pNext : *void;
+    memory : VkDeviceMemory;
+    mtlBuffer : MTLBuffer_id;
+}
+
+
+// Type VkImportMetalBufferInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImportMetalBufferInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkImportMetalBufferInfoEXT :: struct // Can be in the pNext chain of "VkMemoryAllocateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMPORT_METAL_BUFFER_INFO_EXT;
+    pNext : *void;
+    mtlBuffer : MTLBuffer_id;
+}
+
+
+// Type VkExportMetalTextureInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalTextureInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalTextureInfoEXT :: struct // Can be in the pNext chain of "VkExportMetalObjectsInfoEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_TEXTURE_INFO_EXT;
+    pNext : *void;
+    image : VkImage;
+    imageView : VkImageView;
+    bufferView : VkBufferView;
+    plane : VkImageAspectFlagBits;
+    mtlTexture : MTLTexture_id;
+}
+
+
+// Type VkImportMetalTextureInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImportMetalTextureInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkImportMetalTextureInfoEXT :: struct // Can be in the pNext chain of "VkImageCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT;
+    pNext : *void;
+    plane : VkImageAspectFlagBits;
+    mtlTexture : MTLTexture_id;
+}
+
+
+// Type VkExportMetalIOSurfaceInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalIOSurfaceInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalIOSurfaceInfoEXT :: struct // Can be in the pNext chain of "VkExportMetalObjectsInfoEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_IO_SURFACE_INFO_EXT;
+    pNext : *void;
+    image : VkImage;
+    ioSurface : IOSurfaceRef;
+}
+
+
+// Type VkImportMetalIOSurfaceInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImportMetalIOSurfaceInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkImportMetalIOSurfaceInfoEXT :: struct // Can be in the pNext chain of "VkImageCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMPORT_METAL_IO_SURFACE_INFO_EXT;
+    pNext : *void;
+    ioSurface : IOSurfaceRef;
+}
+
+
+// Type VkExportMetalSharedEventInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMetalSharedEventInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkExportMetalSharedEventInfoEXT :: struct // Can be in the pNext chain of "VkExportMetalObjectsInfoEXT"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_METAL_SHARED_EVENT_INFO_EXT;
+    pNext : *void;
+    semaphore : VkSemaphore;
+    event : VkEvent;
+    mtlSharedEvent : MTLSharedEvent_id;
+}
+
+
+// Type VkImportMetalSharedEventInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImportMetalSharedEventInfoEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VkImportMetalSharedEventInfoEXT :: struct // Can be in the pNext chain of "VkSemaphoreCreateInfo,VkEventCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMPORT_METAL_SHARED_EVENT_INFO_EXT;
+    pNext : *void;
+    mtlSharedEvent : MTLSharedEvent_id;
+}
+
+
 // Command vkCreateIOSSurfaceMVK (Instance Command)
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateIOSSurfaceMVK.html)
 // Referenced by VK_MVK_ios_surface
@@ -22194,6 +27636,14 @@ PFN_vkCreateMetalSurfaceEXT :: #type (instance : VkInstance,
                                       pCreateInfo : *VkMetalSurfaceCreateInfoEXT,
                                       pAllocator : *VkAllocationCallbacks,
                                       pSurface : *VkSurfaceKHR) -> VkResult #foreign;
+
+
+// Command vkExportMetalObjectsEXT (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkExportMetalObjectsEXT.html)
+// Referenced by VK_EXT_metal_objects
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+PFN_vkExportMetalObjectsEXT :: #type (device : VkDevice,
+                                      pMetalObjectsInfo : *VkExportMetalObjectsInfoEXT) #foreign;
 
 
 }
@@ -22271,6 +27721,132 @@ PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX :: #type (physicalDevice : V
 
 
 }
+#if VULKAN_PLATFORM == .Jetson
+{
+
+// Type VkExportMemorySciBufInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportMemorySciBufInfoNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+VkExportMemorySciBufInfoNV :: struct // Can be in the pNext chain of "VkMemoryAllocateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_SCI_BUF_INFO_NV;
+    pNext : *void;
+    pAttributes : NvSciBufAttrList;
+}
+
+
+// Type VkImportMemorySciBufInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImportMemorySciBufInfoNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+VkImportMemorySciBufInfoNV :: struct // Can be in the pNext chain of "VkMemoryAllocateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_SCI_BUF_INFO_NV;
+    pNext : *void;
+    handleType : VkExternalMemoryHandleTypeFlagBits;
+    handle : NvSciBufObj;
+}
+
+
+// Type VkExportFenceSciSyncInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportFenceSciSyncInfoNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkExportFenceSciSyncInfoNV :: struct // Can be in the pNext chain of "VkFenceCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_FENCE_SCI_SYNC_INFO_NV;
+    pNext : *void;
+    pAttributes : NvSciSyncAttrList;
+}
+
+
+// Type VkExportSemaphoreSciSyncInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExportSemaphoreSciSyncInfoNV.html)
+// Referenced by VK_NV_external_sci_sync
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+VkExportSemaphoreSciSyncInfoNV :: struct // Can be in the pNext chain of "VkSemaphoreCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_SCI_SYNC_INFO_NV;
+    pNext : *void;
+    pAttributes : NvSciSyncAttrList;
+}
+
+
+// Type VkSemaphoreSciSyncPoolCreateInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreSciSyncPoolCreateInfoNV.html)
+// Referenced by VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkSemaphoreSciSyncPoolCreateInfoNV :: struct
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SEMAPHORE_SCI_SYNC_POOL_CREATE_INFO_NV;
+    pNext : *void;
+    handle : NvSciSyncObj;
+}
+
+
+// Type VkSemaphoreSciSyncCreateInfoNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreSciSyncCreateInfoNV.html)
+// Referenced by VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VkSemaphoreSciSyncCreateInfoNV :: struct // Can be in the pNext chain of "VkSemaphoreCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_SEMAPHORE_SCI_SYNC_CREATE_INFO_NV;
+    pNext : *void;
+    semaphorePool : VkSemaphoreSciSyncPoolNV;
+    pFence : *NvSciSyncFence;
+}
+
+
+// Command vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+PFN_vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV :: #type (physicalDevice : VkPhysicalDevice,
+                                                                  handleType : VkExternalMemoryHandleTypeFlagBits,
+                                                                  handle : NvSciBufObj,
+                                                                  pMemorySciBufProperties : *VkMemorySciBufPropertiesNV) -> VkResult #foreign;
+
+
+// Command vkGetPhysicalDeviceSciBufAttributesNV (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSciBufAttributesNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+PFN_vkGetPhysicalDeviceSciBufAttributesNV :: #type (physicalDevice : VkPhysicalDevice,
+                                                    pAttributes : NvSciBufAttrList) -> VkResult #foreign;
+
+
+// Command vkGetPhysicalDeviceSciSyncAttributesNV (Instance Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSciSyncAttributesNV.html)
+// Referenced by VK_NV_external_sci_sync, VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+PFN_vkGetPhysicalDeviceSciSyncAttributesNV :: #type (physicalDevice : VkPhysicalDevice,
+                                                     pSciSyncAttributesInfo : *VkSciSyncAttributesInfoNV,
+                                                     pAttributes : NvSciSyncAttrList) -> VkResult #foreign;
+
+
+// Command vkGetMemorySciBufNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetMemorySciBufNV.html)
+// Referenced by VK_NV_external_memory_sci_buf
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+PFN_vkGetMemorySciBufNV :: #type (device : VkDevice,
+                                  pGetSciBufInfo : *VkMemoryGetSciBufInfoNV,
+                                  pHandle : *NvSciBufObj) -> VkResult #foreign;
+
+
+// Command vkCreateSemaphoreSciSyncPoolNV (Device Command)
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSemaphoreSciSyncPoolNV.html)
+// Referenced by VK_NV_external_sci_sync2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+PFN_vkCreateSemaphoreSciSyncPoolNV :: #type (device : VkDevice,
+                                             pCreateInfo : *VkSemaphoreSciSyncPoolCreateInfoNV,
+                                             pAllocator : *VkAllocationCallbacks,
+                                             pSemaphorePool : *VkSemaphoreSciSyncPoolNV) -> VkResult #foreign;
+
+
+}
 #if VK_ENABLE_BETA_EXTENSIONS
 {
 
@@ -22312,461 +27888,180 @@ VkPhysicalDevicePortabilitySubsetPropertiesKHR :: struct // Can be in the pNext 
 }
 
 
-// Type VkVideoQueueFamilyProperties2KHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoQueueFamilyProperties2KHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoQueueFamilyProperties2KHR :: struct // Can be in the pNext chain of "VkQueueFamilyProperties2"
+// Type VkVideoDecodeH264ProfileInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264ProfileInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h264
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+VkVideoDecodeH264ProfileInfoKHR :: struct // Can be in the pNext chain of "VkVideoProfileInfoKHR,VkQueryPoolCreateInfo"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_QUEUE_FAMILY_PROPERTIES_2_KHR;
-    pNext : *void;
-    videoCodecOperations : VkVideoCodecOperationFlagsKHR;
-}
-
-
-// Type VkQueueFamilyQueryResultStatusProperties2KHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFamilyQueryResultStatusProperties2KHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkQueueFamilyQueryResultStatusProperties2KHR :: struct // Can be in the pNext chain of "VkQueueFamilyProperties2"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_2_KHR;
-    pNext : *void;
-    supported : VkBool32;
-}
-
-
-// Type VkVideoProfilesKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoProfilesKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoProfilesKHR :: struct // Can be in the pNext chain of "VkFormatProperties2,VkImageCreateInfo,VkImageViewCreateInfo,VkBufferCreateInfo"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_PROFILES_KHR;
-    pNext : *void;
-    profileCount : u32;
-    pProfiles : *VkVideoProfileKHR;
-}
-
-
-// Type VkPhysicalDeviceVideoFormatInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVideoFormatInfoKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkPhysicalDeviceVideoFormatInfoKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_FORMAT_INFO_KHR;
-    pNext : *void;
-    imageUsage : VkImageUsageFlags;
-    pVideoProfiles : *VkVideoProfilesKHR;
-}
-
-
-// Type VkVideoFormatPropertiesKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoFormatPropertiesKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoFormatPropertiesKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_FORMAT_PROPERTIES_KHR;
-    pNext : *void;
-    format : VkFormat;
-}
-
-
-// Type VkVideoProfileKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoProfileKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoProfileKHR :: struct // Can be in the pNext chain of "VkQueryPoolCreateInfo,VkFormatProperties2,VkImageCreateInfo,VkImageViewCreateInfo,VkBufferCreateInfo"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_PROFILE_KHR;
-    pNext : *void;
-    videoCodecOperation : VkVideoCodecOperationFlagBitsKHR;
-    chromaSubsampling : VkVideoChromaSubsamplingFlagsKHR;
-    lumaBitDepth : VkVideoComponentBitDepthFlagsKHR;
-    chromaBitDepth : VkVideoComponentBitDepthFlagsKHR;
-}
-
-
-// Type VkVideoCapabilitiesKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoCapabilitiesKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoCapabilitiesKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_CAPABILITIES_KHR;
-    pNext : *void;
-    capabilityFlags : VkVideoCapabilityFlagsKHR;
-    minBitstreamBufferOffsetAlignment : VkDeviceSize;
-    minBitstreamBufferSizeAlignment : VkDeviceSize;
-    videoPictureExtentGranularity : VkExtent2D;
-    minExtent : VkExtent2D;
-    maxExtent : VkExtent2D;
-    maxReferencePicturesSlotsCount : u32;
-    maxReferencePicturesActiveCount : u32;
-}
-
-
-// Type VkVideoGetMemoryPropertiesKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoGetMemoryPropertiesKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoGetMemoryPropertiesKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_GET_MEMORY_PROPERTIES_KHR;
-    pNext : *void;
-    memoryBindIndex : u32;
-    pMemoryRequirements : *VkMemoryRequirements2;
-}
-
-
-// Type VkVideoBindMemoryKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoBindMemoryKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoBindMemoryKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_BIND_MEMORY_KHR;
-    pNext : *void;
-    memoryBindIndex : u32;
-    memory : VkDeviceMemory;
-    memoryOffset : VkDeviceSize;
-    memorySize : VkDeviceSize;
-}
-
-
-// Type VkVideoPictureResourceKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoPictureResourceKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoPictureResourceKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_PICTURE_RESOURCE_KHR;
-    pNext : *void;
-    codedOffset : VkOffset2D; // The offset to be used for the picture resource, currently only used in field mode
-    codedExtent : VkExtent2D; // The extent to be used for the picture resource
-    baseArrayLayer : u32; // TThe first array layer to be accessed for the Decode or Encode Operations
-    imageViewBinding : VkImageView; // The ImageView binding of the resource
-}
-
-
-// Type VkVideoReferenceSlotKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoReferenceSlotKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoReferenceSlotKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_REFERENCE_SLOT_KHR;
-    pNext : *void;
-    slotIndex : s8; // The reference slot index
-    pPictureResource : *VkVideoPictureResourceKHR; // The reference picture resource
-}
-
-
-// Type VkVideoDecodeInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeInfoKHR.html)
-// Referenced by VK_KHR_video_decode_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
-VkVideoDecodeInfoKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_INFO_KHR;
-    pNext : *void;
-    flags : VkVideoDecodeFlagsKHR;
-    codedOffset : VkOffset2D;
-    codedExtent : VkExtent2D;
-    srcBuffer : VkBuffer;
-    srcBufferOffset : VkDeviceSize;
-    srcBufferRange : VkDeviceSize;
-    dstPictureResource : VkVideoPictureResourceKHR;
-    pSetupReferenceSlot : *VkVideoReferenceSlotKHR;
-    referenceSlotCount : u32;
-    pReferenceSlots : *VkVideoReferenceSlotKHR;
-}
-
-
-// Type VkVideoDecodeH264ProfileEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264ProfileEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264ProfileEXT :: struct // Can be in the pNext chain of "VkVideoProfileKHR,VkQueryPoolCreateInfo,VkFormatProperties2,VkImageCreateInfo,VkImageViewCreateInfo,VkBufferCreateInfo"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR;
     pNext : *void;
     stdProfileIdc : StdVideoH264ProfileIdc;
-    pictureLayout : VkVideoDecodeH264PictureLayoutFlagsEXT;
+    pictureLayout : VkVideoDecodeH264PictureLayoutFlagBitsKHR;
 }
 
 
-// Type VkVideoDecodeH264CapabilitiesEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264CapabilitiesEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264CapabilitiesEXT :: struct // Can be in the pNext chain of "VkVideoCapabilitiesKHR"
+// Type VkVideoDecodeH264CapabilitiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264CapabilitiesKHR.html)
+// Referenced by VK_KHR_video_decode_h264
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+VkVideoDecodeH264CapabilitiesKHR :: struct // Can be in the pNext chain of "VkVideoCapabilitiesKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_CAPABILITIES_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_CAPABILITIES_KHR;
     pNext : *void;
-    maxLevel : u32;
+    maxLevelIdc : StdVideoH264LevelIdc;
     fieldOffsetGranularity : VkOffset2D;
-    stdExtensionVersion : VkExtensionProperties;
 }
 
 
-// Type VkVideoDecodeH264SessionCreateInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264SessionCreateInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264SessionCreateInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionCreateInfoKHR"
+// Type VkVideoDecodeH264SessionParametersAddInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264SessionParametersAddInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h264
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+VkVideoDecodeH264SessionParametersAddInfoKHR :: struct // Can be in the pNext chain of "VkVideoSessionParametersUpdateInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_CREATE_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR;
     pNext : *void;
-    flags : VkVideoDecodeH264CreateFlagsEXT;
-    pStdExtensionVersion : *VkExtensionProperties;
+    stdSPSCount : u32;
+    pStdSPSs : *StdVideoH264SequenceParameterSet;
+    stdPPSCount : u32;
+    pStdPPSs : *StdVideoH264PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
 }
 
 
-// Type VkVideoDecodeH264SessionParametersAddInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264SessionParametersAddInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264SessionParametersAddInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionParametersUpdateInfoKHR"
+// Type VkVideoDecodeH264SessionParametersCreateInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264SessionParametersCreateInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h264
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+VkVideoDecodeH264SessionParametersCreateInfoKHR :: struct // Can be in the pNext chain of "VkVideoSessionParametersCreateInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR;
     pNext : *void;
-    spsStdCount : u32;
-    pSpsStd : *StdVideoH264SequenceParameterSet;
-    ppsStdCount : u32;
-    pPpsStd : *StdVideoH264PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
+    maxStdSPSCount : u32;
+    maxStdPPSCount : u32;
+    pParametersAddInfo : *VkVideoDecodeH264SessionParametersAddInfoKHR;
 }
 
 
-// Type VkVideoDecodeH264SessionParametersCreateInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264SessionParametersCreateInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264SessionParametersCreateInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionParametersCreateInfoKHR"
+// Type VkVideoDecodeH264PictureInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264PictureInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h264
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+VkVideoDecodeH264PictureInfoKHR :: struct // Can be in the pNext chain of "VkVideoDecodeInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT;
-    pNext : *void;
-    maxSpsStdCount : u32;
-    maxPpsStdCount : u32;
-    pParametersAddInfo : *VkVideoDecodeH264SessionParametersAddInfoEXT;
-}
-
-
-// Type VkVideoDecodeH264PictureInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264PictureInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264PictureInfoEXT :: struct // Can be in the pNext chain of "VkVideoDecodeInfoKHR"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_KHR;
     pNext : *void;
     pStdPictureInfo : *StdVideoDecodeH264PictureInfo;
-    slicesCount : u32;
-    pSlicesDataOffsets : *u32;
+    sliceCount : u32;
+    pSliceOffsets : *u32;
 }
 
 
-// Type VkVideoDecodeH264DpbSlotInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264DpbSlotInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264DpbSlotInfoEXT :: struct // Can be in the pNext chain of "VkVideoReferenceSlotKHR"
+// Type VkVideoDecodeH264DpbSlotInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264DpbSlotInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h264
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+VkVideoDecodeH264DpbSlotInfoKHR :: struct // Can be in the pNext chain of "VkVideoReferenceSlotInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_KHR;
     pNext : *void;
     pStdReferenceInfo : *StdVideoDecodeH264ReferenceInfo;
 }
 
 
-// Type VkVideoDecodeH264MvcEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH264MvcEXT.html)
-// Referenced by VK_EXT_video_decode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VkVideoDecodeH264MvcEXT :: struct // Can be in the pNext chain of "VkVideoDecodeH264PictureInfoEXT"
+// Type VkVideoDecodeH265ProfileInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265ProfileInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h265
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+VkVideoDecodeH265ProfileInfoKHR :: struct // Can be in the pNext chain of "VkVideoProfileInfoKHR,VkQueryPoolCreateInfo"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_MVC_EXT;
-    pNext : *void;
-    pStdMvc : *StdVideoDecodeH264Mvc;
-}
-
-
-// Type VkVideoDecodeH265ProfileEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265ProfileEXT.html)
-// Referenced by VK_EXT_video_decode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VkVideoDecodeH265ProfileEXT :: struct // Can be in the pNext chain of "VkVideoProfileKHR,VkQueryPoolCreateInfo,VkFormatProperties2,VkImageCreateInfo,VkImageViewCreateInfo,VkBufferCreateInfo"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PROFILE_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PROFILE_INFO_KHR;
     pNext : *void;
     stdProfileIdc : StdVideoH265ProfileIdc;
 }
 
 
-// Type VkVideoDecodeH265CapabilitiesEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265CapabilitiesEXT.html)
-// Referenced by VK_EXT_video_decode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VkVideoDecodeH265CapabilitiesEXT :: struct // Can be in the pNext chain of "VkVideoCapabilitiesKHR"
+// Type VkVideoDecodeH265CapabilitiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265CapabilitiesKHR.html)
+// Referenced by VK_KHR_video_decode_h265
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+VkVideoDecodeH265CapabilitiesKHR :: struct // Can be in the pNext chain of "VkVideoCapabilitiesKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_CAPABILITIES_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_CAPABILITIES_KHR;
     pNext : *void;
-    maxLevel : u32;
-    stdExtensionVersion : VkExtensionProperties;
+    maxLevelIdc : StdVideoH265LevelIdc;
 }
 
 
-// Type VkVideoDecodeH265SessionCreateInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265SessionCreateInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VkVideoDecodeH265SessionCreateInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionCreateInfoKHR"
+// Type VkVideoDecodeH265SessionParametersAddInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265SessionParametersAddInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h265
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+VkVideoDecodeH265SessionParametersAddInfoKHR :: struct // Can be in the pNext chain of "VkVideoSessionParametersUpdateInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_CREATE_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_ADD_INFO_KHR;
     pNext : *void;
-    flags : VkVideoDecodeH265CreateFlagsEXT;
-    pStdExtensionVersion : *VkExtensionProperties;
+    stdVPSCount : u32;
+    pStdVPSs : *StdVideoH265VideoParameterSet;
+    stdSPSCount : u32;
+    pStdSPSs : *StdVideoH265SequenceParameterSet;
+    stdPPSCount : u32;
+    pStdPPSs : *StdVideoH265PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
 }
 
 
-// Type VkVideoDecodeH265SessionParametersAddInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265SessionParametersAddInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VkVideoDecodeH265SessionParametersAddInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionParametersUpdateInfoKHR"
+// Type VkVideoDecodeH265SessionParametersCreateInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265SessionParametersCreateInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h265
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+VkVideoDecodeH265SessionParametersCreateInfoKHR :: struct // Can be in the pNext chain of "VkVideoSessionParametersCreateInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_CREATE_INFO_KHR;
     pNext : *void;
-    spsStdCount : u32;
-    pSpsStd : *StdVideoH265SequenceParameterSet;
-    ppsStdCount : u32;
-    pPpsStd : *StdVideoH265PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
+    maxStdVPSCount : u32;
+    maxStdSPSCount : u32;
+    maxStdPPSCount : u32;
+    pParametersAddInfo : *VkVideoDecodeH265SessionParametersAddInfoKHR;
 }
 
 
-// Type VkVideoDecodeH265SessionParametersCreateInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265SessionParametersCreateInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VkVideoDecodeH265SessionParametersCreateInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionParametersCreateInfoKHR"
+// Type VkVideoDecodeH265PictureInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265PictureInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h265
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+VkVideoDecodeH265PictureInfoKHR :: struct // Can be in the pNext chain of "VkVideoDecodeInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT;
-    pNext : *void;
-    maxSpsStdCount : u32;
-    maxPpsStdCount : u32;
-    pParametersAddInfo : *VkVideoDecodeH265SessionParametersAddInfoEXT;
-}
-
-
-// Type VkVideoDecodeH265PictureInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265PictureInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VkVideoDecodeH265PictureInfoEXT :: struct // Can be in the pNext chain of "VkVideoDecodeInfoKHR"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_KHR;
     pNext : *void;
     pStdPictureInfo : *StdVideoDecodeH265PictureInfo;
-    slicesCount : u32;
-    pSlicesDataOffsets : *u32;
+    sliceSegmentCount : u32;
+    pSliceSegmentOffsets : *u32;
 }
 
 
-// Type VkVideoDecodeH265DpbSlotInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265DpbSlotInfoEXT.html)
-// Referenced by VK_EXT_video_decode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VkVideoDecodeH265DpbSlotInfoEXT :: struct // Can be in the pNext chain of "VkVideoReferenceSlotKHR"
+// Type VkVideoDecodeH265DpbSlotInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoDecodeH265DpbSlotInfoKHR.html)
+// Referenced by VK_KHR_video_decode_h265
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+VkVideoDecodeH265DpbSlotInfoKHR :: struct // Can be in the pNext chain of "VkVideoReferenceSlotInfoKHR"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_DPB_SLOT_INFO_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_DPB_SLOT_INFO_KHR;
     pNext : *void;
     pStdReferenceInfo : *StdVideoDecodeH265ReferenceInfo;
 }
 
 
-// Type VkVideoSessionCreateInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoSessionCreateInfoKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoSessionCreateInfoKHR :: struct
+// Type VkVideoEncodeUsageInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeUsageInfoKHR.html)
+// Referenced by VK_KHR_video_encode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+VkVideoEncodeUsageInfoKHR :: struct // Can be in the pNext chain of "VkVideoProfileInfoKHR,VkQueryPoolCreateInfo"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_SESSION_CREATE_INFO_KHR;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_USAGE_INFO_KHR;
     pNext : *void;
-    queueFamilyIndex : u32;
-    flags : VkVideoSessionCreateFlagsKHR;
-    pVideoProfile : *VkVideoProfileKHR;
-    pictureFormat : VkFormat;
-    maxCodedExtent : VkExtent2D;
-    referencePicturesFormat : VkFormat;
-    maxReferencePicturesSlotsCount : u32;
-    maxReferencePicturesActiveCount : u32;
-}
-
-
-// Type VkVideoSessionParametersCreateInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoSessionParametersCreateInfoKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoSessionParametersCreateInfoKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_CREATE_INFO_KHR;
-    pNext : *void;
-    videoSessionParametersTemplate : VkVideoSessionParametersKHR;
-    videoSession : VkVideoSessionKHR;
-}
-
-
-// Type VkVideoSessionParametersUpdateInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoSessionParametersUpdateInfoKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoSessionParametersUpdateInfoKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_UPDATE_INFO_KHR;
-    pNext : *void;
-    updateSequenceCount : u32;
-}
-
-
-// Type VkVideoBeginCodingInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoBeginCodingInfoKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoBeginCodingInfoKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_BEGIN_CODING_INFO_KHR;
-    pNext : *void;
-    flags : VkVideoBeginCodingFlagsKHR;
-    codecQualityPreset : VkVideoCodingQualityPresetFlagsKHR;
-    videoSession : VkVideoSessionKHR;
-    videoSessionParameters : VkVideoSessionParametersKHR;
-    referenceSlotCount : u32;
-    pReferenceSlots : *VkVideoReferenceSlotKHR;
-}
-
-
-// Type VkVideoEndCodingInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEndCodingInfoKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoEndCodingInfoKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_END_CODING_INFO_KHR;
-    pNext : *void;
-    flags : VkVideoEndCodingFlagsKHR;
-}
-
-
-// Type VkVideoCodingControlInfoKHR
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoCodingControlInfoKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-VkVideoCodingControlInfoKHR :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_CODING_CONTROL_INFO_KHR;
-    pNext : *void;
-    flags : VkVideoCodingControlFlagsKHR;
+    videoUsageHints : VkVideoEncodeUsageFlagsKHR;
+    videoContentHints : VkVideoEncodeContentFlagsKHR;
+    tuningMode : VkVideoEncodeTuningModeKHR;
 }
 
 
@@ -22780,15 +28075,26 @@ VkVideoEncodeInfoKHR :: struct
     pNext : *void;
     flags : VkVideoEncodeFlagsKHR;
     qualityLevel : u32;
-    codedExtent : VkExtent2D;
-    dstBitstreamBuffer : VkBuffer;
-    dstBitstreamBufferOffset : VkDeviceSize;
-    dstBitstreamBufferMaxRange : VkDeviceSize;
-    srcPictureResource : VkVideoPictureResourceKHR;
-    pSetupReferenceSlot : *VkVideoReferenceSlotKHR;
+    dstBuffer : VkBuffer;
+    dstBufferOffset : VkDeviceSize;
+    dstBufferRange : VkDeviceSize;
+    srcPictureResource : VkVideoPictureResourceInfoKHR;
+    pSetupReferenceSlot : *VkVideoReferenceSlotInfoKHR;
     referenceSlotCount : u32;
-    pReferenceSlots : *VkVideoReferenceSlotKHR;
+    pReferenceSlots : *VkVideoReferenceSlotInfoKHR;
     precedingExternallyEncodedBytes : u32;
+}
+
+
+// Type VkQueryPoolVideoEncodeFeedbackCreateInfoKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPoolVideoEncodeFeedbackCreateInfoKHR.html)
+// Referenced by VK_KHR_video_encode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+VkQueryPoolVideoEncodeFeedbackCreateInfoKHR :: struct // Can be in the pNext chain of "VkQueryPoolCreateInfo"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_QUERY_POOL_VIDEO_ENCODE_FEEDBACK_CREATE_INFO_KHR;
+    pNext : *void;
+    encodeFeedbackFlags : VkVideoEncodeFeedbackFlagsKHR;
 }
 
 
@@ -22802,8 +28108,8 @@ VkVideoEncodeRateControlInfoKHR :: struct // Can be in the pNext chain of "VkVid
     pNext : *void;
     flags : VkVideoEncodeRateControlFlagsKHR;
     rateControlMode : VkVideoEncodeRateControlModeFlagBitsKHR;
-    layerCount : u8;
-    pLayerConfigs : *VkVideoEncodeRateControlLayerInfoKHR;
+    layerCount : u32;
+    pLayers : *VkVideoEncodeRateControlLayerInfoKHR;
 }
 
 
@@ -22815,12 +28121,29 @@ VkVideoEncodeRateControlLayerInfoKHR :: struct // Can be in the pNext chain of "
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_LAYER_INFO_KHR;
     pNext : *void;
-    averageBitrate : u32;
-    maxBitrate : u32;
+    averageBitrate : u64;
+    maxBitrate : u64;
     frameRateNumerator : u32;
     frameRateDenominator : u32;
     virtualBufferSizeInMs : u32;
     initialVirtualBufferSizeInMs : u32;
+}
+
+
+// Type VkVideoEncodeCapabilitiesKHR
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeCapabilitiesKHR.html)
+// Referenced by VK_KHR_video_encode_queue
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
+VkVideoEncodeCapabilitiesKHR :: struct // Can be in the pNext chain of "VkVideoCapabilitiesKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_CAPABILITIES_KHR;
+    pNext : *void;
+    flags : VkVideoEncodeCapabilityFlagsKHR;
+    rateControlModes : VkVideoEncodeRateControlModeFlagsKHR;
+    maxRateControlLayers : u32;
+    maxQualityLevels : u32;
+    inputImageDataFillAlignment : VkExtent2D;
+    supportedEncodeFeedbackFlags : VkVideoEncodeFeedbackFlagsKHR;
 }
 
 
@@ -22833,30 +28156,14 @@ VkVideoEncodeH264CapabilitiesEXT :: struct // Can be in the pNext chain of "VkVi
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_CAPABILITIES_EXT;
     pNext : *void;
     flags : VkVideoEncodeH264CapabilityFlagsEXT;
-    inputModeFlags : VkVideoEncodeH264InputModeFlagsEXT;
-    outputModeFlags : VkVideoEncodeH264OutputModeFlagsEXT;
-    minPictureSizeInMbs : VkExtent2D;
-    maxPictureSizeInMbs : VkExtent2D;
-    inputImageDataAlignment : VkExtent2D;
-    maxNumL0ReferenceForP : u8;
-    maxNumL0ReferenceForB : u8;
-    maxNumL1Reference : u8;
-    qualityLevelCount : u8;
-    stdExtensionVersion : VkExtensionProperties;
-}
-
-
-// Type VkVideoEncodeH264SessionCreateInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264SessionCreateInfoEXT.html)
-// Referenced by VK_EXT_video_encode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-VkVideoEncodeH264SessionCreateInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionCreateInfoKHR"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_CREATE_INFO_EXT;
-    pNext : *void;
-    flags : VkVideoEncodeH264CreateFlagsEXT;
-    maxPictureSizeInMbs : VkExtent2D;
-    pStdExtensionVersion : *VkExtensionProperties;
+    maxPPictureL0ReferenceCount : u32;
+    maxBPictureL0ReferenceCount : u32;
+    maxL1ReferenceCount : u32;
+    motionVectorsOverPicBoundariesFlag : VkBool32;
+    maxBytesPerPicDenom : u32;
+    maxBitsPerMbDenom : u32;
+    log2MaxMvLengthHorizontal : u32;
+    log2MaxMvLengthVertical : u32;
 }
 
 
@@ -22868,10 +28175,10 @@ VkVideoEncodeH264SessionParametersAddInfoEXT :: struct // Can be in the pNext ch
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT;
     pNext : *void;
-    spsStdCount : u32;
-    pSpsStd : *StdVideoH264SequenceParameterSet;
-    ppsStdCount : u32;
-    pPpsStd : *StdVideoH264PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
+    stdSPSCount : u32;
+    pStdSPSs : *StdVideoH264SequenceParameterSet;
+    stdPPSCount : u32;
+    pStdPPSs : *StdVideoH264PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
 }
 
 
@@ -22883,8 +28190,8 @@ VkVideoEncodeH264SessionParametersCreateInfoEXT :: struct // Can be in the pNext
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT;
     pNext : *void;
-    maxSpsStdCount : u32;
-    maxPpsStdCount : u32;
+    maxStdSPSCount : u32;
+    maxStdPPSCount : u32;
     pParametersAddInfo : *VkVideoEncodeH264SessionParametersAddInfoEXT;
 }
 
@@ -22893,12 +28200,11 @@ VkVideoEncodeH264SessionParametersCreateInfoEXT :: struct // Can be in the pNext
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264DpbSlotInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h264
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-VkVideoEncodeH264DpbSlotInfoEXT :: struct
+VkVideoEncodeH264DpbSlotInfoEXT :: struct // Can be in the pNext chain of "VkVideoReferenceSlotInfoKHR"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_DPB_SLOT_INFO_EXT;
     pNext : *void;
-    slotIndex : s8;
-    pStdPictureInfo : *StdVideoEncodeH264PictureInfo;
+    pStdReferenceInfo : *StdVideoEncodeH264ReferenceInfo;
 }
 
 
@@ -22910,57 +28216,36 @@ VkVideoEncodeH264VclFrameInfoEXT :: struct // Can be in the pNext chain of "VkVi
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_VCL_FRAME_INFO_EXT;
     pNext : *void;
-    refDefaultFinalList0EntryCount : u8;
-    pRefDefaultFinalList0Entries : *VkVideoEncodeH264DpbSlotInfoEXT;
-    refDefaultFinalList1EntryCount : u8;
-    pRefDefaultFinalList1Entries : *VkVideoEncodeH264DpbSlotInfoEXT;
+    pStdReferenceFinalLists : *StdVideoEncodeH264ReferenceListsInfo;
     naluSliceEntryCount : u32;
-    pNaluSliceEntries : *VkVideoEncodeH264NaluSliceEXT;
-    pCurrentPictureInfo : *VkVideoEncodeH264DpbSlotInfoEXT;
+    pNaluSliceEntries : *VkVideoEncodeH264NaluSliceInfoEXT;
+    pStdPictureInfo : *StdVideoEncodeH264PictureInfo;
 }
 
 
-// Type VkVideoEncodeH264EmitPictureParametersEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264EmitPictureParametersEXT.html)
+// Type VkVideoEncodeH264ProfileInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264ProfileInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h264
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-VkVideoEncodeH264EmitPictureParametersEXT :: struct // Can be in the pNext chain of "VkVideoEncodeInfoKHR"
+VkVideoEncodeH264ProfileInfoEXT :: struct // Can be in the pNext chain of "VkVideoProfileInfoKHR,VkQueryPoolCreateInfo"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_EMIT_PICTURE_PARAMETERS_EXT;
-    pNext : *void;
-    spsId : u8;
-    emitSpsEnable : VkBool32;
-    ppsIdEntryCount : u32;
-    ppsIdEntries : *u8;
-}
-
-
-// Type VkVideoEncodeH264ProfileEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264ProfileEXT.html)
-// Referenced by VK_EXT_video_encode_h264
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-VkVideoEncodeH264ProfileEXT :: struct // Can be in the pNext chain of "VkVideoProfileKHR,VkQueryPoolCreateInfo,VkFormatProperties2,VkImageCreateInfo,VkImageViewCreateInfo,VkBufferCreateInfo"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_INFO_EXT;
     pNext : *void;
     stdProfileIdc : StdVideoH264ProfileIdc;
 }
 
 
-// Type VkVideoEncodeH264NaluSliceEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264NaluSliceEXT.html)
+// Type VkVideoEncodeH264NaluSliceInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264NaluSliceInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h264
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-VkVideoEncodeH264NaluSliceEXT :: struct
+VkVideoEncodeH264NaluSliceInfoEXT :: struct
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_INFO_EXT;
     pNext : *void;
-    pSliceHeaderStd : *StdVideoEncodeH264SliceHeader;
     mbCount : u32;
-    refFinalList0EntryCount : u8;
-    pRefFinalList0Entries : *VkVideoEncodeH264DpbSlotInfoEXT;
-    refFinalList1EntryCount : u8;
-    pRefFinalList1Entries : *VkVideoEncodeH264DpbSlotInfoEXT;
+    pStdReferenceFinalLists : *StdVideoEncodeH264ReferenceListsInfo;
+    pStdSliceHeader : *StdVideoEncodeH264SliceHeader;
 }
 
 
@@ -22968,15 +28253,15 @@ VkVideoEncodeH264NaluSliceEXT :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264RateControlInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h264
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-VkVideoEncodeH264RateControlInfoEXT :: struct // Can be in the pNext chain of "VkVideoEncodeRateControlInfoKHR"
+VkVideoEncodeH264RateControlInfoEXT :: struct // Can be in the pNext chain of "VkVideoCodingControlInfoKHR"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_INFO_EXT;
     pNext : *void;
     gopFrameCount : u32;
     idrPeriod : u32;
     consecutiveBFrameCount : u32;
-    rateControlStructure : VkVideoEncodeH264RateControlStructureFlagBitsEXT;
-    temporalLayerCount : u8;
+    rateControlStructure : VkVideoEncodeH264RateControlStructureEXT;
+    temporalLayerCount : u32;
 }
 
 
@@ -23008,11 +28293,11 @@ VkVideoEncodeH264FrameSizeEXT :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH264RateControlLayerInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h264
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
-VkVideoEncodeH264RateControlLayerInfoEXT :: struct // Can be in the pNext chain of "VkVideoEncodeRateControlLayerInfoKHR"
+VkVideoEncodeH264RateControlLayerInfoEXT :: struct // Can be in the pNext chain of "VkVideoCodingControlInfoKHR,VkVideoEncodeRateControlLayerInfoKHR"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_LAYER_INFO_EXT;
     pNext : *void;
-    temporalLayerId : u8;
+    temporalLayerId : u32;
     useInitialRcQp : VkBool32;
     initialRcQp : VkVideoEncodeH264QpEXT;
     useMinQp : VkBool32;
@@ -23033,29 +28318,23 @@ VkVideoEncodeH265CapabilitiesEXT :: struct // Can be in the pNext chain of "VkVi
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_CAPABILITIES_EXT;
     pNext : *void;
     flags : VkVideoEncodeH265CapabilityFlagsEXT;
-    inputModeFlags : VkVideoEncodeH265InputModeFlagsEXT;
-    outputModeFlags : VkVideoEncodeH265OutputModeFlagsEXT;
     ctbSizes : VkVideoEncodeH265CtbSizeFlagsEXT;
-    inputImageDataAlignment : VkExtent2D;
-    maxNumL0ReferenceForP : u8;
-    maxNumL0ReferenceForB : u8;
-    maxNumL1Reference : u8;
-    maxNumSubLayers : u8;
-    qualityLevelCount : u8;
-    stdExtensionVersion : VkExtensionProperties;
-}
-
-
-// Type VkVideoEncodeH265SessionCreateInfoEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265SessionCreateInfoEXT.html)
-// Referenced by VK_EXT_video_encode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265SessionCreateInfoEXT :: struct // Can be in the pNext chain of "VkVideoSessionCreateInfoKHR"
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_CREATE_INFO_EXT;
-    pNext : *void;
-    flags : VkVideoEncodeH265CreateFlagsEXT;
-    pStdExtensionVersion : *VkExtensionProperties;
+    transformBlockSizes : VkVideoEncodeH265TransformBlockSizeFlagsEXT;
+    maxPPictureL0ReferenceCount : u32;
+    maxBPictureL0ReferenceCount : u32;
+    maxL1ReferenceCount : u32;
+    maxSubLayersCount : u32;
+    minLog2MinLumaCodingBlockSizeMinus3 : u32;
+    maxLog2MinLumaCodingBlockSizeMinus3 : u32;
+    minLog2MinLumaTransformBlockSizeMinus2 : u32;
+    maxLog2MinLumaTransformBlockSizeMinus2 : u32;
+    minMaxTransformHierarchyDepthInter : u32;
+    maxMaxTransformHierarchyDepthInter : u32;
+    minMaxTransformHierarchyDepthIntra : u32;
+    maxMaxTransformHierarchyDepthIntra : u32;
+    maxDiffCuQpDeltaDepth : u32;
+    minMaxNumMergeCand : u32;
+    maxMaxNumMergeCand : u32;
 }
 
 
@@ -23067,12 +28346,12 @@ VkVideoEncodeH265SessionParametersAddInfoEXT :: struct // Can be in the pNext ch
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT;
     pNext : *void;
-    vpsStdCount : u32;
-    pVpsStd : *StdVideoH265VideoParameterSet;
-    spsStdCount : u32;
-    pSpsStd : *StdVideoH265SequenceParameterSet;
-    ppsStdCount : u32;
-    pPpsStd : *StdVideoH265PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
+    stdVPSCount : u32;
+    pStdVPSs : *StdVideoH265VideoParameterSet;
+    stdSPSCount : u32;
+    pStdSPSs : *StdVideoH265SequenceParameterSet;
+    stdPPSCount : u32;
+    pStdPPSs : *StdVideoH265PictureParameterSet; // List of Picture Parameters associated with the spsStd, above
 }
 
 
@@ -23084,9 +28363,9 @@ VkVideoEncodeH265SessionParametersCreateInfoEXT :: struct // Can be in the pNext
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT;
     pNext : *void;
-    maxVpsStdCount : u32;
-    maxSpsStdCount : u32;
-    maxPpsStdCount : u32;
+    maxStdVPSCount : u32;
+    maxStdSPSCount : u32;
+    maxStdPPSCount : u32;
     pParametersAddInfo : *VkVideoEncodeH265SessionParametersAddInfoEXT;
 }
 
@@ -23099,41 +28378,24 @@ VkVideoEncodeH265VclFrameInfoEXT :: struct // Can be in the pNext chain of "VkVi
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_VCL_FRAME_INFO_EXT;
     pNext : *void;
-    pReferenceFinalLists : *VkVideoEncodeH265ReferenceListsEXT;
-    naluSliceEntryCount : u32;
-    pNaluSliceEntries : *VkVideoEncodeH265NaluSliceEXT;
-    pCurrentPictureInfo : *StdVideoEncodeH265PictureInfo;
+    pStdReferenceFinalLists : *StdVideoEncodeH265ReferenceListsInfo;
+    naluSliceSegmentEntryCount : u32;
+    pNaluSliceSegmentEntries : *VkVideoEncodeH265NaluSliceSegmentInfoEXT;
+    pStdPictureInfo : *StdVideoEncodeH265PictureInfo;
 }
 
 
-// Type VkVideoEncodeH265EmitPictureParametersEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265EmitPictureParametersEXT.html)
+// Type VkVideoEncodeH265NaluSliceSegmentInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265NaluSliceSegmentInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265EmitPictureParametersEXT :: struct // Can be in the pNext chain of "VkVideoEncodeInfoKHR"
+VkVideoEncodeH265NaluSliceSegmentInfoEXT :: struct
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_EMIT_PICTURE_PARAMETERS_EXT;
-    pNext : *void;
-    vpsId : u8;
-    spsId : u8;
-    emitVpsEnable : VkBool32;
-    emitSpsEnable : VkBool32;
-    ppsIdEntryCount : u32;
-    ppsIdEntries : *u8;
-}
-
-
-// Type VkVideoEncodeH265NaluSliceEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265NaluSliceEXT.html)
-// Referenced by VK_EXT_video_encode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265NaluSliceEXT :: struct
-{
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_SEGMENT_INFO_EXT;
     pNext : *void;
     ctbCount : u32;
-    pReferenceFinalLists : *VkVideoEncodeH265ReferenceListsEXT;
-    pSliceHeaderStd : *StdVideoEncodeH265SliceHeader;
+    pStdReferenceFinalLists : *StdVideoEncodeH265ReferenceListsInfo;
+    pStdSliceSegmentHeader : *StdVideoEncodeH265SliceSegmentHeader;
 }
 
 
@@ -23141,15 +28403,15 @@ VkVideoEncodeH265NaluSliceEXT :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265RateControlInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265RateControlInfoEXT :: struct // Can be in the pNext chain of "VkVideoEncodeRateControlInfoKHR"
+VkVideoEncodeH265RateControlInfoEXT :: struct // Can be in the pNext chain of "VkVideoCodingControlInfoKHR"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_INFO_EXT;
     pNext : *void;
     gopFrameCount : u32;
     idrPeriod : u32;
     consecutiveBFrameCount : u32;
-    rateControlStructure : VkVideoEncodeH265RateControlStructureFlagBitsEXT;
-    subLayerCount : u8;
+    rateControlStructure : VkVideoEncodeH265RateControlStructureEXT;
+    subLayerCount : u32;
 }
 
 
@@ -23181,11 +28443,11 @@ VkVideoEncodeH265FrameSizeEXT :: struct
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265RateControlLayerInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265RateControlLayerInfoEXT :: struct // Can be in the pNext chain of "VkVideoEncodeRateControlLayerInfoKHR"
+VkVideoEncodeH265RateControlLayerInfoEXT :: struct // Can be in the pNext chain of "VkVideoCodingControlInfoKHR,VkVideoEncodeRateControlLayerInfoKHR"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_LAYER_INFO_EXT;
     pNext : *void;
-    temporalId : u8;
+    temporalId : u32;
     useInitialRcQp : VkBool32;
     initialRcQp : VkVideoEncodeH265QpEXT;
     useMinQp : VkBool32;
@@ -23197,13 +28459,13 @@ VkVideoEncodeH265RateControlLayerInfoEXT :: struct // Can be in the pNext chain 
 }
 
 
-// Type VkVideoEncodeH265ProfileEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265ProfileEXT.html)
+// Type VkVideoEncodeH265ProfileInfoEXT
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265ProfileInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265ProfileEXT :: struct // Can be in the pNext chain of "VkVideoProfileKHR,VkQueryPoolCreateInfo,VkFormatProperties2,VkImageCreateInfo,VkImageViewCreateInfo,VkBufferCreateInfo"
+VkVideoEncodeH265ProfileInfoEXT :: struct // Can be in the pNext chain of "VkVideoProfileInfoKHR,VkQueryPoolCreateInfo"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PROFILE_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PROFILE_INFO_EXT;
     pNext : *void;
     stdProfileIdc : StdVideoH265ProfileIdc;
 }
@@ -23213,159 +28475,63 @@ VkVideoEncodeH265ProfileEXT :: struct // Can be in the pNext chain of "VkVideoPr
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265DpbSlotInfoEXT.html)
 // Referenced by VK_EXT_video_encode_h265
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265DpbSlotInfoEXT :: struct
+VkVideoEncodeH265DpbSlotInfoEXT :: struct // Can be in the pNext chain of "VkVideoReferenceSlotInfoKHR"
 {
     sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_DPB_SLOT_INFO_EXT;
     pNext : *void;
-    slotIndex : s8;
     pStdReferenceInfo : *StdVideoEncodeH265ReferenceInfo;
 }
 
 
-// Type VkVideoEncodeH265ReferenceListsEXT
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeH265ReferenceListsEXT.html)
-// Referenced by VK_EXT_video_encode_h265
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
-VkVideoEncodeH265ReferenceListsEXT :: struct
+// Type VkPhysicalDeviceDisplacementMicromapFeaturesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDisplacementMicromapFeaturesNV.html)
+// Referenced by VK_NV_displacement_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+VkPhysicalDeviceDisplacementMicromapFeaturesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceFeatures2,VkDeviceCreateInfo"
 {
-    sType : VkStructureType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_REFERENCE_LISTS_EXT;
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_FEATURES_NV;
     pNext : *void;
-    referenceList0EntryCount : u8;
-    pReferenceList0Entries : *VkVideoEncodeH265DpbSlotInfoEXT;
-    referenceList1EntryCount : u8;
-    pReferenceList1Entries : *VkVideoEncodeH265DpbSlotInfoEXT;
-    pReferenceModifications : *StdVideoEncodeH265ReferenceModifications;
+    displacementMicromap : VkBool32;
 }
 
 
-// Command vkGetPhysicalDeviceVideoCapabilitiesKHR (Instance Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoCapabilitiesKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkGetPhysicalDeviceVideoCapabilitiesKHR :: #type (physicalDevice : VkPhysicalDevice,
-                                                      pVideoProfile : *VkVideoProfileKHR,
-                                                      pCapabilities : *VkVideoCapabilitiesKHR) -> VkResult #foreign;
+// Type VkPhysicalDeviceDisplacementMicromapPropertiesNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDisplacementMicromapPropertiesNV.html)
+// Referenced by VK_NV_displacement_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+VkPhysicalDeviceDisplacementMicromapPropertiesNV :: struct // Can be in the pNext chain of "VkPhysicalDeviceProperties2"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_PROPERTIES_NV;
+    pNext : *void;
+    maxDisplacementMicromapSubdivisionLevel : u32;
+}
 
 
-// Command vkGetPhysicalDeviceVideoFormatPropertiesKHR (Instance Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoFormatPropertiesKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkGetPhysicalDeviceVideoFormatPropertiesKHR :: #type (physicalDevice : VkPhysicalDevice,
-                                                          pVideoFormatInfo : *VkPhysicalDeviceVideoFormatInfoKHR,
-                                                          pVideoFormatPropertyCount : *u32,
-                                                          pVideoFormatProperties : *VkVideoFormatPropertiesKHR) -> VkResult #foreign;
-
-
-// Command vkCreateVideoSessionKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkCreateVideoSessionKHR :: #type (device : VkDevice,
-                                      pCreateInfo : *VkVideoSessionCreateInfoKHR,
-                                      pAllocator : *VkAllocationCallbacks,
-                                      pVideoSession : *VkVideoSessionKHR) -> VkResult #foreign;
-
-
-// Command vkDestroyVideoSessionKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkDestroyVideoSessionKHR :: #type (device : VkDevice,
-                                       videoSession : VkVideoSessionKHR,
-                                       pAllocator : *VkAllocationCallbacks) #foreign;
-
-
-// Command vkCreateVideoSessionParametersKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionParametersKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkCreateVideoSessionParametersKHR :: #type (device : VkDevice,
-                                                pCreateInfo : *VkVideoSessionParametersCreateInfoKHR,
-                                                pAllocator : *VkAllocationCallbacks,
-                                                pVideoSessionParameters : *VkVideoSessionParametersKHR) -> VkResult #foreign;
-
-
-// Command vkUpdateVideoSessionParametersKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkUpdateVideoSessionParametersKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkUpdateVideoSessionParametersKHR :: #type (device : VkDevice,
-                                                videoSessionParameters : VkVideoSessionParametersKHR,
-                                                pUpdateInfo : *VkVideoSessionParametersUpdateInfoKHR) -> VkResult #foreign;
-
-
-// Command vkDestroyVideoSessionParametersKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionParametersKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkDestroyVideoSessionParametersKHR :: #type (device : VkDevice,
-                                                 videoSessionParameters : VkVideoSessionParametersKHR,
-                                                 pAllocator : *VkAllocationCallbacks) #foreign;
-
-
-// Command vkGetVideoSessionMemoryRequirementsKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetVideoSessionMemoryRequirementsKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkGetVideoSessionMemoryRequirementsKHR :: #type (device : VkDevice,
-                                                     videoSession : VkVideoSessionKHR,
-                                                     pVideoSessionMemoryRequirementsCount : *u32,
-                                                     pVideoSessionMemoryRequirements : *VkVideoGetMemoryPropertiesKHR) -> VkResult #foreign;
-
-
-// Command vkBindVideoSessionMemoryKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindVideoSessionMemoryKHR.html)
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkBindVideoSessionMemoryKHR :: #type (device : VkDevice,
-                                          videoSession : VkVideoSessionKHR,
-                                          videoSessionBindMemoryCount : u32,
-                                          pVideoSessionBindMemories : *VkVideoBindMemoryKHR) -> VkResult #foreign;
-
-
-// Command vkCmdDecodeVideoKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDecodeVideoKHR.html)
-// Can be submitted to a Decode queue
-// Has to be used outside a renderpass
-// Has to be recorded to a primary command buffer
-// Referenced by VK_KHR_video_decode_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
-PFN_vkCmdDecodeVideoKHR :: #type (commandBuffer : VkCommandBuffer,
-                                  pFrameInfo : *VkVideoDecodeInfoKHR) #foreign;
-
-
-// Command vkCmdBeginVideoCodingKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginVideoCodingKHR.html)
-// Can be submitted to a Decode and Encode queues
-// Has to be used outside a renderpass
-// Has to be recorded to a primary command buffer
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkCmdBeginVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
-                                       pBeginInfo : *VkVideoBeginCodingInfoKHR) #foreign;
-
-
-// Command vkCmdControlVideoCodingKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdControlVideoCodingKHR.html)
-// Can be submitted to a Decode and Encode queues
-// Has to be used outside a renderpass
-// Has to be recorded to a primary command buffer
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkCmdControlVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
-                                         pCodingControlInfo : *VkVideoCodingControlInfoKHR) #foreign;
-
-
-// Command vkCmdEndVideoCodingKHR (Device Command)
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndVideoCodingKHR.html)
-// Can be submitted to a Decode and Encode queues
-// Has to be used outside a renderpass
-// Has to be recorded to a primary command buffer
-// Referenced by VK_KHR_video_queue
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
-PFN_vkCmdEndVideoCodingKHR :: #type (commandBuffer : VkCommandBuffer,
-                                     pEndCodingInfo : *VkVideoEndCodingInfoKHR) #foreign;
+// Type VkAccelerationStructureTrianglesDisplacementMicromapNV
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureTrianglesDisplacementMicromapNV.html)
+// Referenced by VK_NV_displacement_micromap
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+VkAccelerationStructureTrianglesDisplacementMicromapNV :: struct // Can be in the pNext chain of "VkAccelerationStructureGeometryTrianglesDataKHR"
+{
+    sType : VkStructureType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_DISPLACEMENT_MICROMAP_NV;
+    pNext : *void;
+    displacementBiasAndScaleFormat : VkFormat;
+    displacementVectorFormat : VkFormat;
+    displacementBiasAndScaleBuffer : VkDeviceOrHostAddressConstKHR;
+    displacementBiasAndScaleStride : VkDeviceSize;
+    displacementVectorBuffer : VkDeviceOrHostAddressConstKHR;
+    displacementVectorStride : VkDeviceSize;
+    displacedMicromapPrimitiveFlags : VkDeviceOrHostAddressConstKHR;
+    displacedMicromapPrimitiveFlagsStride : VkDeviceSize;
+    indexType : VkIndexType;
+    indexBuffer : VkDeviceOrHostAddressConstKHR;
+    indexStride : VkDeviceSize;
+    baseTriangle : u32;
+    usageCountsCount : u32;
+    pUsageCounts : *VkMicromapUsageEXT;
+    ppUsageCounts : **VkMicromapUsageEXT;
+    micromap : VkMicromapEXT;
+}
 
 
 // Command vkCmdEncodeVideoKHR (Device Command)
@@ -23534,7 +28700,7 @@ VK_EXT_DEBUG_MARKER_EXTENSION_NAME :: "VK_EXT_debug_marker";
 // author KHR, contact Tony Zlatinski @tzlatinski
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_queue.html)
 VK_KHR_video_queue :: true;
-VK_KHR_VIDEO_QUEUE_SPEC_VERSION :: 2;
+VK_KHR_VIDEO_QUEUE_SPEC_VERSION :: 8;
 VK_KHR_VIDEO_QUEUE_EXTENSION_NAME :: "VK_KHR_video_queue";
 
 
@@ -23542,7 +28708,7 @@ VK_KHR_VIDEO_QUEUE_EXTENSION_NAME :: "VK_KHR_video_queue";
 // author KHR, contact jake.beju@amd.com
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_queue.html)
 VK_KHR_video_decode_queue :: true;
-VK_KHR_VIDEO_DECODE_QUEUE_SPEC_VERSION :: 2;
+VK_KHR_VIDEO_DECODE_QUEUE_SPEC_VERSION :: 7;
 VK_KHR_VIDEO_DECODE_QUEUE_EXTENSION_NAME :: "VK_KHR_video_decode_queue";
 
 
@@ -23622,7 +28788,7 @@ VK_AMD_SHADER_BALLOT_EXTENSION_NAME :: "VK_AMD_shader_ballot";
 // author KHR, contact Ahmed Abdelkhalek @aabdelkh
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h264.html)
 VK_EXT_video_encode_h264 :: true;
-VK_EXT_VIDEO_ENCODE_H264_SPEC_VERSION :: 3;
+VK_EXT_VIDEO_ENCODE_H264_SPEC_VERSION :: 10;
 VK_EXT_VIDEO_ENCODE_H264_EXTENSION_NAME :: "VK_EXT_video_encode_h264";
 
 
@@ -23630,16 +28796,16 @@ VK_EXT_VIDEO_ENCODE_H264_EXTENSION_NAME :: "VK_EXT_video_encode_h264";
 // author KHR, contact Ahmed Abdelkhalek @aabdelkh
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_encode_h265.html)
 VK_EXT_video_encode_h265 :: true;
-VK_EXT_VIDEO_ENCODE_H265_SPEC_VERSION :: 3;
+VK_EXT_VIDEO_ENCODE_H265_SPEC_VERSION :: 10;
 VK_EXT_VIDEO_ENCODE_H265_EXTENSION_NAME :: "VK_EXT_video_encode_h265";
 
 
-// Device Extension VK_EXT_video_decode_h264 (41)
+// Device Extension VK_KHR_video_decode_h264 (41)
 // author KHR, contact peter.fang@amd.com
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h264.html)
-VK_EXT_video_decode_h264 :: true;
-VK_EXT_VIDEO_DECODE_H264_SPEC_VERSION :: 3;
-VK_EXT_VIDEO_DECODE_H264_EXTENSION_NAME :: "VK_EXT_video_decode_h264";
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h264.html)
+VK_KHR_video_decode_h264 :: true;
+VK_KHR_VIDEO_DECODE_H264_SPEC_VERSION :: 8;
+VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME :: "VK_KHR_video_decode_h264";
 
 
 // Device Extension VK_AMD_texture_gather_bias_lod (42)
@@ -23688,6 +28854,14 @@ VK_GGP_STREAM_DESCRIPTOR_SURFACE_EXTENSION_NAME :: "VK_GGP_stream_descriptor_sur
 VK_NV_corner_sampled_image :: true;
 VK_NV_CORNER_SAMPLED_IMAGE_SPEC_VERSION :: 2;
 VK_NV_CORNER_SAMPLED_IMAGE_EXTENSION_NAME :: "VK_NV_corner_sampled_image";
+
+
+// Device Extension VK_NV_private_vendor_info (52)
+// author NV, contact Daniel Koch @dgkoch
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_private_vendor_info.html)
+VK_NV_private_vendor_info :: true;
+VK_NV_PRIVATE_VENDOR_INFO_SPEC_VERSION :: 2;
+VK_NV_PRIVATE_VENDOR_INFO_EXTENSION_NAME :: "VK_NV_private_vendor_info";
 
 
 // Device Extension VK_KHR_multiview (54)
@@ -23808,6 +28982,14 @@ VK_EXT_TEXTURE_COMPRESSION_ASTC_HDR_EXTENSION_NAME :: "VK_EXT_texture_compressio
 VK_EXT_astc_decode_mode :: true;
 VK_EXT_ASTC_DECODE_MODE_SPEC_VERSION :: 1;
 VK_EXT_ASTC_DECODE_MODE_EXTENSION_NAME :: "VK_EXT_astc_decode_mode";
+
+
+// Device Extension VK_EXT_pipeline_robustness (69)
+// author IMG, contact Jarred Davies
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_robustness.html)
+VK_EXT_pipeline_robustness :: true;
+VK_EXT_PIPELINE_ROBUSTNESS_SPEC_VERSION :: 1;
+VK_EXT_PIPELINE_ROBUSTNESS_EXTENSION_NAME :: "VK_EXT_pipeline_robustness";
 
 
 // Device Extension VK_KHR_maintenance1 (70)
@@ -24042,7 +29224,7 @@ VK_NV_VIEWPORT_SWIZZLE_EXTENSION_NAME :: "VK_NV_viewport_swizzle";
 // author NV, contact Piers Daniell @pdaniell-nv
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_discard_rectangles.html)
 VK_EXT_discard_rectangles :: true;
-VK_EXT_DISCARD_RECTANGLES_SPEC_VERSION :: 1;
+VK_EXT_DISCARD_RECTANGLES_SPEC_VERSION :: 2;
 VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME :: "VK_EXT_discard_rectangles";
 
 
@@ -24087,7 +29269,7 @@ VK_KHR_IMAGELESS_FRAMEBUFFER_EXTENSION_NAME :: "VK_KHR_imageless_framebuffer";
 
 
 // Device Extension VK_KHR_create_renderpass2 (110)
-// contact Tobias Hector @tobias
+// author KHR, contact Tobias Hector @tobias
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_create_renderpass2.html)
 VK_KHR_create_renderpass2 :: true;
 VK_KHR_CREATE_RENDERPASS_2_SPEC_VERSION :: 1;
@@ -24193,7 +29375,7 @@ VK_MVK_MACOS_SURFACE_EXTENSION_NAME :: "VK_MVK_macos_surface";
 
 
 // Device Extension VK_EXT_external_memory_dma_buf (126)
-// author EXT, contact Chad Versace @chadversary
+// author EXT, contact Lina Versace @versalinyaa
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_external_memory_dma_buf.html)
 VK_EXT_external_memory_dma_buf :: true;
 VK_EXT_EXTERNAL_MEMORY_DMA_BUF_SPEC_VERSION :: 1;
@@ -24201,7 +29383,7 @@ VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME :: "VK_EXT_external_memory_dma_buf
 
 
 // Device Extension VK_EXT_queue_family_foreign (127)
-// author EXT, contact Chad Versace @chadversary
+// author EXT, contact Lina Versace @versalinyaa
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_queue_family_foreign.html)
 VK_EXT_queue_family_foreign :: true;
 VK_EXT_QUEUE_FAMILY_FOREIGN_SPEC_VERSION :: 1;
@@ -24228,7 +29410,7 @@ VK_EXT_DEBUG_UTILS_EXTENSION_NAME :: "VK_EXT_debug_utils";
 // author ANDROID, contact Jesse Hall @critsec
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ANDROID_external_memory_android_hardware_buffer.html)
 VK_ANDROID_external_memory_android_hardware_buffer :: true;
-VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_SPEC_VERSION :: 4;
+VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_SPEC_VERSION :: 5;
 VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME :: "VK_ANDROID_external_memory_android_hardware_buffer";
 
 
@@ -24305,7 +29487,7 @@ VK_KHR_RELAXED_BLOCK_LAYOUT_EXTENSION_NAME :: "VK_KHR_relaxed_block_layout";
 
 
 // Device Extension VK_KHR_get_memory_requirements2 (147)
-// author KHR, contact Jason Ekstrand @jekstrand
+// author KHR, contact Faith Ekstrand @gfxstrand
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_get_memory_requirements2.html)
 VK_KHR_get_memory_requirements2 :: true;
 VK_KHR_GET_MEMORY_REQUIREMENTS_2_SPEC_VERSION :: 1;
@@ -24313,7 +29495,7 @@ VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME :: "VK_KHR_get_memory_requiremen
 
 
 // Device Extension VK_KHR_image_format_list (148)
-// author KHR, contact Jason Ekstrand @jekstrand
+// author KHR, contact Faith Ekstrand @gfxstrand
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_image_format_list.html)
 VK_KHR_image_format_list :: true;
 VK_KHR_IMAGE_FORMAT_LIST_SPEC_VERSION :: 1;
@@ -24409,7 +29591,7 @@ VK_KHR_BIND_MEMORY_2_EXTENSION_NAME :: "VK_KHR_bind_memory2";
 
 
 // Device Extension VK_EXT_image_drm_format_modifier (159)
-// author EXT, contact Chad Versace @chadversary
+// author EXT, contact Lina Versace @versalinyaa
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_drm_format_modifier.html)
 VK_EXT_image_drm_format_modifier :: true;
 VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_SPEC_VERSION :: 2;
@@ -24586,12 +29768,12 @@ VK_AMD_SHADER_CORE_PROPERTIES_SPEC_VERSION :: 2;
 VK_AMD_SHADER_CORE_PROPERTIES_EXTENSION_NAME :: "VK_AMD_shader_core_properties";
 
 
-// Device Extension VK_EXT_video_decode_h265 (188)
+// Device Extension VK_KHR_video_decode_h265 (188)
 // author KHR, contact peter.fang@amd.com
-//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_video_decode_h265.html)
-VK_EXT_video_decode_h265 :: true;
-VK_EXT_VIDEO_DECODE_H265_SPEC_VERSION :: 1;
-VK_EXT_VIDEO_DECODE_H265_EXTENSION_NAME :: "VK_EXT_video_decode_h265";
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_decode_h265.html)
+VK_KHR_video_decode_h265 :: true;
+VK_KHR_VIDEO_DECODE_H265_SPEC_VERSION :: 7;
+VK_KHR_VIDEO_DECODE_H265_EXTENSION_NAME :: "VK_KHR_video_decode_h265";
 
 
 // Device Extension VK_KHR_global_priority (189)
@@ -24667,7 +29849,7 @@ VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME :: "VK_KHR_depth_stencil_resolve";
 
 
 // Device Extension VK_KHR_swapchain_mutable_format (201)
-// author KHR, contact Daniel Rakos @drakos-arm
+// author KHR, contact Daniel Rakos @drakos-amd
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain_mutable_format.html)
 VK_KHR_swapchain_mutable_format :: true;
 VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_SPEC_VERSION :: 1;
@@ -24710,7 +29892,7 @@ VK_NV_SHADER_IMAGE_FOOTPRINT_EXTENSION_NAME :: "VK_NV_shader_image_footprint";
 // author NV, contact Pat Brown @nvpbrown
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_scissor_exclusive.html)
 VK_NV_scissor_exclusive :: true;
-VK_NV_SCISSOR_EXCLUSIVE_SPEC_VERSION :: 1;
+VK_NV_SCISSOR_EXCLUSIVE_SPEC_VERSION :: 2;
 VK_NV_SCISSOR_EXCLUSIVE_EXTENSION_NAME :: "VK_NV_scissor_exclusive";
 
 
@@ -24723,7 +29905,7 @@ VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME :: "VK_NV_device_diagnostic_c
 
 
 // Device Extension VK_KHR_timeline_semaphore (208)
-// author KHR, contact Jason Ekstrand @jekstrand
+// author KHR, contact Faith Ekstrand @gfxstrand
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_timeline_semaphore.html)
 VK_KHR_timeline_semaphore :: true;
 VK_KHR_TIMELINE_SEMAPHORE_SPEC_VERSION :: 2;
@@ -25077,19 +30259,43 @@ VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME :: "VK_KHR_deferred_host_operatio
 
 
 // Device Extension VK_KHR_pipeline_executable_properties (270)
-// author KHR, contact Jason Ekstrand @jekstrand
+// author KHR, contact Faith Ekstrand @gfxstrand
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_pipeline_executable_properties.html)
 VK_KHR_pipeline_executable_properties :: true;
 VK_KHR_PIPELINE_EXECUTABLE_PROPERTIES_SPEC_VERSION :: 1;
 VK_KHR_PIPELINE_EXECUTABLE_PROPERTIES_EXTENSION_NAME :: "VK_KHR_pipeline_executable_properties";
 
 
+// Device Extension VK_KHR_map_memory2 (272)
+// author KHR, contact Faith Ekstrand @gfxstrand
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)
+VK_KHR_map_memory2 :: true;
+VK_KHR_MAP_MEMORY_2_SPEC_VERSION :: 1;
+VK_KHR_MAP_MEMORY_2_EXTENSION_NAME :: "VK_KHR_map_memory2";
+
+
 // Device Extension VK_EXT_shader_atomic_float2 (274)
-// author EXT, contact Jason Ekstrand @jekstrand
+// author EXT, contact Faith Ekstrand @gfxstrand
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_atomic_float2.html)
 VK_EXT_shader_atomic_float2 :: true;
 VK_EXT_SHADER_ATOMIC_FLOAT_2_SPEC_VERSION :: 1;
 VK_EXT_SHADER_ATOMIC_FLOAT_2_EXTENSION_NAME :: "VK_EXT_shader_atomic_float2";
+
+
+// Instance Extension VK_EXT_surface_maintenance1 (275)
+// author EXT, contact Shahbaz Youssefi @syoussefi
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_surface_maintenance1.html)
+VK_EXT_surface_maintenance1 :: true;
+VK_EXT_SURFACE_MAINTENANCE_1_SPEC_VERSION :: 1;
+VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME :: "VK_EXT_surface_maintenance1";
+
+
+// Device Extension VK_EXT_swapchain_maintenance1 (276)
+// author EXT, contact Shahbaz Youssefi @syoussefi
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_swapchain_maintenance1.html)
+VK_EXT_swapchain_maintenance1 :: true;
+VK_EXT_SWAPCHAIN_MAINTENANCE_1_SPEC_VERSION :: 1;
+VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME :: "VK_EXT_swapchain_maintenance1";
 
 
 // Device Extension VK_EXT_shader_demote_to_helper_invocation (277)
@@ -25136,7 +30342,7 @@ VK_EXT_TEXEL_BUFFER_ALIGNMENT_EXTENSION_NAME :: "VK_EXT_texel_buffer_alignment";
 // author QCOM, contact Jeff Leger @jackohound
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_render_pass_transform.html)
 VK_QCOM_render_pass_transform :: true;
-VK_QCOM_RENDER_PASS_TRANSFORM_SPEC_VERSION :: 2;
+VK_QCOM_RENDER_PASS_TRANSFORM_SPEC_VERSION :: 3;
 VK_QCOM_RENDER_PASS_TRANSFORM_EXTENSION_NAME :: "VK_QCOM_render_pass_transform";
 
 
@@ -25188,6 +30394,14 @@ VK_KHR_PIPELINE_LIBRARY_SPEC_VERSION :: 1;
 VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME :: "VK_KHR_pipeline_library";
 
 
+// Device Extension VK_NV_present_barrier (293)
+// author NV, contact Liya Li @liyli
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_present_barrier.html)
+VK_NV_present_barrier :: true;
+VK_NV_PRESENT_BARRIER_SPEC_VERSION :: 1;
+VK_NV_PRESENT_BARRIER_EXTENSION_NAME :: "VK_NV_present_barrier";
+
+
 // Device Extension VK_KHR_shader_non_semantic_info (294)
 // author KHR, contact Baldur Karlsson @baldurk
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_shader_non_semantic_info.html)
@@ -25221,10 +30435,10 @@ VK_EXT_PIPELINE_CREATION_CACHE_CONTROL_EXTENSION_NAME :: "VK_EXT_pipeline_creati
 
 
 // Device Extension VK_KHR_video_encode_queue (300)
-// author KHR, contact ahmed.abdelkalek@amd.com
+// author KHR, contact Ahmed Abdelkhalek @aabdelkh
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_video_encode_queue.html)
 VK_KHR_video_encode_queue :: true;
-VK_KHR_VIDEO_ENCODE_QUEUE_SPEC_VERSION :: 3;
+VK_KHR_VIDEO_ENCODE_QUEUE_SPEC_VERSION :: 8;
 VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME :: "VK_KHR_video_encode_queue";
 
 
@@ -25232,7 +30446,7 @@ VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME :: "VK_KHR_video_encode_queue";
 // author NV, contact Kedarnath Thangudu @kthangudu
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_device_diagnostics_config.html)
 VK_NV_device_diagnostics_config :: true;
-VK_NV_DEVICE_DIAGNOSTICS_CONFIG_SPEC_VERSION :: 1;
+VK_NV_DEVICE_DIAGNOSTICS_CONFIG_SPEC_VERSION :: 2;
 VK_NV_DEVICE_DIAGNOSTICS_CONFIG_EXTENSION_NAME :: "VK_NV_device_diagnostics_config";
 
 
@@ -25244,12 +30458,68 @@ VK_QCOM_RENDER_PASS_STORE_OPS_SPEC_VERSION :: 2;
 VK_QCOM_RENDER_PASS_STORE_OPS_EXTENSION_NAME :: "VK_QCOM_render_pass_store_ops";
 
 
+// Device Extension VK_KHR_object_refresh (309)
+// author KHR, contact Aidan Fabius @afabius
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_object_refresh.html)
+VK_KHR_object_refresh :: true;
+VK_KHR_OBJECT_REFRESH_SPEC_VERSION :: 1;
+VK_KHR_OBJECT_REFRESH_EXTENSION_NAME :: "VK_KHR_object_refresh";
+
+
+// Device Extension VK_NV_low_latency (311)
+// author NV, contact Charles Hansen @cshansen
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_low_latency.html)
+VK_NV_low_latency :: true;
+VK_NV_LOW_LATENCY_SPEC_VERSION :: 1;
+VK_NV_LOW_LATENCY_EXTENSION_NAME :: "VK_NV_low_latency";
+
+
+// Device Extension VK_EXT_metal_objects (312)
+// author EXT, contact Bill Hollings @billhollings
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_metal_objects.html)
+VK_EXT_metal_objects :: true;
+VK_EXT_METAL_OBJECTS_SPEC_VERSION :: 1;
+VK_EXT_METAL_OBJECTS_EXTENSION_NAME :: "VK_EXT_metal_objects";
+
+
 // Device Extension VK_KHR_synchronization2 (315)
 // author KHR, contact Tobias Hector @tobski
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_synchronization2.html)
 VK_KHR_synchronization2 :: true;
 VK_KHR_SYNCHRONIZATION_2_SPEC_VERSION :: 1;
 VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME :: "VK_KHR_synchronization2";
+
+
+// Device Extension VK_EXT_descriptor_buffer (317)
+// author EXT, contact Tobias Hector @tobski
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)
+VK_EXT_descriptor_buffer :: true;
+VK_EXT_DESCRIPTOR_BUFFER_SPEC_VERSION :: 1;
+VK_EXT_DESCRIPTOR_BUFFER_EXTENSION_NAME :: "VK_EXT_descriptor_buffer";
+
+
+// Device Extension VK_EXT_graphics_pipeline_library (321)
+// author AMD, contact Tobias Hector @tobski
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)
+VK_EXT_graphics_pipeline_library :: true;
+VK_EXT_GRAPHICS_PIPELINE_LIBRARY_SPEC_VERSION :: 1;
+VK_EXT_GRAPHICS_PIPELINE_LIBRARY_EXTENSION_NAME :: "VK_EXT_graphics_pipeline_library";
+
+
+// Device Extension VK_AMD_shader_early_and_late_fragment_tests (322)
+// author EXT, contact Tobias Hector @tobski
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_AMD_shader_early_and_late_fragment_tests.html)
+VK_AMD_shader_early_and_late_fragment_tests :: true;
+VK_AMD_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_SPEC_VERSION :: 1;
+VK_AMD_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_EXTENSION_NAME :: "VK_AMD_shader_early_and_late_fragment_tests";
+
+
+// Device Extension VK_KHR_fragment_shader_barycentric (323)
+// author KHR, contact Stu Smith
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_fragment_shader_barycentric.html)
+VK_KHR_fragment_shader_barycentric :: true;
+VK_KHR_FRAGMENT_SHADER_BARYCENTRIC_SPEC_VERSION :: 1;
+VK_KHR_FRAGMENT_SHADER_BARYCENTRIC_EXTENSION_NAME :: "VK_KHR_fragment_shader_barycentric";
 
 
 // Device Extension VK_KHR_shader_subgroup_uniform_control_flow (324)
@@ -25282,6 +30552,14 @@ VK_NV_FRAGMENT_SHADING_RATE_ENUMS_EXTENSION_NAME :: "VK_NV_fragment_shading_rate
 VK_NV_ray_tracing_motion_blur :: true;
 VK_NV_RAY_TRACING_MOTION_BLUR_SPEC_VERSION :: 1;
 VK_NV_RAY_TRACING_MOTION_BLUR_EXTENSION_NAME :: "VK_NV_ray_tracing_motion_blur";
+
+
+// Device Extension VK_EXT_mesh_shader (329)
+// author EXT, contact Christoph Kubisch @pixeljetstream
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
+VK_EXT_mesh_shader :: true;
+VK_EXT_MESH_SHADER_SPEC_VERSION :: 1;
+VK_EXT_MESH_SHADER_EXTENSION_NAME :: "VK_EXT_mesh_shader";
 
 
 // Device Extension VK_EXT_ycbcr_2plane_444_formats (331)
@@ -25332,12 +30610,36 @@ VK_KHR_COPY_COMMANDS_2_SPEC_VERSION :: 1;
 VK_KHR_COPY_COMMANDS_2_EXTENSION_NAME :: "VK_KHR_copy_commands2";
 
 
+// Device Extension VK_EXT_image_compression_control (339)
+// author EXT, contact Jan-Harald Fredriksen @janharaldfredriksen-arm
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control.html)
+VK_EXT_image_compression_control :: true;
+VK_EXT_IMAGE_COMPRESSION_CONTROL_SPEC_VERSION :: 1;
+VK_EXT_IMAGE_COMPRESSION_CONTROL_EXTENSION_NAME :: "VK_EXT_image_compression_control";
+
+
+// Device Extension VK_EXT_attachment_feedback_loop_layout (340)
+// author EXT, contact Joshua Ashton @Joshua-Ashton
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_attachment_feedback_loop_layout.html)
+VK_EXT_attachment_feedback_loop_layout :: true;
+VK_EXT_ATTACHMENT_FEEDBACK_LOOP_LAYOUT_SPEC_VERSION :: 2;
+VK_EXT_ATTACHMENT_FEEDBACK_LOOP_LAYOUT_EXTENSION_NAME :: "VK_EXT_attachment_feedback_loop_layout";
+
+
 // Device Extension VK_EXT_4444_formats (341)
 // author EXT, contact Joshua Ashton @Joshua-Ashton
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_4444_formats.html)
 VK_EXT_4444_formats :: true;
 VK_EXT_4444_FORMATS_SPEC_VERSION :: 1;
 VK_EXT_4444_FORMATS_EXTENSION_NAME :: "VK_EXT_4444_formats";
+
+
+// Device Extension VK_EXT_device_fault (342)
+// author EXT, contact Ralph Potter gitlab:@r_potter
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_fault.html)
+VK_EXT_device_fault :: true;
+VK_EXT_DEVICE_FAULT_SPEC_VERSION :: 2;
+VK_EXT_DEVICE_FAULT_EXTENSION_NAME :: "VK_EXT_device_fault";
 
 
 // Device Extension VK_ARM_rasterization_order_attachment_access (343)
@@ -25396,6 +30698,14 @@ VK_EXT_PHYSICAL_DEVICE_DRM_SPEC_VERSION :: 1;
 VK_EXT_PHYSICAL_DEVICE_DRM_EXTENSION_NAME :: "VK_EXT_physical_device_drm";
 
 
+// Device Extension VK_EXT_device_address_binding_report (355)
+// author EXT, contact Ralph Potter gitlab:@r_potter
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_device_address_binding_report.html)
+VK_EXT_device_address_binding_report :: true;
+VK_EXT_DEVICE_ADDRESS_BINDING_REPORT_SPEC_VERSION :: 1;
+VK_EXT_DEVICE_ADDRESS_BINDING_REPORT_EXTENSION_NAME :: "VK_EXT_device_address_binding_report";
+
+
 // Device Extension VK_EXT_depth_clip_control (356)
 // author EXT, contact Shahbaz Youssefi @syoussefi
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_depth_clip_control.html)
@@ -25416,7 +30726,7 @@ VK_EXT_PRIMITIVE_TOPOLOGY_LIST_RESTART_EXTENSION_NAME :: "VK_EXT_primitive_topol
 // author KHR, contact Lionel Landwerlin @llandwerlin
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_format_feature_flags2.html)
 VK_KHR_format_feature_flags2 :: true;
-VK_KHR_FORMAT_FEATURE_FLAGS_2_SPEC_VERSION :: 1;
+VK_KHR_FORMAT_FEATURE_FLAGS_2_SPEC_VERSION :: 2;
 VK_KHR_FORMAT_FEATURE_FLAGS_2_EXTENSION_NAME :: "VK_KHR_format_feature_flags2";
 
 
@@ -25445,7 +30755,7 @@ VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME :: "VK_FUCHSIA_buffer_collection";
 
 
 // Device Extension VK_HUAWEI_subpass_shading (370)
-// author HUAWEI, contact Hueilong Wang @wyvernathuawei
+// author HUAWEI, contact Pan Gao @PanGao-h
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_subpass_shading.html)
 VK_HUAWEI_subpass_shading :: true;
 VK_HUAWEI_SUBPASS_SHADING_SPEC_VERSION :: 2;
@@ -25453,7 +30763,7 @@ VK_HUAWEI_SUBPASS_SHADING_EXTENSION_NAME :: "VK_HUAWEI_subpass_shading";
 
 
 // Device Extension VK_HUAWEI_invocation_mask (371)
-// author Huawei, contact Yunpeng Zhu @yunxingzhu
+// author Huawei, contact Pan Gao @PanGao-h
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_invocation_mask.html)
 VK_HUAWEI_invocation_mask :: true;
 VK_HUAWEI_INVOCATION_MASK_SPEC_VERSION :: 1;
@@ -25466,6 +30776,38 @@ VK_HUAWEI_INVOCATION_MASK_EXTENSION_NAME :: "VK_HUAWEI_invocation_mask";
 VK_NV_external_memory_rdma :: true;
 VK_NV_EXTERNAL_MEMORY_RDMA_SPEC_VERSION :: 1;
 VK_NV_EXTERNAL_MEMORY_RDMA_EXTENSION_NAME :: "VK_NV_external_memory_rdma";
+
+
+// Device Extension VK_EXT_pipeline_properties (373)
+// author EXT, contact Mukund Keshava @mkeshavanv
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_properties.html)
+VK_EXT_pipeline_properties :: true;
+VK_EXT_PIPELINE_PROPERTIES_SPEC_VERSION :: 1;
+VK_EXT_PIPELINE_PROPERTIES_EXTENSION_NAME :: "VK_EXT_pipeline_properties";
+
+
+// Device Extension VK_NV_external_sci_sync (374)
+// author NV, contact Kai Zhang @kazhang
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync.html)
+VK_NV_external_sci_sync :: true;
+VK_NV_EXTERNAL_SCI_SYNC_SPEC_VERSION :: 2;
+VK_NV_EXTERNAL_SCI_SYNC_EXTENSION_NAME :: "VK_NV_external_sci_sync";
+
+
+// Device Extension VK_NV_external_memory_sci_buf (375)
+// author NV, contact Kai Zhang @kazhang
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_memory_sci_buf.html)
+VK_NV_external_memory_sci_buf :: true;
+VK_NV_EXTERNAL_MEMORY_SCI_BUF_SPEC_VERSION :: 2;
+VK_NV_EXTERNAL_MEMORY_SCI_BUF_EXTENSION_NAME :: "VK_NV_external_memory_sci_buf";
+
+
+// Device Extension VK_EXT_multisampled_render_to_single_sampled (377)
+// author EXT, contact Shahbaz Youssefi @syoussefi
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_multisampled_render_to_single_sampled.html)
+VK_EXT_multisampled_render_to_single_sampled :: true;
+VK_EXT_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_SPEC_VERSION :: 1;
+VK_EXT_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_EXTENSION_NAME :: "VK_EXT_multisampled_render_to_single_sampled";
 
 
 // Device Extension VK_EXT_extended_dynamic_state2 (378)
@@ -25492,6 +30834,22 @@ VK_EXT_COLOR_WRITE_ENABLE_SPEC_VERSION :: 1;
 VK_EXT_COLOR_WRITE_ENABLE_EXTENSION_NAME :: "VK_EXT_color_write_enable";
 
 
+// Device Extension VK_EXT_primitives_generated_query (383)
+// author EXT, contact Shahbaz Youssefi @syoussefi
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_primitives_generated_query.html)
+VK_EXT_primitives_generated_query :: true;
+VK_EXT_PRIMITIVES_GENERATED_QUERY_SPEC_VERSION :: 1;
+VK_EXT_PRIMITIVES_GENERATED_QUERY_EXTENSION_NAME :: "VK_EXT_primitives_generated_query";
+
+
+// Device Extension VK_KHR_ray_tracing_maintenance1 (387)
+// author KHR, contact Daniel Koch @dgkoch
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
+VK_KHR_ray_tracing_maintenance1 :: true;
+VK_KHR_RAY_TRACING_MAINTENANCE_1_SPEC_VERSION :: 1;
+VK_KHR_RAY_TRACING_MAINTENANCE_1_EXTENSION_NAME :: "VK_KHR_ray_tracing_maintenance1";
+
+
 // Device Extension VK_EXT_global_priority_query (389)
 // author EXT, contact Yiwei Zhang @zhangyiwei
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_global_priority_query.html)
@@ -25516,12 +30874,60 @@ VK_EXT_MULTI_DRAW_SPEC_VERSION :: 1;
 VK_EXT_MULTI_DRAW_EXTENSION_NAME :: "VK_EXT_multi_draw";
 
 
+// Device Extension VK_EXT_image_2d_view_of_3d (394)
+// author EXT, contact Mike Blumenkrantz @zmike
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_2d_view_of_3d.html)
+VK_EXT_image_2d_view_of_3d :: true;
+VK_EXT_IMAGE_2D_VIEW_OF_3D_SPEC_VERSION :: 1;
+VK_EXT_IMAGE_2D_VIEW_OF_3D_EXTENSION_NAME :: "VK_EXT_image_2d_view_of_3d";
+
+
+// Instance Extension VK_KHR_portability_enumeration (395)
+// author KHR, contact Charles Giessen @charles-lunarg
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_portability_enumeration.html)
+VK_KHR_portability_enumeration :: true;
+VK_KHR_PORTABILITY_ENUMERATION_SPEC_VERSION :: 1;
+VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME :: "VK_KHR_portability_enumeration";
+
+
+// Device Extension VK_EXT_shader_tile_image (396)
+// author EXT, contact Jan-Harald Fredriksen @janharaldfredriksen-arm
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_tile_image.html)
+VK_EXT_shader_tile_image :: true;
+VK_EXT_SHADER_TILE_IMAGE_SPEC_VERSION :: 1;
+VK_EXT_SHADER_TILE_IMAGE_EXTENSION_NAME :: "VK_EXT_shader_tile_image";
+
+
+// Device Extension VK_EXT_opacity_micromap (397)
+// author EXT, contact Christoph Kubisch @pixeljetstream, Eric Werness
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_opacity_micromap.html)
+VK_EXT_opacity_micromap :: true;
+VK_EXT_OPACITY_MICROMAP_SPEC_VERSION :: 2;
+VK_EXT_OPACITY_MICROMAP_EXTENSION_NAME :: "VK_EXT_opacity_micromap";
+
+
+// Device Extension VK_NV_displacement_micromap (398)
+// author NV, contact Christoph Kubisch @pixeljetstream, Eric Werness
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_displacement_micromap.html)
+VK_NV_displacement_micromap :: true;
+VK_NV_DISPLACEMENT_MICROMAP_SPEC_VERSION :: 1;
+VK_NV_DISPLACEMENT_MICROMAP_EXTENSION_NAME :: "VK_NV_displacement_micromap";
+
+
 // Device Extension VK_EXT_load_store_op_none (401)
 // author EXT, contact Shahbaz Youssefi @syoussefi
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_load_store_op_none.html)
 VK_EXT_load_store_op_none :: true;
 VK_EXT_LOAD_STORE_OP_NONE_SPEC_VERSION :: 1;
 VK_EXT_LOAD_STORE_OP_NONE_EXTENSION_NAME :: "VK_EXT_load_store_op_none";
+
+
+// Device Extension VK_HUAWEI_cluster_culling_shader (405)
+// author HUAWEI, contact Yuchang Wang @richard_Wang2
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_HUAWEI_cluster_culling_shader.html)
+VK_HUAWEI_cluster_culling_shader :: true;
+VK_HUAWEI_CLUSTER_CULLING_SHADER_SPEC_VERSION :: 2;
+VK_HUAWEI_CLUSTER_CULLING_SHADER_EXTENSION_NAME :: "VK_HUAWEI_cluster_culling_shader";
 
 
 // Device Extension VK_EXT_border_color_swizzle (412)
@@ -25548,12 +30954,68 @@ VK_KHR_MAINTENANCE_4_SPEC_VERSION :: 2;
 VK_KHR_MAINTENANCE_4_EXTENSION_NAME :: "VK_KHR_maintenance4";
 
 
+// Device Extension VK_ARM_shader_core_properties (416)
+// author ARM, contact Jan-Harald Fredriksen @janharaldfredriksen-arm
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_shader_core_properties.html)
+VK_ARM_shader_core_properties :: true;
+VK_ARM_SHADER_CORE_PROPERTIES_SPEC_VERSION :: 1;
+VK_ARM_SHADER_CORE_PROPERTIES_EXTENSION_NAME :: "VK_ARM_shader_core_properties";
+
+
+// Device Extension VK_EXT_image_sliced_view_of_3d (419)
+// author EXT, contact Mike Blumenkrantz @zmike
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_sliced_view_of_3d.html)
+VK_EXT_image_sliced_view_of_3d :: true;
+VK_EXT_IMAGE_SLICED_VIEW_OF_3D_SPEC_VERSION :: 1;
+VK_EXT_IMAGE_SLICED_VIEW_OF_3D_EXTENSION_NAME :: "VK_EXT_image_sliced_view_of_3d";
+
+
+// Device Extension VK_VALVE_descriptor_set_host_mapping (421)
+// author VALVE, contact Hans-Kristian Arntzen @HansKristian-Work
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VALVE_descriptor_set_host_mapping.html)
+VK_VALVE_descriptor_set_host_mapping :: true;
+VK_VALVE_DESCRIPTOR_SET_HOST_MAPPING_SPEC_VERSION :: 1;
+VK_VALVE_DESCRIPTOR_SET_HOST_MAPPING_EXTENSION_NAME :: "VK_VALVE_descriptor_set_host_mapping";
+
+
+// Device Extension VK_EXT_depth_clamp_zero_one (422)
+// author EXT, contact Graeme Leese @gnl21
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_depth_clamp_zero_one.html)
+VK_EXT_depth_clamp_zero_one :: true;
+VK_EXT_DEPTH_CLAMP_ZERO_ONE_SPEC_VERSION :: 1;
+VK_EXT_DEPTH_CLAMP_ZERO_ONE_EXTENSION_NAME :: "VK_EXT_depth_clamp_zero_one";
+
+
+// Device Extension VK_EXT_non_seamless_cube_map (423)
+// author EXT, contact Georg Lehmann @DadSchoorse
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_non_seamless_cube_map.html)
+VK_EXT_non_seamless_cube_map :: true;
+VK_EXT_NON_SEAMLESS_CUBE_MAP_SPEC_VERSION :: 1;
+VK_EXT_NON_SEAMLESS_CUBE_MAP_EXTENSION_NAME :: "VK_EXT_non_seamless_cube_map";
+
+
 // Device Extension VK_QCOM_fragment_density_map_offset (426)
 // author QCOM, contact Matthew Netsch @mnetsch
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_fragment_density_map_offset.html)
 VK_QCOM_fragment_density_map_offset :: true;
 VK_QCOM_FRAGMENT_DENSITY_MAP_OFFSET_SPEC_VERSION :: 1;
 VK_QCOM_FRAGMENT_DENSITY_MAP_OFFSET_EXTENSION_NAME :: "VK_QCOM_fragment_density_map_offset";
+
+
+// Device Extension VK_NV_copy_memory_indirect (427)
+// author NV, contact Vikram Kushwaha @vkushwaha-nv
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_copy_memory_indirect.html)
+VK_NV_copy_memory_indirect :: true;
+VK_NV_COPY_MEMORY_INDIRECT_SPEC_VERSION :: 1;
+VK_NV_COPY_MEMORY_INDIRECT_EXTENSION_NAME :: "VK_NV_copy_memory_indirect";
+
+
+// Device Extension VK_NV_memory_decompression (428)
+// author NV, contact Vikram Kushwaha @vkushwaha-nv
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_memory_decompression.html)
+VK_NV_memory_decompression :: true;
+VK_NV_MEMORY_DECOMPRESSION_SPEC_VERSION :: 1;
+VK_NV_MEMORY_DECOMPRESSION_EXTENSION_NAME :: "VK_NV_memory_decompression";
 
 
 // Device Extension VK_NV_linear_color_attachment (431)
@@ -25568,8 +31030,176 @@ VK_NV_LINEAR_COLOR_ATTACHMENT_EXTENSION_NAME :: "VK_NV_linear_color_attachment";
 // author GOOGLE, contact Shahbaz Youssefi @syoussefi
 //  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_GOOGLE_surfaceless_query.html)
 VK_GOOGLE_surfaceless_query :: true;
-VK_GOOGLE_SURFACELESS_QUERY_SPEC_VERSION :: 1;
+VK_GOOGLE_SURFACELESS_QUERY_SPEC_VERSION :: 2;
 VK_GOOGLE_SURFACELESS_QUERY_EXTENSION_NAME :: "VK_GOOGLE_surfaceless_query";
+
+
+// Instance Extension VK_EXT_application_parameters (436)
+// author EXT, contact Daniel Koch @dgkoch
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_application_parameters.html)
+VK_EXT_application_parameters :: true;
+VK_EXT_APPLICATION_PARAMETERS_SPEC_VERSION :: 1;
+VK_EXT_APPLICATION_PARAMETERS_EXTENSION_NAME :: "VK_EXT_application_parameters";
+
+
+// Device Extension VK_EXT_image_compression_control_swapchain (438)
+// author EXT, contact Jan-Harald Fredriksen @janharaldfredriksen-arm
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_compression_control_swapchain.html)
+VK_EXT_image_compression_control_swapchain :: true;
+VK_EXT_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_SPEC_VERSION :: 1;
+VK_EXT_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_EXTENSION_NAME :: "VK_EXT_image_compression_control_swapchain";
+
+
+// Device Extension VK_QCOM_image_processing (441)
+// author QCOM, contact Jeff Leger @jackohound
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_image_processing.html)
+VK_QCOM_image_processing :: true;
+VK_QCOM_IMAGE_PROCESSING_SPEC_VERSION :: 1;
+VK_QCOM_IMAGE_PROCESSING_EXTENSION_NAME :: "VK_QCOM_image_processing";
+
+
+// Device Extension VK_EXT_extended_dynamic_state3 (456)
+// author NV, contact Piers Daniell @pdaniell-nv
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)
+VK_EXT_extended_dynamic_state3 :: true;
+VK_EXT_EXTENDED_DYNAMIC_STATE_3_SPEC_VERSION :: 2;
+VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME :: "VK_EXT_extended_dynamic_state3";
+
+
+// Device Extension VK_EXT_subpass_merge_feedback (459)
+// author EXT, contact Ting Wei @catweiting
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_subpass_merge_feedback.html)
+VK_EXT_subpass_merge_feedback :: true;
+VK_EXT_SUBPASS_MERGE_FEEDBACK_SPEC_VERSION :: 2;
+VK_EXT_SUBPASS_MERGE_FEEDBACK_EXTENSION_NAME :: "VK_EXT_subpass_merge_feedback";
+
+
+// Instance Extension VK_LUNARG_direct_driver_loading (460)
+// author LUNARG, contact Charles Giessen @charles-lunarg
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_LUNARG_direct_driver_loading.html)
+VK_LUNARG_direct_driver_loading :: true;
+VK_LUNARG_DIRECT_DRIVER_LOADING_SPEC_VERSION :: 1;
+VK_LUNARG_DIRECT_DRIVER_LOADING_EXTENSION_NAME :: "VK_LUNARG_direct_driver_loading";
+
+
+// Device Extension VK_EXT_shader_module_identifier (463)
+// author EXT, contact Hans-Kristian Arntzen @HansKristian-Work
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)
+VK_EXT_shader_module_identifier :: true;
+VK_EXT_SHADER_MODULE_IDENTIFIER_SPEC_VERSION :: 1;
+VK_EXT_SHADER_MODULE_IDENTIFIER_EXTENSION_NAME :: "VK_EXT_shader_module_identifier";
+
+
+// Device Extension VK_EXT_rasterization_order_attachment_access (464)
+// author ARM, contact Jan-Harald Fredriksen @janharaldfredriksen-arm
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_rasterization_order_attachment_access.html)
+VK_EXT_rasterization_order_attachment_access :: true;
+VK_EXT_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_SPEC_VERSION :: 1;
+VK_EXT_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_EXTENSION_NAME :: "VK_EXT_rasterization_order_attachment_access";
+
+
+// Device Extension VK_NV_optical_flow (465)
+// author NV, contact Carsten Rohde @crohde
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_optical_flow.html)
+VK_NV_optical_flow :: true;
+VK_NV_OPTICAL_FLOW_SPEC_VERSION :: 1;
+VK_NV_OPTICAL_FLOW_EXTENSION_NAME :: "VK_NV_optical_flow";
+
+
+// Device Extension VK_EXT_legacy_dithering (466)
+// author EXT, contact Shahbaz Youssefi @syoussefi
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_legacy_dithering.html)
+VK_EXT_legacy_dithering :: true;
+VK_EXT_LEGACY_DITHERING_SPEC_VERSION :: 1;
+VK_EXT_LEGACY_DITHERING_EXTENSION_NAME :: "VK_EXT_legacy_dithering";
+
+
+// Device Extension VK_EXT_pipeline_protected_access (467)
+// author EXT, contact Shahbaz Youssefi @syoussefi
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_protected_access.html)
+VK_EXT_pipeline_protected_access :: true;
+VK_EXT_PIPELINE_PROTECTED_ACCESS_SPEC_VERSION :: 1;
+VK_EXT_PIPELINE_PROTECTED_ACCESS_EXTENSION_NAME :: "VK_EXT_pipeline_protected_access";
+
+
+// Device Extension VK_EXT_shader_object (483)
+// author EXT, contact Daniel Story @daniel-story
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+VK_EXT_shader_object :: true;
+VK_EXT_SHADER_OBJECT_SPEC_VERSION :: 1;
+VK_EXT_SHADER_OBJECT_EXTENSION_NAME :: "VK_EXT_shader_object";
+
+
+// Device Extension VK_QCOM_tile_properties (485)
+// author QCOM, contact Jeff Leger @jackohound
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_tile_properties.html)
+VK_QCOM_tile_properties :: true;
+VK_QCOM_TILE_PROPERTIES_SPEC_VERSION :: 1;
+VK_QCOM_TILE_PROPERTIES_EXTENSION_NAME :: "VK_QCOM_tile_properties";
+
+
+// Device Extension VK_SEC_amigo_profiling (486)
+// author SEC, contact Ralph Potter gitlab:@r_potter
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_SEC_amigo_profiling.html)
+VK_SEC_amigo_profiling :: true;
+VK_SEC_AMIGO_PROFILING_SPEC_VERSION :: 1;
+VK_SEC_AMIGO_PROFILING_EXTENSION_NAME :: "VK_SEC_amigo_profiling";
+
+
+// Device Extension VK_QCOM_multiview_per_view_viewports (489)
+// author QCOM, contact Jeff Leger @jackohound
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_multiview_per_view_viewports.html)
+VK_QCOM_multiview_per_view_viewports :: true;
+VK_QCOM_MULTIVIEW_PER_VIEW_VIEWPORTS_SPEC_VERSION :: 1;
+VK_QCOM_MULTIVIEW_PER_VIEW_VIEWPORTS_EXTENSION_NAME :: "VK_QCOM_multiview_per_view_viewports";
+
+
+// Device Extension VK_NV_external_sci_sync2 (490)
+// author NV, contact Kai Zhang @kazhang
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_external_sci_sync2.html)
+VK_NV_external_sci_sync2 :: true;
+VK_NV_EXTERNAL_SCI_SYNC_2_SPEC_VERSION :: 1;
+VK_NV_EXTERNAL_SCI_SYNC_2_EXTENSION_NAME :: "VK_NV_external_sci_sync2";
+
+
+// Device Extension VK_NV_ray_tracing_invocation_reorder (491)
+// author NV, contact Eric Werness @ewerness-nv
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_NV_ray_tracing_invocation_reorder.html)
+VK_NV_ray_tracing_invocation_reorder :: true;
+VK_NV_RAY_TRACING_INVOCATION_REORDER_SPEC_VERSION :: 1;
+VK_NV_RAY_TRACING_INVOCATION_REORDER_EXTENSION_NAME :: "VK_NV_ray_tracing_invocation_reorder";
+
+
+// Device Extension VK_EXT_mutable_descriptor_type (495)
+// author EXT, contact Joshua Ashton @Joshua-Ashton,Hans-Kristian Arntzen @HansKristian-Work
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mutable_descriptor_type.html)
+VK_EXT_mutable_descriptor_type :: true;
+VK_EXT_MUTABLE_DESCRIPTOR_TYPE_SPEC_VERSION :: 1;
+VK_EXT_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME :: "VK_EXT_mutable_descriptor_type";
+
+
+// Device Extension VK_ARM_shader_core_builtins (498)
+// author ARM, contact Kevin Petit @kevinpetit
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_ARM_shader_core_builtins.html)
+VK_ARM_shader_core_builtins :: true;
+VK_ARM_SHADER_CORE_BUILTINS_SPEC_VERSION :: 2;
+VK_ARM_SHADER_CORE_BUILTINS_EXTENSION_NAME :: "VK_ARM_shader_core_builtins";
+
+
+// Device Extension VK_EXT_pipeline_library_group_handles (499)
+// author EXT, contact Hans-Kristian Arntzen @HansKristian-Work
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_pipeline_library_group_handles.html)
+VK_EXT_pipeline_library_group_handles :: true;
+VK_EXT_PIPELINE_LIBRARY_GROUP_HANDLES_SPEC_VERSION :: 1;
+VK_EXT_PIPELINE_LIBRARY_GROUP_HANDLES_EXTENSION_NAME :: "VK_EXT_pipeline_library_group_handles";
+
+
+// Device Extension VK_QCOM_multiview_per_view_render_areas (511)
+// author QCOM, contact Jeff Leger @jackohound
+//  - (https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QCOM_multiview_per_view_render_areas.html)
+VK_QCOM_multiview_per_view_render_areas :: true;
+VK_QCOM_MULTIVIEW_PER_VIEW_RENDER_AREAS_SPEC_VERSION :: 1;
+VK_QCOM_MULTIVIEW_PER_VIEW_RENDER_AREAS_EXTENSION_NAME :: "VK_QCOM_multiview_per_view_render_areas";
 
 
 

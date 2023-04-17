@@ -164,9 +164,13 @@ Vulkan_All_Commands :: struct
         vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV : PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV;
         vkGetPhysicalDeviceToolProperties : PFN_vkGetPhysicalDeviceToolProperties;
         vkGetPhysicalDeviceToolPropertiesEXT : PFN_vkGetPhysicalDeviceToolPropertiesEXT;
+        vkGetPhysicalDeviceRefreshableObjectTypesKHR : PFN_vkGetPhysicalDeviceRefreshableObjectTypesKHR;
         vkGetPhysicalDeviceFragmentShadingRatesKHR : PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR;
+        vkGetPhysicalDeviceVideoCapabilitiesKHR : PFN_vkGetPhysicalDeviceVideoCapabilitiesKHR;
+        vkGetPhysicalDeviceVideoFormatPropertiesKHR : PFN_vkGetPhysicalDeviceVideoFormatPropertiesKHR;
         vkAcquireDrmDisplayEXT : PFN_vkAcquireDrmDisplayEXT;
         vkGetDrmDisplayEXT : PFN_vkGetDrmDisplayEXT;
+        vkGetPhysicalDeviceOpticalFlowImageFormatsNV : PFN_vkGetPhysicalDeviceOpticalFlowImageFormatsNV;
         #if VULKAN_PLATFORM == .X11
         {
             vkCreateXlibSurfaceKHR : PFN_vkCreateXlibSurfaceKHR;
@@ -224,10 +228,11 @@ Vulkan_All_Commands :: struct
             vkCreateScreenSurfaceQNX : PFN_vkCreateScreenSurfaceQNX;
             vkGetPhysicalDeviceScreenPresentationSupportQNX : PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX;
         }
-        #if VK_ENABLE_BETA_EXTENSIONS
+        #if VULKAN_PLATFORM == .Jetson
         {
-            vkGetPhysicalDeviceVideoCapabilitiesKHR : PFN_vkGetPhysicalDeviceVideoCapabilitiesKHR;
-            vkGetPhysicalDeviceVideoFormatPropertiesKHR : PFN_vkGetPhysicalDeviceVideoFormatPropertiesKHR;
+            vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV : PFN_vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV;
+            vkGetPhysicalDeviceSciBufAttributesNV : PFN_vkGetPhysicalDeviceSciBufAttributesNV;
+            vkGetPhysicalDeviceSciSyncAttributesNV : PFN_vkGetPhysicalDeviceSciSyncAttributesNV;
         }
     }
 
@@ -335,11 +340,15 @@ Vulkan_All_Commands :: struct
         vkCmdDispatch : PFN_vkCmdDispatch;
         vkCmdDispatchIndirect : PFN_vkCmdDispatchIndirect;
         vkCmdSubpassShadingHUAWEI : PFN_vkCmdSubpassShadingHUAWEI;
+        vkCmdDrawClusterHUAWEI : PFN_vkCmdDrawClusterHUAWEI;
+        vkCmdDrawClusterIndirectHUAWEI : PFN_vkCmdDrawClusterIndirectHUAWEI;
         vkCmdCopyBuffer : PFN_vkCmdCopyBuffer;
         vkCmdCopyImage : PFN_vkCmdCopyImage;
         vkCmdBlitImage : PFN_vkCmdBlitImage;
         vkCmdCopyBufferToImage : PFN_vkCmdCopyBufferToImage;
         vkCmdCopyImageToBuffer : PFN_vkCmdCopyImageToBuffer;
+        vkCmdCopyMemoryIndirectNV : PFN_vkCmdCopyMemoryIndirectNV;
+        vkCmdCopyMemoryToImageIndirectNV : PFN_vkCmdCopyMemoryToImageIndirectNV;
         vkCmdUpdateBuffer : PFN_vkCmdUpdateBuffer;
         vkCmdFillBuffer : PFN_vkCmdFillBuffer;
         vkCmdClearColorImage : PFN_vkCmdClearColorImage;
@@ -389,6 +398,13 @@ Vulkan_All_Commands :: struct
         vkImportSemaphoreFdKHR : PFN_vkImportSemaphoreFdKHR;
         vkGetFenceFdKHR : PFN_vkGetFenceFdKHR;
         vkImportFenceFdKHR : PFN_vkImportFenceFdKHR;
+        vkGetFenceSciSyncFenceNV : PFN_vkGetFenceSciSyncFenceNV;
+        vkGetFenceSciSyncObjNV : PFN_vkGetFenceSciSyncObjNV;
+        vkImportFenceSciSyncFenceNV : PFN_vkImportFenceSciSyncFenceNV;
+        vkImportFenceSciSyncObjNV : PFN_vkImportFenceSciSyncObjNV;
+        vkGetSemaphoreSciSyncObjNV : PFN_vkGetSemaphoreSciSyncObjNV;
+        vkImportSemaphoreSciSyncObjNV : PFN_vkImportSemaphoreSciSyncObjNV;
+        vkDestroySemaphoreSciSyncPoolNV : PFN_vkDestroySemaphoreSciSyncPoolNV;
         vkDisplayPowerControlEXT : PFN_vkDisplayPowerControlEXT;
         vkRegisterDeviceEventEXT : PFN_vkRegisterDeviceEventEXT;
         vkRegisterDisplayEventEXT : PFN_vkRegisterDisplayEventEXT;
@@ -419,6 +435,8 @@ Vulkan_All_Commands :: struct
         vkGetPastPresentationTimingGOOGLE : PFN_vkGetPastPresentationTimingGOOGLE;
         vkCmdSetViewportWScalingNV : PFN_vkCmdSetViewportWScalingNV;
         vkCmdSetDiscardRectangleEXT : PFN_vkCmdSetDiscardRectangleEXT;
+        vkCmdSetDiscardRectangleEnableEXT : PFN_vkCmdSetDiscardRectangleEnableEXT;
+        vkCmdSetDiscardRectangleModeEXT : PFN_vkCmdSetDiscardRectangleModeEXT;
         vkCmdSetSampleLocationsEXT : PFN_vkCmdSetSampleLocationsEXT;
         vkGetBufferMemoryRequirements2 : PFN_vkGetBufferMemoryRequirements2;
         vkGetBufferMemoryRequirements2KHR : PFN_vkGetBufferMemoryRequirements2KHR;
@@ -477,12 +495,16 @@ Vulkan_All_Commands :: struct
         vkCmdEndQueryIndexedEXT : PFN_vkCmdEndQueryIndexedEXT;
         vkCmdDrawIndirectByteCountEXT : PFN_vkCmdDrawIndirectByteCountEXT;
         vkCmdSetExclusiveScissorNV : PFN_vkCmdSetExclusiveScissorNV;
+        vkCmdSetExclusiveScissorEnableNV : PFN_vkCmdSetExclusiveScissorEnableNV;
         vkCmdBindShadingRateImageNV : PFN_vkCmdBindShadingRateImageNV;
         vkCmdSetViewportShadingRatePaletteNV : PFN_vkCmdSetViewportShadingRatePaletteNV;
         vkCmdSetCoarseSampleOrderNV : PFN_vkCmdSetCoarseSampleOrderNV;
         vkCmdDrawMeshTasksNV : PFN_vkCmdDrawMeshTasksNV;
         vkCmdDrawMeshTasksIndirectNV : PFN_vkCmdDrawMeshTasksIndirectNV;
         vkCmdDrawMeshTasksIndirectCountNV : PFN_vkCmdDrawMeshTasksIndirectCountNV;
+        vkCmdDrawMeshTasksEXT : PFN_vkCmdDrawMeshTasksEXT;
+        vkCmdDrawMeshTasksIndirectEXT : PFN_vkCmdDrawMeshTasksIndirectEXT;
+        vkCmdDrawMeshTasksIndirectCountEXT : PFN_vkCmdDrawMeshTasksIndirectCountEXT;
         vkCompileDeferredNV : PFN_vkCompileDeferredNV;
         vkCreateAccelerationStructureNV : PFN_vkCreateAccelerationStructureNV;
         vkCmdBindInvocationMaskHUAWEI : PFN_vkCmdBindInvocationMaskHUAWEI;
@@ -510,6 +532,7 @@ Vulkan_All_Commands :: struct
         vkCreateRayTracingPipelinesNV : PFN_vkCreateRayTracingPipelinesNV;
         vkCreateRayTracingPipelinesKHR : PFN_vkCreateRayTracingPipelinesKHR;
         vkCmdTraceRaysIndirectKHR : PFN_vkCmdTraceRaysIndirectKHR;
+        vkCmdTraceRaysIndirect2KHR : PFN_vkCmdTraceRaysIndirect2KHR;
         vkGetDeviceAccelerationStructureCompatibilityKHR : PFN_vkGetDeviceAccelerationStructureCompatibilityKHR;
         vkGetRayTracingShaderGroupStackSizeKHR : PFN_vkGetRayTracingShaderGroupStackSizeKHR;
         vkCmdSetRayTracingPipelineStackSizeKHR : PFN_vkCmdSetRayTracingPipelineStackSizeKHR;
@@ -538,6 +561,7 @@ Vulkan_All_Commands :: struct
         vkGetPipelineExecutableStatisticsKHR : PFN_vkGetPipelineExecutableStatisticsKHR;
         vkGetPipelineExecutableInternalRepresentationsKHR : PFN_vkGetPipelineExecutableInternalRepresentationsKHR;
         vkCmdSetLineStippleEXT : PFN_vkCmdSetLineStippleEXT;
+        vkGetFaultData : PFN_vkGetFaultData;
         vkCreateAccelerationStructureKHR : PFN_vkCreateAccelerationStructureKHR;
         vkCmdBuildAccelerationStructuresKHR : PFN_vkCmdBuildAccelerationStructuresKHR;
         vkCmdBuildAccelerationStructuresIndirectKHR : PFN_vkCmdBuildAccelerationStructuresIndirectKHR;
@@ -580,6 +604,37 @@ Vulkan_All_Commands :: struct
         vkCmdSetLogicOpEXT : PFN_vkCmdSetLogicOpEXT;
         vkCmdSetPrimitiveRestartEnable : PFN_vkCmdSetPrimitiveRestartEnable;
         vkCmdSetPrimitiveRestartEnableEXT : PFN_vkCmdSetPrimitiveRestartEnableEXT;
+        vkCmdSetTessellationDomainOriginEXT : PFN_vkCmdSetTessellationDomainOriginEXT;
+        vkCmdSetDepthClampEnableEXT : PFN_vkCmdSetDepthClampEnableEXT;
+        vkCmdSetPolygonModeEXT : PFN_vkCmdSetPolygonModeEXT;
+        vkCmdSetRasterizationSamplesEXT : PFN_vkCmdSetRasterizationSamplesEXT;
+        vkCmdSetSampleMaskEXT : PFN_vkCmdSetSampleMaskEXT;
+        vkCmdSetAlphaToCoverageEnableEXT : PFN_vkCmdSetAlphaToCoverageEnableEXT;
+        vkCmdSetAlphaToOneEnableEXT : PFN_vkCmdSetAlphaToOneEnableEXT;
+        vkCmdSetLogicOpEnableEXT : PFN_vkCmdSetLogicOpEnableEXT;
+        vkCmdSetColorBlendEnableEXT : PFN_vkCmdSetColorBlendEnableEXT;
+        vkCmdSetColorBlendEquationEXT : PFN_vkCmdSetColorBlendEquationEXT;
+        vkCmdSetColorWriteMaskEXT : PFN_vkCmdSetColorWriteMaskEXT;
+        vkCmdSetRasterizationStreamEXT : PFN_vkCmdSetRasterizationStreamEXT;
+        vkCmdSetConservativeRasterizationModeEXT : PFN_vkCmdSetConservativeRasterizationModeEXT;
+        vkCmdSetExtraPrimitiveOverestimationSizeEXT : PFN_vkCmdSetExtraPrimitiveOverestimationSizeEXT;
+        vkCmdSetDepthClipEnableEXT : PFN_vkCmdSetDepthClipEnableEXT;
+        vkCmdSetSampleLocationsEnableEXT : PFN_vkCmdSetSampleLocationsEnableEXT;
+        vkCmdSetColorBlendAdvancedEXT : PFN_vkCmdSetColorBlendAdvancedEXT;
+        vkCmdSetProvokingVertexModeEXT : PFN_vkCmdSetProvokingVertexModeEXT;
+        vkCmdSetLineRasterizationModeEXT : PFN_vkCmdSetLineRasterizationModeEXT;
+        vkCmdSetLineStippleEnableEXT : PFN_vkCmdSetLineStippleEnableEXT;
+        vkCmdSetDepthClipNegativeOneToOneEXT : PFN_vkCmdSetDepthClipNegativeOneToOneEXT;
+        vkCmdSetViewportWScalingEnableNV : PFN_vkCmdSetViewportWScalingEnableNV;
+        vkCmdSetViewportSwizzleNV : PFN_vkCmdSetViewportSwizzleNV;
+        vkCmdSetCoverageToColorEnableNV : PFN_vkCmdSetCoverageToColorEnableNV;
+        vkCmdSetCoverageToColorLocationNV : PFN_vkCmdSetCoverageToColorLocationNV;
+        vkCmdSetCoverageModulationModeNV : PFN_vkCmdSetCoverageModulationModeNV;
+        vkCmdSetCoverageModulationTableEnableNV : PFN_vkCmdSetCoverageModulationTableEnableNV;
+        vkCmdSetCoverageModulationTableNV : PFN_vkCmdSetCoverageModulationTableNV;
+        vkCmdSetShadingRateImageEnableNV : PFN_vkCmdSetShadingRateImageEnableNV;
+        vkCmdSetCoverageReductionModeNV : PFN_vkCmdSetCoverageReductionModeNV;
+        vkCmdSetRepresentativeFragmentTestEnableNV : PFN_vkCmdSetRepresentativeFragmentTestEnableNV;
         vkCreatePrivateDataSlot : PFN_vkCreatePrivateDataSlot;
         vkCreatePrivateDataSlotEXT : PFN_vkCreatePrivateDataSlotEXT;
         vkDestroyPrivateDataSlot : PFN_vkDestroyPrivateDataSlot;
@@ -600,6 +655,7 @@ Vulkan_All_Commands :: struct
         vkCmdCopyImageToBuffer2KHR : PFN_vkCmdCopyImageToBuffer2KHR;
         vkCmdResolveImage2 : PFN_vkCmdResolveImage2;
         vkCmdResolveImage2KHR : PFN_vkCmdResolveImage2KHR;
+        vkCmdRefreshObjectsKHR : PFN_vkCmdRefreshObjectsKHR;
         vkCmdSetFragmentShadingRateKHR : PFN_vkCmdSetFragmentShadingRateKHR;
         vkCmdSetFragmentShadingRateEnumNV : PFN_vkCmdSetFragmentShadingRateEnumNV;
         vkGetAccelerationStructureBuildSizesKHR : PFN_vkGetAccelerationStructureBuildSizesKHR;
@@ -619,17 +675,76 @@ Vulkan_All_Commands :: struct
         vkCmdWriteTimestamp2KHR : PFN_vkCmdWriteTimestamp2KHR;
         vkCmdWriteBufferMarker2AMD : PFN_vkCmdWriteBufferMarker2AMD;
         vkGetQueueCheckpointData2NV : PFN_vkGetQueueCheckpointData2NV;
+        vkGetCommandPoolMemoryConsumption : PFN_vkGetCommandPoolMemoryConsumption;
+        vkCreateVideoSessionKHR : PFN_vkCreateVideoSessionKHR;
+        vkDestroyVideoSessionKHR : PFN_vkDestroyVideoSessionKHR;
+        vkCreateVideoSessionParametersKHR : PFN_vkCreateVideoSessionParametersKHR;
+        vkUpdateVideoSessionParametersKHR : PFN_vkUpdateVideoSessionParametersKHR;
+        vkDestroyVideoSessionParametersKHR : PFN_vkDestroyVideoSessionParametersKHR;
+        vkGetVideoSessionMemoryRequirementsKHR : PFN_vkGetVideoSessionMemoryRequirementsKHR;
+        vkBindVideoSessionMemoryKHR : PFN_vkBindVideoSessionMemoryKHR;
+        vkCmdDecodeVideoKHR : PFN_vkCmdDecodeVideoKHR;
+        vkCmdBeginVideoCodingKHR : PFN_vkCmdBeginVideoCodingKHR;
+        vkCmdControlVideoCodingKHR : PFN_vkCmdControlVideoCodingKHR;
+        vkCmdEndVideoCodingKHR : PFN_vkCmdEndVideoCodingKHR;
+        vkCmdDecompressMemoryNV : PFN_vkCmdDecompressMemoryNV;
+        vkCmdDecompressMemoryIndirectCountNV : PFN_vkCmdDecompressMemoryIndirectCountNV;
         vkCreateCuModuleNVX : PFN_vkCreateCuModuleNVX;
         vkCreateCuFunctionNVX : PFN_vkCreateCuFunctionNVX;
         vkDestroyCuModuleNVX : PFN_vkDestroyCuModuleNVX;
         vkDestroyCuFunctionNVX : PFN_vkDestroyCuFunctionNVX;
         vkCmdCuLaunchKernelNVX : PFN_vkCmdCuLaunchKernelNVX;
+        vkGetDescriptorSetLayoutSizeEXT : PFN_vkGetDescriptorSetLayoutSizeEXT;
+        vkGetDescriptorSetLayoutBindingOffsetEXT : PFN_vkGetDescriptorSetLayoutBindingOffsetEXT;
+        vkGetDescriptorEXT : PFN_vkGetDescriptorEXT;
+        vkCmdBindDescriptorBuffersEXT : PFN_vkCmdBindDescriptorBuffersEXT;
+        vkCmdSetDescriptorBufferOffsetsEXT : PFN_vkCmdSetDescriptorBufferOffsetsEXT;
+        vkCmdBindDescriptorBufferEmbeddedSamplersEXT : PFN_vkCmdBindDescriptorBufferEmbeddedSamplersEXT;
+        vkGetBufferOpaqueCaptureDescriptorDataEXT : PFN_vkGetBufferOpaqueCaptureDescriptorDataEXT;
+        vkGetImageOpaqueCaptureDescriptorDataEXT : PFN_vkGetImageOpaqueCaptureDescriptorDataEXT;
+        vkGetImageViewOpaqueCaptureDescriptorDataEXT : PFN_vkGetImageViewOpaqueCaptureDescriptorDataEXT;
+        vkGetSamplerOpaqueCaptureDescriptorDataEXT : PFN_vkGetSamplerOpaqueCaptureDescriptorDataEXT;
+        vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT : PFN_vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT;
         vkSetDeviceMemoryPriorityEXT : PFN_vkSetDeviceMemoryPriorityEXT;
         vkWaitForPresentKHR : PFN_vkWaitForPresentKHR;
         vkCmdBeginRendering : PFN_vkCmdBeginRendering;
         vkCmdBeginRenderingKHR : PFN_vkCmdBeginRenderingKHR;
         vkCmdEndRendering : PFN_vkCmdEndRendering;
         vkCmdEndRenderingKHR : PFN_vkCmdEndRenderingKHR;
+        vkGetDescriptorSetLayoutHostMappingInfoVALVE : PFN_vkGetDescriptorSetLayoutHostMappingInfoVALVE;
+        vkGetDescriptorSetHostMappingVALVE : PFN_vkGetDescriptorSetHostMappingVALVE;
+        vkCreateMicromapEXT : PFN_vkCreateMicromapEXT;
+        vkCmdBuildMicromapsEXT : PFN_vkCmdBuildMicromapsEXT;
+        vkBuildMicromapsEXT : PFN_vkBuildMicromapsEXT;
+        vkDestroyMicromapEXT : PFN_vkDestroyMicromapEXT;
+        vkCmdCopyMicromapEXT : PFN_vkCmdCopyMicromapEXT;
+        vkCopyMicromapEXT : PFN_vkCopyMicromapEXT;
+        vkCmdCopyMicromapToMemoryEXT : PFN_vkCmdCopyMicromapToMemoryEXT;
+        vkCopyMicromapToMemoryEXT : PFN_vkCopyMicromapToMemoryEXT;
+        vkCmdCopyMemoryToMicromapEXT : PFN_vkCmdCopyMemoryToMicromapEXT;
+        vkCopyMemoryToMicromapEXT : PFN_vkCopyMemoryToMicromapEXT;
+        vkCmdWriteMicromapsPropertiesEXT : PFN_vkCmdWriteMicromapsPropertiesEXT;
+        vkWriteMicromapsPropertiesEXT : PFN_vkWriteMicromapsPropertiesEXT;
+        vkGetDeviceMicromapCompatibilityEXT : PFN_vkGetDeviceMicromapCompatibilityEXT;
+        vkGetMicromapBuildSizesEXT : PFN_vkGetMicromapBuildSizesEXT;
+        vkGetShaderModuleIdentifierEXT : PFN_vkGetShaderModuleIdentifierEXT;
+        vkGetShaderModuleCreateInfoIdentifierEXT : PFN_vkGetShaderModuleCreateInfoIdentifierEXT;
+        vkGetImageSubresourceLayout2EXT : PFN_vkGetImageSubresourceLayout2EXT;
+        vkGetPipelinePropertiesEXT : PFN_vkGetPipelinePropertiesEXT;
+        vkGetFramebufferTilePropertiesQCOM : PFN_vkGetFramebufferTilePropertiesQCOM;
+        vkGetDynamicRenderingTilePropertiesQCOM : PFN_vkGetDynamicRenderingTilePropertiesQCOM;
+        vkCreateOpticalFlowSessionNV : PFN_vkCreateOpticalFlowSessionNV;
+        vkDestroyOpticalFlowSessionNV : PFN_vkDestroyOpticalFlowSessionNV;
+        vkBindOpticalFlowSessionImageNV : PFN_vkBindOpticalFlowSessionImageNV;
+        vkCmdOpticalFlowExecuteNV : PFN_vkCmdOpticalFlowExecuteNV;
+        vkGetDeviceFaultInfoEXT : PFN_vkGetDeviceFaultInfoEXT;
+        vkReleaseSwapchainImagesEXT : PFN_vkReleaseSwapchainImagesEXT;
+        vkMapMemory2KHR : PFN_vkMapMemory2KHR;
+        vkUnmapMemory2KHR : PFN_vkUnmapMemory2KHR;
+        vkCreateShadersEXT : PFN_vkCreateShadersEXT;
+        vkDestroyShaderEXT : PFN_vkDestroyShaderEXT;
+        vkGetShaderBinaryDataEXT : PFN_vkGetShaderBinaryDataEXT;
+        vkCmdBindShadersEXT : PFN_vkCmdBindShadersEXT;
         #if VULKAN_PLATFORM == .Windows
         {
             vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;
@@ -660,19 +775,17 @@ Vulkan_All_Commands :: struct
             vkGetAndroidHardwareBufferPropertiesANDROID : PFN_vkGetAndroidHardwareBufferPropertiesANDROID;
             vkGetMemoryAndroidHardwareBufferANDROID : PFN_vkGetMemoryAndroidHardwareBufferANDROID;
         }
+        #if VULKAN_PLATFORM == .MacOS
+        {
+            vkExportMetalObjectsEXT : PFN_vkExportMetalObjectsEXT;
+        }
+        #if VULKAN_PLATFORM == .Jetson
+        {
+            vkGetMemorySciBufNV : PFN_vkGetMemorySciBufNV;
+            vkCreateSemaphoreSciSyncPoolNV : PFN_vkCreateSemaphoreSciSyncPoolNV;
+        }
         #if VK_ENABLE_BETA_EXTENSIONS
         {
-            vkCreateVideoSessionKHR : PFN_vkCreateVideoSessionKHR;
-            vkDestroyVideoSessionKHR : PFN_vkDestroyVideoSessionKHR;
-            vkCreateVideoSessionParametersKHR : PFN_vkCreateVideoSessionParametersKHR;
-            vkUpdateVideoSessionParametersKHR : PFN_vkUpdateVideoSessionParametersKHR;
-            vkDestroyVideoSessionParametersKHR : PFN_vkDestroyVideoSessionParametersKHR;
-            vkGetVideoSessionMemoryRequirementsKHR : PFN_vkGetVideoSessionMemoryRequirementsKHR;
-            vkBindVideoSessionMemoryKHR : PFN_vkBindVideoSessionMemoryKHR;
-            vkCmdDecodeVideoKHR : PFN_vkCmdDecodeVideoKHR;
-            vkCmdBeginVideoCodingKHR : PFN_vkCmdBeginVideoCodingKHR;
-            vkCmdControlVideoCodingKHR : PFN_vkCmdControlVideoCodingKHR;
-            vkCmdEndVideoCodingKHR : PFN_vkCmdEndVideoCodingKHR;
             vkCmdEncodeVideoKHR : PFN_vkCmdEncodeVideoKHR;
         }
     }
