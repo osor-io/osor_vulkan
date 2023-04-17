@@ -279,7 +279,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
-        print_to_builder(*prelude_builder, "    %;\n", get_enum_name(platform));
+        print_to_builder(*prelude_builder, "    %;\n", enum_value_to_name(platform));
     }
     print_to_builder(*prelude_builder, "}\n\n\n\n");
     append(*prelude_builder, VULKAN_GENERAL_PRELUDE);
@@ -299,7 +299,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     
     requires_strings_to_platform : Table(string, Vulkan_Platform);
-    defer uninit(*requires_strings_to_platform);
+    defer deinit(*requires_strings_to_platform);
     table_add(*requires_strings_to_platform, "X11/Xlib.h",              .X11);
     table_add(*requires_strings_to_platform, "X11/extensions/Xrandr.h", .X11);
     table_add(*requires_strings_to_platform, "wayland-client.h",        .Wayland);
@@ -317,7 +317,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_encode.h", .Provisional);
 
     platform_name_to_platform_table : Table(string, Vulkan_Platform);
-    defer uninit(*platform_name_to_platform_table);
+    defer deinit(*platform_name_to_platform_table);
     table_add(*platform_name_to_platform_table, "xlib",         .X11);
     table_add(*platform_name_to_platform_table, "xlib_xrandr",  .X11);
     table_add(*platform_name_to_platform_table, "xcb",          .XCB);
@@ -335,7 +335,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*platform_name_to_platform_table, "screen",       .Screen);
     find_platform_from_platform_name :: (name : string) -> Vulkan_Platform #expand
     {
-        platform := table_find_pointer(platform_name_to_platform_table, name);
+        platform := table_find_pointer(*platform_name_to_platform_table, name);
         if !platform then return Vulkan_Platform.None;
         return <<platform;
     }
@@ -356,7 +356,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     add_platform_specific_name :: (requires_string : string, name : string) #expand
     {
-        platform, found := table_find(requires_strings_to_platform, requires_string);
+        platform, found := table_find(*requires_strings_to_platform, requires_string);
         assert(found);
         names := *array_of_platform_specific_names[platform];
         array_add(*names.names, name);
@@ -479,7 +479,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 for Include..Union
                 {
-                    if equal_nocase(get_enum_name(it), category_string)
+                    if equal_nocase(enum_value_to_name(it), category_string)
                         category = it;
                 }
             }
@@ -540,7 +540,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             case Include;
             {
-                platform, found := table_find(requires_strings_to_platform, type_name);
+                platform, found := table_find(*requires_strings_to_platform, type_name);
                 assert(found || type_name == "vk_platform");
                 // Checking that we already matched the include to a platform earlier
                 // in case other types reference it and we need to put platform requirements
@@ -1376,7 +1376,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         {
             assert(false);
         }
-        comment.text = builder_to_string(*builder, __temporary_allocator);
+        comment.text = builder_to_string(*builder, __temporary_allocator, do_reset = false);
         array_add(*instance.comments, comment);
     }
 
@@ -2233,7 +2233,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             print_to_builder(builder, "% :: #type (", procedure_pointer.name);
             spaces_to_pad := 0;
             {
-                string_so_far := builder_to_string(builder);
+                string_so_far := builder_to_string(builder, do_reset = false);
                 defer free(string_so_far);
                 //
                 // @@IMPROVEMENT @@NOTE @@UGLY: Allocating here this string only to figure out how much space there
@@ -2321,7 +2321,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 {
                     append(*pointer_builder, "*");
                 }
-                pointer_string := builder_to_string(*pointer_builder);
+                pointer_string := builder_to_string(*pointer_builder, do_reset = false);
                 print_to_builder(*types_builder, "%1 :: %2%3;\n", it.name, pointer_string, it.alias);
             }
         }
@@ -2352,9 +2352,9 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 if it.type == 
                 {
                     case Handle_Instance.Type.Dispatchable;
-                        print_to_builder(*types_builder, "// Dispatchable Handle\n", it.name, it.name, it.name);
+                        print_to_builder(*types_builder, "// Dispatchable Handle\n");
                     case Handle_Instance.Type.Non_Dispatchable;
-                        print_to_builder(*types_builder, "// Non-Dispatchable Handle\n", it.name, it.name, it.name);
+                        print_to_builder(*types_builder, "// Non-Dispatchable Handle\n");
                     case; error();
                 }
                 print_to_builder(*types_builder, "%_T :: struct {};\n% :: *%_T;\n\n", it.name, it.name, it.name);
@@ -2378,11 +2378,11 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
         else if platform == .Provisional
         {
-            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n", get_enum_name(platform));
+            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n");
         }
         else
         {
-            print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", get_enum_name(platform));
+            print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", enum_value_to_name(platform));
         }
         output_all_structs(structs, *types_builder, platform);
         output_all_procedure_pointers(procedure_pointers, *types_builder, platform);
@@ -2580,7 +2580,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             print_to_builder(builder, "PFN_% :: #type (", command_instance.name);
             spaces_to_pad := 0;
             {
-                string_so_far := builder_to_string(builder);
+                string_so_far := builder_to_string(builder, do_reset = false);
                 defer free(string_so_far);
                 //
                 // @@IMPROVEMENT @@NOTE @@UGLY: Allocating here this string only to figure out how much space there
@@ -2783,7 +2783,7 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
                 }
                 else
                 {
-                    write("        #if VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                    write("        #if VULKAN_PLATFORM == .%\n        {\n", enum_value_to_name(platform));
                 }
                 write_all_commands(commands, platform, "            ");
                 write("        }\n");
@@ -2890,10 +2890,10 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
             }
             else
             {
-                print_to_builder(*prelude_builder, "#if VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
+                print_to_builder(*prelude_builder, "#if VULKAN_PLATFORM == .%\n{\n", enum_value_to_name(platform));
             }
             append(*prelude_builder, prelude_to_add);
-            print_to_builder(*prelude_builder, "} // %\n\n", get_enum_name(platform));
+            print_to_builder(*prelude_builder, "} // %\n\n", enum_value_to_name(platform));
         }
     }
 
@@ -3595,7 +3595,7 @@ get_type_name :: ($type : Type) -> string
     }
 }
 
-get_enum_names :: ($enum_type : Type) -> [] string
+enum_value_to_names :: ($enum_type : Type) -> [] string
 {
     info := type_info(enum_type);
     assert(info.type == Type_Info_Tag.ENUM);
@@ -3623,7 +3623,7 @@ print_array_of_enum_values :: (builder : *String_Builder, values : [] $Enum_Type
 {
     for values
     {
-        name := tprint("%", get_enum_name(it));
+        name := tprint("%", enum_value_to_name(it));
         for 0..name.count-1
             if name[it] == #char "_" then name[it] = #char " ";
         print_to_builder(builder, name);
