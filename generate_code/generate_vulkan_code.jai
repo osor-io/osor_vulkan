@@ -335,7 +335,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*platform_name_to_platform_table, "screen",       .Screen);
     find_platform_from_platform_name :: (name : string) -> Vulkan_Platform #expand
     {
-        platform := table_find_pointer(platform_name_to_platform_table, name);
+        platform := table_find_pointer(*platform_name_to_platform_table, name);
         if !platform then return Vulkan_Platform.None;
         return <<platform;
     }
@@ -356,7 +356,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     add_platform_specific_name :: (requires_string : string, name : string) #expand
     {
-        platform, found := table_find(requires_strings_to_platform, requires_string);
+        platform, found := table_find(*requires_strings_to_platform, requires_string);
         assert(found);
         names := *array_of_platform_specific_names[platform];
         array_add(*names.names, name);
@@ -540,7 +540,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             case Include;
             {
-                platform, found := table_find(requires_strings_to_platform, type_name);
+                platform, found := table_find(*requires_strings_to_platform, type_name);
                 assert(found || type_name == "vk_platform");
                 // Checking that we already matched the include to a platform earlier
                 // in case other types reference it and we need to put platform requirements
