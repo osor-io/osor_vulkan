@@ -1376,7 +1376,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         {
             assert(false);
         }
-        comment.text = builder_to_string(*builder, __temporary_allocator);
+        comment.text = builder_to_string(*builder, __temporary_allocator, do_reset = false);
         array_add(*instance.comments, comment);
     }
 
@@ -2233,7 +2233,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             print_to_builder(builder, "% :: #type (", procedure_pointer.name);
             spaces_to_pad := 0;
             {
-                string_so_far := builder_to_string(builder);
+                string_so_far := builder_to_string(builder, do_reset = false);
                 defer free(string_so_far);
                 //
                 // @@IMPROVEMENT @@NOTE @@UGLY: Allocating here this string only to figure out how much space there
@@ -2321,7 +2321,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 {
                     append(*pointer_builder, "*");
                 }
-                pointer_string := builder_to_string(*pointer_builder);
+                pointer_string := builder_to_string(*pointer_builder, do_reset = false);
                 print_to_builder(*types_builder, "%1 :: %2%3;\n", it.name, pointer_string, it.alias);
             }
         }
@@ -2580,7 +2580,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             print_to_builder(builder, "PFN_% :: #type (", command_instance.name);
             spaces_to_pad := 0;
             {
-                string_so_far := builder_to_string(builder);
+                string_so_far := builder_to_string(builder, do_reset = false);
                 defer free(string_so_far);
                 //
                 // @@IMPROVEMENT @@NOTE @@UGLY: Allocating here this string only to figure out how much space there
