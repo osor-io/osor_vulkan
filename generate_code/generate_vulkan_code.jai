@@ -279,7 +279,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     for get_enum_values(Vulkan_Platform)
     {
         platform := cast(Vulkan_Platform) it;
-        print_to_builder(*prelude_builder, "    %;\n", get_enum_name(platform));
+        print_to_builder(*prelude_builder, "    %;\n", enum_value_to_name(platform));
     }
     print_to_builder(*prelude_builder, "}\n\n\n\n");
     append(*prelude_builder, VULKAN_GENERAL_PRELUDE);
@@ -479,7 +479,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 for Include..Union
                 {
-                    if equal_nocase(get_enum_name(it), category_string)
+                    if equal_nocase(enum_value_to_name(it), category_string)
                         category = it;
                 }
             }
@@ -2378,11 +2378,11 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
         else if platform == .Provisional
         {
-            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n", get_enum_name(platform));
+            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n", enum_value_to_name(platform));
         }
         else
         {
-            print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", get_enum_name(platform));
+            print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", enum_value_to_name(platform));
         }
         output_all_structs(structs, *types_builder, platform);
         output_all_procedure_pointers(procedure_pointers, *types_builder, platform);
@@ -2783,7 +2783,7 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
                 }
                 else
                 {
-                    write("        #if VULKAN_PLATFORM == .%\n        {\n", get_enum_name(platform));
+                    write("        #if VULKAN_PLATFORM == .%\n        {\n", enum_value_to_name(platform));
                 }
                 write_all_commands(commands, platform, "            ");
                 write("        }\n");
@@ -2890,10 +2890,10 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
             }
             else
             {
-                print_to_builder(*prelude_builder, "#if VULKAN_PLATFORM == .%\n{\n", get_enum_name(platform));
+                print_to_builder(*prelude_builder, "#if VULKAN_PLATFORM == .%\n{\n", enum_value_to_name(platform));
             }
             append(*prelude_builder, prelude_to_add);
-            print_to_builder(*prelude_builder, "} // %\n\n", get_enum_name(platform));
+            print_to_builder(*prelude_builder, "} // %\n\n", enum_value_to_name(platform));
         }
     }
 
@@ -3595,7 +3595,7 @@ get_type_name :: ($type : Type) -> string
     }
 }
 
-get_enum_names :: ($enum_type : Type) -> [] string
+enum_value_to_names :: ($enum_type : Type) -> [] string
 {
     info := type_info(enum_type);
     assert(info.type == Type_Info_Tag.ENUM);
@@ -3623,7 +3623,7 @@ print_array_of_enum_values :: (builder : *String_Builder, values : [] $Enum_Type
 {
     for values
     {
-        name := tprint("%", get_enum_name(it));
+        name := tprint("%", enum_value_to_name(it));
         for 0..name.count-1
             if name[it] == #char "_" then name[it] = #char " ";
         print_to_builder(builder, name);
