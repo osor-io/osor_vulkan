@@ -37,7 +37,7 @@ Vulkan_Platform :: enum
     MacOS;
     IDirectFB;
     Screen;
-
+    Jetson;
     Provisional; // Jesus, Mary and Joseph and the wee donkey, why is this a platform. 
 }
 
@@ -66,6 +66,7 @@ Struct_Instance :: struct
         type : string;
         only_value_possible : string;
         is_optional := false;
+        api_name : string;
         pointer_count := 0;
         array_dimensions : [8] string;
         array_dimensions_used := 0;
@@ -118,6 +119,7 @@ Procedure_Instance :: struct
     Argument :: struct
     {
         type : Type;
+        api_name : string;
         name : string;
     }
     Type :: struct
@@ -150,6 +152,7 @@ Command_Instance :: struct
         Sparse_Binding;
         Decode;
         Encode;
+        Optical_Flow; // wat
     }
 
     renderpass : Render_Pass;
@@ -184,6 +187,7 @@ Command_Instance :: struct
     }
 
     comment : string;
+    api_name : string;
 }
 
 Base_Type_Instance :: struct
@@ -309,6 +313,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "ggp_c/vulkan_types.h",    .GGP);
     table_add(*requires_strings_to_platform, "directfb.h",              .IDirectFB);
     table_add(*requires_strings_to_platform, "screen/screen.h",         .Screen);
+    // The xml doesn't contain any platform="x" for these two, but this page describes NvSciSync as
+    //     "The NvMedia APIs provide true hardware acceleration of image processing using hardware engines on Jetson devices."
+    // I don't know what a Jetson is but it's a platform now
+    // https://docs.nvidia.com/drive/drive_os_5.1.6.1L/nvvib_docs/index.html#page/DRIVE_OS_Linux_SDK_Development_Guide/NvMedia/nvmedia_concept_scisync.html
+    table_add(*requires_strings_to_platform, "nvscisync.h",             .Jetson); 
+    table_add(*requires_strings_to_platform, "nvscibuf.h",              .Jetson);
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std.h",        .Provisional);
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std_decode.h", .Provisional);
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h264std_encode.h", .Provisional);
@@ -357,7 +367,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     add_platform_specific_name :: (requires_string : string, name : string) #expand
     {
         platform, found := table_find(*requires_strings_to_platform, requires_string);
-        assert(found);
+        assert(found, "add_platform_specific_name unable to find requires_string=%", requires_string);
         names := *array_of_platform_specific_names[platform];
         array_add(*names.names, name);
     }
@@ -509,6 +519,10 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             }
         }
 
+        has_api_attribute, api_attribute := find_attribute_with_name_and_strip(type, "api");
+        if has_api_attribute && api_attribute == "vulkansc" continue;
+    
+
         has_alias_attribute, alias := find_attribute_with_name_and_strip(type, "alias");
 
         has_parent, parent_attribute := find_attribute_with_name_and_strip(type, "parent");
@@ -541,7 +555,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             case Include;
             {
                 platform, found := table_find(*requires_strings_to_platform, type_name);
-                assert(found || type_name == "vk_platform");
+                assert(found || type_name == "vk_platform", "Unable to find type_name or the type name was not vk_platform. found=% - type_name=%", found, type_name);
                 // Checking that we already matched the include to a platform earlier
                 // in case other types reference it and we need to put platform requirements
                 // on those.
@@ -621,6 +635,14 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                             if has_optional 
                             {
                                 if optional == "true" member.is_optional = true;
+                            }
+                        }
+                        {
+                            has_api_attribute, api_attribute := find_attribute_with_name_and_strip(child, "api");
+
+                            if has_api_attribute
+                            {
+                                member.api_name = api_attribute;
                             }
                         }
 
@@ -1393,8 +1415,13 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     {
         command_instance : Command_Instance;
         
-        found_name , name_attribute  := find_attribute_with_name_and_strip(command_node, "name");
-        found_alias, alias_attribute := find_attribute_with_name_and_strip(command_node, "alias");
+        found_name , name_attribute        := find_attribute_with_name_and_strip(command_node, "name");
+        found_alias, alias_attribute       := find_attribute_with_name_and_strip(command_node, "alias");
+        found_api_name, api_name_attribute := find_attribute_with_name_and_strip(command_node, "api");
+
+        if found_api_name {
+            command_instance.api_name = api_name_attribute;
+        }
 
         found_successcodes , successcodes_attribute   := find_attribute_with_name_and_strip(command_node, "successcodes");
         found_errorcodes   , errorcodes_attribute     := find_attribute_with_name_and_strip(command_node, "errorcodes");
@@ -1417,7 +1444,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                     case "sparse_binding";  array_add(*command_instance.queues, Command_Instance.Queue.Sparse_Binding);
                     case "decode";          array_add(*command_instance.queues, Command_Instance.Queue.Decode);
                     case "encode";          array_add(*command_instance.queues, Command_Instance.Queue.Encode);
-                    case; assert(false);
+                    case "opticalflow";     array_add(*command_instance.queues, Command_Instance.Queue.Optical_Flow);
+                    case; assert(false, "No matching case for queue '%'", it);
                 }
             }
         
@@ -1566,6 +1594,13 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             for param_node : param_nodes
             {
                 argument := parse_argument(param_node);
+                has_api_attribute, api_attribute := find_attribute_with_name_and_strip(param_node, "api");
+
+                if has_api_attribute
+                {
+                    argument.api_name = api_attribute;
+                }
+
                 array_add(*command_instance.arguments, argument);
             }
 
@@ -2248,6 +2283,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 }
                 spaces_to_pad = end - current;
             }
+
             for * argument : procedure_pointer.arguments
             {
                 if it_index != 0
@@ -2438,8 +2474,11 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 defer array_reset(*bit_field_counts);
                 bit_field_member_names : [..] string;
                 defer array_reset(*bit_field_member_names);
+
                 for * member, member_index : struct_instance.members
                 {
+                    if member.api_name == "vulkansc" continue;
+
                     if current_comment_index < struct_instance.comments.count &&
                        member_index == struct_instance.comments[current_comment_index].print_before_nth_member
                     {
@@ -2595,8 +2634,11 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 }
                 spaces_to_pad = end - current;
             }
+
             for * argument : command_instance.arguments
             {
+                if argument.api_name == "vulkansc" continue;
+
                 if it_index != 0
                 {
                     for 0..spaces_to_pad-1 print_to_builder(builder, " ");
@@ -2654,6 +2696,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         for command_instance : command_instances
         {
             if command_instance.requires_platform != platform continue;
+            if command_instance.api_name == "vulkansc" continue;
             if all_extensions_that_reference_this_are_disabled(command_instance.extensions_that_reference_this)  continue command_instance;
             if command_instance.alias
             {
@@ -2803,6 +2846,7 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
             for command : commands
             {
                 if platform != command.requires_platform continue;
+                if command.api_name == "vulkansc" continue;
                 if all_extensions_that_reference_this_are_disabled(command.extensions_that_reference_this) continue;
                 if command.alias
                 {
