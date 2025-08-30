@@ -2040,7 +2040,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     do_one_step_of_expanding_requirements :: () -> bool #expand
     {
         changed := false;
-        set_requirements :: (instance : *$T, platform : Vulkan_Platform) -> bool #must
+        set_requirements :: (instance : *$T, platform : Vulkan_Platform) -> bool
         {
             if platform == .None
             {
@@ -2100,7 +2100,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             for * procedure_instance.arguments
                    changed |= update_requiremens_for_type(procedure_instance, it.type.name);
         }
-        update_requiremens_for_type :: (instance : $Instance_Type, type_name : string) -> bool #must #expand
+        update_requiremens_for_type :: (instance : $Instance_Type, type_name : string) -> bool #expand
         {
             platform := get_type_platform_requirements(array_of_platform_specific_names, type_name);
 
@@ -2119,7 +2119,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         changed |= fixup_platform_requirements_of_aliased_types(structs);
         changed |= fixup_platform_requirements_of_aliased_types(commands);
         changed |= fixup_platform_requirements_of_aliased_types(procedure_pointers);
-        fixup_platform_requirements_of_aliased_types :: (instances : [] $Instance_Type) -> bool #must
+        fixup_platform_requirements_of_aliased_types :: (instances : [] $Instance_Type) -> bool
         {
             changed := false;
             for * instance : instances
@@ -3739,7 +3739,7 @@ find_first_node_with_name_and_attribute_value_recursive :: (root : *Node, name :
     return null;
 }
 
-find_all_nodes_with_name_and_attribute_recursive :: (root : *Node, name : string, attribute : string) -> [..] *Node #must
+find_all_nodes_with_name_and_attribute_recursive :: (root : *Node, name : string, attribute : string) -> [..] *Node
 {
     nodes : [..] *Node;
     recurse(root, name, attribute, *nodes);
@@ -3761,7 +3761,7 @@ find_all_nodes_with_name_and_attribute_recursive :: (root : *Node, name : string
     }
 }
 
-find_all_nodes_with_name_and_not_attribute_recursive :: (root : *Node, name : string, attribute : string) -> [..] *Node #must
+find_all_nodes_with_name_and_not_attribute_recursive :: (root : *Node, name : string, attribute : string) -> [..] *Node
 {
     nodes : [..] *Node;
     recurse(root, name, attribute, *nodes);
@@ -3790,7 +3790,7 @@ find_first_node_with_name :: (root : *Node, name : string) -> *Node
     return null;
 }
 
-find_all_nodes_with_name :: (root : *Node, name : string) -> [..] *Node #must
+find_all_nodes_with_name :: (root : *Node, name : string) -> [..] *Node
 {
     nodes : [..] *Node;
     for * root.children
@@ -3843,7 +3843,7 @@ find_contents_after_node :: (parent : *Node, child : *Node) -> string
     return "";
 }
 
-aggregate_all_contents_of_node_and_children :: (node : *Node, buffer : [] u8) -> string #must
+aggregate_all_contents_of_node_and_children :: (node : *Node, buffer : [] u8) -> string
 {
     raw_text_content := node.all_node_text_content;
 
@@ -4083,7 +4083,7 @@ parse_xml :: (contents : string) -> root_node : Node
     }
 }
 
-fix_xml_ampersand_shit_in_place :: (original : string) -> string #must
+fix_xml_ampersand_shit_in_place :: (original : string) -> string
 {
     new_string := original;
     chars_to_ignore := 0;

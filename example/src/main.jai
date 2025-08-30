@@ -1123,7 +1123,7 @@ Presentation_Mode :: enum
 
 vulkan_create_swapchain :: (vulkan_context : *Vulkan_Context, 
                             width : int = -999, height : int = -999, 
-                            presentation_mode := Presentation_Mode.Mailbox) -> success : bool #must
+                            presentation_mode := Presentation_Mode.Mailbox) -> success : bool
 {
     using Presentation_Mode;
     using vulkan_context;
@@ -1423,26 +1423,26 @@ vulkan_create_command_pools :: (using vulkan_context : *Vulkan_Context)
 }
 
 
-vulkan_get_new_command_buffer_for_graphics_queue :: (using vulkan_context : *Vulkan_Context) -> VkCommandBuffer #must
+vulkan_get_new_command_buffer_for_graphics_queue :: (using vulkan_context : *Vulkan_Context) -> VkCommandBuffer
 {
     return vulkan_get_new_command_buffer_for_queue_type(vulkan_context, Queue_Type.Graphics);
 }
 
 
-vulkan_get_new_command_buffer_for_async_compute_queue :: (using vulkan_context : *Vulkan_Context) -> VkCommandBuffer #must
+vulkan_get_new_command_buffer_for_async_compute_queue :: (using vulkan_context : *Vulkan_Context) -> VkCommandBuffer
 {
     return vulkan_get_new_command_buffer_for_queue_type(vulkan_context, Queue_Type.Async_Compute);
 }
 
 
-vulkan_get_new_command_buffer_for_transfer_queue :: (using vulkan_context : *Vulkan_Context) -> VkCommandBuffer #must
+vulkan_get_new_command_buffer_for_transfer_queue :: (using vulkan_context : *Vulkan_Context) -> VkCommandBuffer
 {
     return vulkan_get_new_command_buffer_for_queue_type(vulkan_context, Queue_Type.Transfer);
 }
 
 
 vulkan_get_new_command_buffer_for_queue_type :: (using vulkan_context : *Vulkan_Context, 
-                                                 queue_type : Queue_Type) -> VkCommandBuffer #must
+                                                 queue_type : Queue_Type) -> VkCommandBuffer
 {
     per_type := *command_pools_per_type[queue_type];
     free_array := *per_type.free_command_buffers[current_command_pool_index];
@@ -1608,10 +1608,10 @@ vulkan_destroy_shader_module :: (using vulkan_context : *Vulkan_Context, module 
 vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Context,
                                             vertex_shader_module : VkShaderModule, 
                                             fragment_shader_module : VkShaderModule,
-                                            $has_vertex_stuff : bool) -> VkPipeline            #must,
-                                                                         VkRenderPass          #must,
-                                                                         VkPipelineLayout      #must,
-                                                                         [3] VkDescriptorSetLayout #must
+                                            $has_vertex_stuff : bool) -> VkPipeline,
+                                                                         VkRenderPass,
+                                                                         VkPipelineLayout,
+                                                                         [3] VkDescriptorSetLayout
 {
     /*
 
@@ -1941,7 +1941,7 @@ vulkan_destroy_graphics_pipeline :: (using vulkan_context : *Vulkan_Context,
 
 
 // @@NOTE: :example_specific
-vulkan_example_create_render_pass :: (using vulkan_context : *Vulkan_Context) -> VkRenderPass #must
+vulkan_example_create_render_pass :: (using vulkan_context : *Vulkan_Context) -> VkRenderPass
 {
     /*
 
@@ -2002,7 +2002,7 @@ vulkan_destroy_render_pass :: (using vulkan_context : *Vulkan_Context, render_pa
 
 
 // @@NOTE: :example_specific but it almost isn't, the attachments are hardcoded to be 1, for the swapchain_image_view, people might want extra attachments or a depth buffer
-vulkan_example_make_framebuffers_for_renderpass_to_render_to_current_swapchain :: (using vulkan_context : *Vulkan_Context, render_pass : VkRenderPass, previous : * [] VkFramebuffer = null) -> [] VkFramebuffer #must
+vulkan_example_make_framebuffers_for_renderpass_to_render_to_current_swapchain :: (using vulkan_context : *Vulkan_Context, render_pass : VkRenderPass, previous : * [] VkFramebuffer = null) -> [] VkFramebuffer
 {
     framebuffers := new_temporary_array(VkFramebuffer);
     create_info : VkFramebufferCreateInfo;
@@ -2051,7 +2051,7 @@ vulkan_destroy_framebuffers :: (using vulkan_context : *Vulkan_Context, framebuf
 }
 
 
-vulkan_create_semaphore :: (using vulkan_context : *Vulkan_Context) -> VkSemaphore #must
+vulkan_create_semaphore :: (using vulkan_context : *Vulkan_Context) -> VkSemaphore
 {
     create_info : VkSemaphoreCreateInfo;
     semaphore : VkSemaphore;
@@ -2067,7 +2067,7 @@ vulkan_destroy_semaphore :: (using vulkan_context : *Vulkan_Context, semaphore :
 }
 
 
-vulkan_create_fence :: (using vulkan_context : *Vulkan_Context, signaled : bool) -> VkFence #must
+vulkan_create_fence :: (using vulkan_context : *Vulkan_Context, signaled : bool) -> VkFence
 {
     create_info : VkFenceCreateInfo;
     if signaled create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
@@ -2084,14 +2084,14 @@ vulkan_destroy_fence :: (using vulkan_context : *Vulkan_Context, fence : *VkFenc
 }
 
 
-vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_context : *Vulkan_Context) -> can_render : bool #must, 
-                                                                                                           image : VkImage #must, 
-                                                                                                           image_view : VkImageView #must, 
-                                                                                                           image_index : u32 #must, 
-                                                                                                           image_acquired_semaphore : VkSemaphore #must, 
-                                                                                                           finished_rendering_semaphore : VkSemaphore #must,
-                                                                                                           finished_rendering_fence : VkFence #must,
-                                                                                                           recreated_swapchain : bool #must
+vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_context : *Vulkan_Context) -> can_render : bool, 
+                                                                                                           image : VkImage, 
+                                                                                                           image_view : VkImageView, 
+                                                                                                           image_index : u32, 
+                                                                                                           image_acquired_semaphore : VkSemaphore, 
+                                                                                                           finished_rendering_semaphore : VkSemaphore,
+                                                                                                           finished_rendering_fence : VkFence,
+                                                                                                           recreated_swapchain : bool
 {
     // # Deal with needing to recreate the swapchain
     recreated_swapchain := false;
@@ -2395,12 +2395,12 @@ vulkan_create_buffer :: (using vulkan_context : *Vulkan_Context,
 
 vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context, 
                                         vertices : [] $Vertex_Type, 
-                                        indices : [] $Index_Type) -> vertex_buffer                   : VkBuffer       #must,
-                                                                     vertex_buffer_memory            : VkDeviceMemory #must,
-                                                                     index_buffer                    : VkBuffer       #must,
-                                                                     index_buffer_memory             : VkDeviceMemory #must,
-                                                                     semaphore_signalled_when_ending : VkSemaphore    #must,
-                                                                     fence_signalled_when_ending     : VkFence        #must
+                                        indices : [] $Index_Type) -> vertex_buffer                   : VkBuffer,
+                                                                     vertex_buffer_memory            : VkDeviceMemory,
+                                                                     index_buffer                    : VkBuffer,
+                                                                     index_buffer_memory             : VkDeviceMemory,
+                                                                     semaphore_signalled_when_ending : VkSemaphore,
+                                                                     fence_signalled_when_ending     : VkFence       
 {
     size_of_vertex_buffer := size_of(Vertex_Type) * vertices.count;
     size_of_index_buffer  := size_of(Index_Type) * indices.count;
@@ -2672,7 +2672,7 @@ vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan
 #scope_file
 
 
-new_temporary_array :: ($Element_Type : Type, initial_reserved_count := 16) -> [..] Element_Type #must
+new_temporary_array :: ($Element_Type : Type, initial_reserved_count := 16) -> [..] Element_Type
 {
     array : [..] Element_Type;
     array.allocator = __temporary_allocator;
@@ -2681,7 +2681,7 @@ new_temporary_array :: ($Element_Type : Type, initial_reserved_count := 16) -> [
 }
 
 
-strings_to_cstrings :: (array : [] string) -> [..] *u8 #must
+strings_to_cstrings :: (array : [] string) -> [..] *u8
 {
     new_array := new_temporary_array(*u8);
     for array
@@ -2713,7 +2713,7 @@ fill_extension_set :: (array_of_extension_properties : [] $Extension_Properties_
 }
 
 
-get_set_extension_cstrings :: (is_set : Vulkan_Context.Extension_Data.Is_Set) -> [] *u8 #must 
+get_set_extension_cstrings :: (is_set : Vulkan_Context.Extension_Data.Is_Set) -> [] *u8 
 {
     names := new_temporary_array(*u8);
     #insert #run () -> string
@@ -2846,7 +2846,7 @@ cleanup_extension_name :: (name : string) -> string
     return builder_to_string(*builder);
 }();
 
-alloc_and_copy_array :: (array : [] $T, allocator := context.allocator) -> [] T #must
+alloc_and_copy_array :: (array : [] $T, allocator := context.allocator) -> [] T
 {
     new_array := array;
     new_array.data = xx alloc(array.count * size_of(T), allocator);
