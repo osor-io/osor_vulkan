@@ -4,7 +4,7 @@
 #import "Compiler";
 #import "Process";
 
-#run,stallable
+#run
 {
     print("\n");
 
