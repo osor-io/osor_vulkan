@@ -27,18 +27,18 @@ main :: ()
 {
     window_handle := create_window(window_name="Vulkan Example", width=1920, height=1080);
 
-    // # Creates the instance, surface and device 
+    // # Creates the instance, surface and device
     vulkan_context : Vulkan_Context;
     vulkan_init(*vulkan_context, window_handle);
     defer vulkan_deinit(*vulkan_context);
 
     // # Create the swapchain, its images and its views
-    success := vulkan_create_swapchain(*vulkan_context); 
+    success := vulkan_create_swapchain(*vulkan_context);
     assert(success);
 
     // # Creating the command pools we can use for each in-flight frame
     vulkan_create_command_pools(*vulkan_context);
-    
+
     // # Load the vertex and fragment shaders for this example
     fullscreen_vertex_shader_module   := vulkan_create_shader_module(*vulkan_context, Assets.Example_Fullscreen_Vertex_Shader_Code);
     fullscreen_fragment_shader_module := vulkan_create_shader_module(*vulkan_context, Assets.Example_Fullscreen_Fragment_Shader_Code);
@@ -50,30 +50,30 @@ main :: ()
     defer vulkan_destroy_shader_module(*vulkan_context, *model_fragment_shader_module);
 
     // # Create a Graphics Pipeline (which needs a layout and a compatible render pass to the one that's going to use it)
-    fullscreen_graphics_pipeline, 
-    fullscreen_compatible_render_pass, 
-    fullscreen_pipeline_layout, 
-    fullscreen_descriptor_set_layouts := vulkan_example_create_graphics_pipeline(*vulkan_context, 
-                                                                                fullscreen_vertex_shader_module, 
+    fullscreen_graphics_pipeline,
+    fullscreen_compatible_render_pass,
+    fullscreen_pipeline_layout,
+    fullscreen_descriptor_set_layouts := vulkan_example_create_graphics_pipeline(*vulkan_context,
+                                                                                fullscreen_vertex_shader_module,
                                                                                 fullscreen_fragment_shader_module,
                                                                                 has_vertex_stuff = false);
-    defer vulkan_destroy_graphics_pipeline(*vulkan_context, 
-                                           *fullscreen_graphics_pipeline, 
-                                           *fullscreen_compatible_render_pass, 
-                                           *fullscreen_pipeline_layout, 
+    defer vulkan_destroy_graphics_pipeline(*vulkan_context,
+                                           *fullscreen_graphics_pipeline,
+                                           *fullscreen_compatible_render_pass,
+                                           *fullscreen_pipeline_layout,
                                            fullscreen_descriptor_set_layouts);
 
-    model_graphics_pipeline, 
-    model_compatible_render_pass, 
-    model_pipeline_layout, 
-    model_descriptor_set_layouts := vulkan_example_create_graphics_pipeline(*vulkan_context, 
-                                                                            model_vertex_shader_module, 
+    model_graphics_pipeline,
+    model_compatible_render_pass,
+    model_pipeline_layout,
+    model_descriptor_set_layouts := vulkan_example_create_graphics_pipeline(*vulkan_context,
+                                                                            model_vertex_shader_module,
                                                                             model_fragment_shader_module,
                                                                             has_vertex_stuff = true);
-    defer vulkan_destroy_graphics_pipeline(*vulkan_context, 
-                                           *model_graphics_pipeline, 
-                                           *model_compatible_render_pass, 
-                                           *model_pipeline_layout, 
+    defer vulkan_destroy_graphics_pipeline(*vulkan_context,
+                                           *model_graphics_pipeline,
+                                           *model_compatible_render_pass,
+                                           *model_pipeline_layout,
                                            model_descriptor_set_layouts);
 
     common_pipeline_layout := model_pipeline_layout;
@@ -99,7 +99,7 @@ main :: ()
 
     // # Making a vertex and index buffer with some contents to draw!
     vertices, indices := make_vertex_and_index_buffer_for_cube();
-    vertex_buffer, vertex_buffer_memory, 
+    vertex_buffer, vertex_buffer_memory,
     index_buffer, index_buffer_memory,
     semaphore_vertex_data_is_ready,
     fence_vertex_data_is_ready := vulkan_make_vertex_and_index_buffer(*vulkan_context, vertices, indices);
@@ -113,10 +113,10 @@ main :: ()
     waited_for_vertex_buffer := false;
 
     // # Main Loop
-    last_time := get_time() - 1.0/60.0;
+    last_time := seconds_since_init() - 1.0/60.0;
     need_to_recreate_framebuffers := false;
     run_main_loop := true;
-    while run_main_loop 
+    while run_main_loop
     {
         reset_temporary_storage();
 
@@ -129,8 +129,8 @@ main :: ()
                 mouse_position_y = xx mouse_y;
             }
         }
-        
-        now := get_time();
+
+        now := seconds_since_init();
         delta_time : float64 = now - last_time;
         last_time = now;
 
@@ -163,12 +163,12 @@ main :: ()
 
         // ## Get image from the swapchain we can render to
         can_render,
-        swapchain_image, 
-        swapchain_image_view, 
-        swapchain_image_index, 
-        image_acquired_semaphore, 
-        rendering_finished_semaphore, 
-        rendering_finished_fence, 
+        swapchain_image,
+        swapchain_image_view,
+        swapchain_image_index,
+        image_acquired_semaphore,
+        rendering_finished_semaphore,
+        rendering_finished_fence,
         recreated_swapchain := vulkan_begin_frame_and_acquire_swapchain_image_to_render_to(*vulkan_context);
 
         // ## Ignore rendering if we can't render (duh...)
@@ -221,7 +221,7 @@ main :: ()
         per_frame_data.mouse_position_y = mouse_position_y;
 
         per_view_data : Per_View_Data;
-        camera_position := make_vector3(0,0,5);
+        camera_position := Vector3.{0,0,5};
         per_view_data.view_from_world_matrix = prepare_matrix_for_shader(make_translation_matrix4(-camera_position));
         per_view_data.projection_from_view_matrix = prepare_matrix_for_shader(
             make_projection_matrix_for_vulkan(fov_vertical_in_degrees = 90.0,
@@ -230,23 +230,23 @@ main :: ()
                                               far = 100.0));
 
         // ## Allocating a descriptor set for per-frame data, make it point to our buffer and record binding it
-        vulkan_example_update_and_bind_uniform_buffer(*vulkan_context, 
-                                                      command_buffer, 
-                                                      common_pipeline_layout, 
-                                                      per_frame_descriptor_set_layout, 
-                                                      per_frame_uniform_buffers[swapchain_image_index], 
-                                                      per_frame_uniform_buffer_memories[swapchain_image_index], 
-                                                      per_frame_data, 
+        vulkan_example_update_and_bind_uniform_buffer(*vulkan_context,
+                                                      command_buffer,
+                                                      common_pipeline_layout,
+                                                      per_frame_descriptor_set_layout,
+                                                      per_frame_uniform_buffers[swapchain_image_index],
+                                                      per_frame_uniform_buffer_memories[swapchain_image_index],
+                                                      per_frame_data,
                                                       set = 0,
                                                       binding = 0);
-                                                      
-        vulkan_example_update_and_bind_uniform_buffer(*vulkan_context, 
-                                                      command_buffer, 
-                                                      common_pipeline_layout, 
-                                                      per_view_descriptor_set_layout, 
-                                                      per_view_uniform_buffers[swapchain_image_index], 
-                                                      per_view_uniform_buffer_memories[swapchain_image_index], 
-                                                      per_view_data, 
+
+        vulkan_example_update_and_bind_uniform_buffer(*vulkan_context,
+                                                      command_buffer,
+                                                      common_pipeline_layout,
+                                                      per_view_descriptor_set_layout,
+                                                      per_view_uniform_buffers[swapchain_image_index],
+                                                      per_view_uniform_buffer_memories[swapchain_image_index],
+                                                      per_view_data,
                                                       set = 1,
                                                       binding = 0);
 
@@ -275,17 +275,17 @@ main :: ()
         // ## We record now drawing something with vertices
         {
             per_object_data : Per_Object_Data;
-            per_object_data.world_from_model_matrix = prepare_matrix_for_shader(make_scale_matrix4(make_vector3(0.3,0.3,0.3)) * make_translation_matrix4(make_vector3(0,0,-3)));
-            vulkan_example_update_and_bind_uniform_buffer(*vulkan_context, 
-                                                          command_buffer, 
-                                                          common_pipeline_layout, 
-                                                          per_object_descriptor_set_layout, 
-                                                          per_object_uniform_buffers[swapchain_image_index], 
-                                                          per_object_uniform_buffer_memories[swapchain_image_index], 
-                                                          per_object_data, 
+            per_object_data.world_from_model_matrix = prepare_matrix_for_shader(make_scale_matrix4({0.3,0.3,0.3}) * make_translation_matrix4({0,0,-3}));
+            vulkan_example_update_and_bind_uniform_buffer(*vulkan_context,
+                                                          command_buffer,
+                                                          common_pipeline_layout,
+                                                          per_object_descriptor_set_layout,
+                                                          per_object_uniform_buffers[swapchain_image_index],
+                                                          per_object_uniform_buffer_memories[swapchain_image_index],
+                                                          per_object_data,
                                                           set = 2,
                                                           binding = 0);
-            
+
             vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, model_graphics_pipeline);
             zero_device_size : VkDeviceSize = 0;
             vkCmdBindVertexBuffers(command_buffer,
@@ -307,7 +307,7 @@ main :: ()
 
         // ## Record ending of Render Pass
         vkCmdEndRenderPass(command_buffer);
-        
+
         // ## End Command Buffer
         {
             end_result := vkEndCommandBuffer(command_buffer);
@@ -335,7 +335,7 @@ main :: ()
             submit_info.pCommandBuffers = *command_buffer;
             submit_info.signalSemaphoreCount = 1;
             submit_info.pSignalSemaphores = *rendering_finished_semaphore;
-            
+
             result := vkQueueSubmit(vulkan_context.graphics_queue,
                                     submitCount = 1,
                                     *submit_info,
@@ -347,7 +347,7 @@ main :: ()
         recreated_swapchain_when_presenting := vulkan_end_frame_and_present_image(*vulkan_context, swapchain_image_index, rendering_finished_semaphore);
         need_to_recreate_framebuffers = need_to_recreate_framebuffers || recreated_swapchain_when_presenting;
     }
-    
+
     // # Wait for idle after exiting main loop to make sure we destroy things after we stopped using them
     vkDeviceWaitIdle(vulkan_context.device);
 }
@@ -400,24 +400,32 @@ Assets :: struct
 
 make_vertex_and_index_buffer_for_cube :: () -> [8] Vertex, [6*2*3] u32
 {
+    tri :: (a : u32, b : u32, c : u32) #expand
+    {
+        `indices[`counter] = a;
+        `indices[`counter+1] = b;
+        `indices[`counter+2] = c;
+        `counter += 3;
+    }
+
     vertices : [8] Vertex;
-    vertices[0].position = make_vector3(-1.0, +1.0, -1.0);
-    vertices[1].position = make_vector3(+1.0, +1.0, -1.0);
-    vertices[2].position = make_vector3(-1.0, +1.0, +1.0);
-    vertices[3].position = make_vector3(+1.0, +1.0, +1.0);
-    vertices[4].position = make_vector3(-1.0, -1.0, -1.0);
-    vertices[5].position = make_vector3(+1.0, -1.0, -1.0);
-    vertices[6].position = make_vector3(-1.0, -1.0, +1.0);
-    vertices[7].position = make_vector3(+1.0, -1.0, +1.0);
-    vertices[0].color = make_vector3(0.0, 1.0, 0.0);
-    vertices[1].color = make_vector3(1.0, 1.0, 0.0);
-    vertices[2].color = make_vector3(0.0, 1.0, 1.0);
-    vertices[3].color = make_vector3(1.0, 1.0, 1.0);
-    vertices[4].color = make_vector3(0.0, 0.0, 0.0);
-    vertices[5].color = make_vector3(1.0, 0.0, 0.0);
-    vertices[6].color = make_vector3(0.0, 0.0, 1.0);
-    vertices[7].color = make_vector3(1.0, 0.0, 1.0);
-    indices : [6*2*3] u32;  
+    vertices[0].position = {-1.0, +1.0, -1.0};
+    vertices[1].position = {+1.0, +1.0, -1.0};
+    vertices[2].position = {-1.0, +1.0, +1.0};
+    vertices[3].position = {+1.0, +1.0, +1.0};
+    vertices[4].position = {-1.0, -1.0, -1.0};
+    vertices[5].position = {+1.0, -1.0, -1.0};
+    vertices[6].position = {-1.0, -1.0, +1.0};
+    vertices[7].position = {+1.0, -1.0, +1.0};
+    vertices[0].color = {0.0, 1.0, 0.0};
+    vertices[1].color = {1.0, 1.0, 0.0};
+    vertices[2].color = {0.0, 1.0, 1.0};
+    vertices[3].color = {1.0, 1.0, 1.0};
+    vertices[4].color = {0.0, 0.0, 0.0};
+    vertices[5].color = {1.0, 0.0, 0.0};
+    vertices[6].color = {0.0, 0.0, 1.0};
+    vertices[7].color = {1.0, 0.0, 1.0};
+    indices : [6*2*3] u32;
     counter := 0;
     tri(0,2,1); tri(2,3,1);
     tri(2,6,3); tri(3,6,7);
@@ -426,16 +434,9 @@ make_vertex_and_index_buffer_for_cube :: () -> [8] Vertex, [6*2*3] u32
     tri(3,5,1); tri(3,7,5);
     tri(6,4,5); tri(6,5,7);
     return vertices, indices;
-    tri :: (a : u32, b : u32, c : u32) #expand
-    {
-        `indices[`counter] = a;
-        `indices[`counter+1] = b;
-        `indices[`counter+2] = c;
-        `counter += 3;
-    }
 }
-    
-    
+
+
 
 
 
@@ -490,7 +491,7 @@ using Vulkan_Context :: struct
         surface_formats : [] VkSurfaceFormatKHR;
         surface_present_modes : [] VkPresentModeKHR;
     }
-    
+
     using extensions : Extension_Data;
     Extension_Data :: struct
     {
@@ -530,7 +531,7 @@ using Vulkan_Context :: struct
         swapchain_images : [] VkImage;
         swapchain_image_views : [] VkImageView;
         current_swapchain_image_extents : VkExtent2D;
-        
+
         acquired_swapchain_image_semaphores : [] VkSemaphore;
         rendering_finished_to_swapchain_image_semaphores : [] VkSemaphore;
         rendering_finished_to_swapchain_image_fences : [] VkFence;
@@ -560,7 +561,7 @@ using Vulkan_Context :: struct
             free_command_buffers : [] [..] VkCommandBuffer;
         }
     }
-    
+
     using descriptor_data : Descriptor_Data;
     Descriptor_Data :: struct
     {
@@ -577,9 +578,9 @@ using Vulkan_Context :: struct
 }
 
 
-vulkan_init :: (using vulkan_context : *Vulkan_Context, 
-                window_handle : Window_Handle, 
-                $want_validation_layers := true, 
+vulkan_init :: (using vulkan_context : *Vulkan_Context,
+                window_handle : Window_Handle,
+                $want_validation_layers := true,
                 $want_debug_extensions := true)
 {
     // # Loader Procedures
@@ -621,7 +622,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
 
         instance_properties := vulkan_fill_array(VkExtensionProperties, vkEnumerateInstanceExtensionProperties, null);
         for desired : desired_instance_extensions
-            for property : instance_properties 
+            for property : instance_properties
                  if desired == to_string(property.extensionName.data)
                     array_add(*enabled_instance_extensions, desired);
 
@@ -631,7 +632,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
             assert(array_contains_string(enabled_instance_extensions, "VK_KHR_win32_surface"));
         else #assert(false);
     }
-    
+
 
     // # Create Instance
     {
@@ -664,7 +665,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
                      message_types : VkDebugUtilsMessageTypeFlagsEXT,
                      callback_data : *VkDebugUtilsMessengerCallbackDataEXT,
                      user_data : *void) -> VkBool32 #c_call
-        {            
+        {
             is_error   : bool = xx message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
             is_warning : bool = xx message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
             is_info    : bool = xx message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
@@ -676,20 +677,20 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
             should_log := (!is_info && !is_verbose);
             if should_log
             {
-                severity_string := ifx is_error "[ERROR]" 
-                                   else ifx is_warning "[WARNING]" 
-                                   else ifx is_info "[INFO]" 
-                                   else ifx is_verbose "[VERBOSE]" 
+                severity_string := ifx is_error "[ERROR]"
+                                   else ifx is_warning "[WARNING]"
+                                   else ifx is_info "[INFO]"
+                                   else ifx is_verbose "[VERBOSE]"
                                    else "";
-                type_string := ifx is_validation "[VALIDATION]" 
-                               else ifx is_performance "[PERFORMANCE]" 
-                               else ifx is_general "[GENERAL]" 
+                type_string := ifx is_validation "[VALIDATION]"
+                               else ifx is_performance "[PERFORMANCE]"
+                               else ifx is_general "[GENERAL]"
                                else "";
 
-                temp_context : Context;
-                push_context temp_context 
+                temp_context : #Context;
+                push_context temp_context
                 {
-                    print("\n\nVulkan Debug Message % %:\n\n%\n\n", 
+                    print("\n\nVulkan Debug Message % %:\n\n%\n\n",
                           severity_string, type_string, to_string(message));
                     if is_error breakpoint();
                 }
@@ -703,7 +704,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
                                       VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
         debug_utils_create_info.messageType =     VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT     |
                                       VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT  |
-                                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT; 
+                                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         debug_utils_create_info.pfnUserCallback = debug_utils_callback;
         debug_utils_create_info.pUserData = debug_utils_user_data;
 
@@ -799,7 +800,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
                 supports_compute  := cast(bool) queue_properties.queueFamilyProperties.queueFlags & VK_QUEUE_COMPUTE_BIT;
                 supports_transfer := (queue_properties.queueFamilyProperties.queueFlags & VK_QUEUE_TRANSFER_BIT) || (supports_graphics || supports_compute);
                 supports_present  := false;
-                if surface  
+                if surface
                 {
                     supports : VkBool32;
                     vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, cast(u32) queue_family_index, surface, *supports);
@@ -856,7 +857,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
         array_resize(*scores, physical_devices.count);
         for physical_device, index : physical_devices
         {
-            scores[index] = -1; 
+            scores[index] = -1;
             queue_family_indices := physical_devices_queue_family_indices[index];
             extensions := physical_devices_supported_extensions[index];
             device_local_memory := physical_devices_device_local_memory_sizes[index];
@@ -868,12 +869,12 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
             if properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
                 scores[index] += 1000;
 
-            if queue_family_indices.async_family_index != -1 
+            if queue_family_indices.async_family_index != -1
                 scores[index] += 1000;
 
-            if queue_family_indices.transfer_family_index != -1 
+            if queue_family_indices.transfer_family_index != -1
                 scores[index] += 500;
-            
+
             if extensions.mesh_shader
                 scores[index] += 1000;
 
@@ -892,7 +893,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
             {
                 max_score = score;
                 chosen_index = index;
-            } 
+            }
         }
         if chosen_index == -1
         {
@@ -903,8 +904,8 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
         {
             for properties : physical_devices_properties
             {
-                print("% - % - %MB - score % %\n", 
-                      to_string(properties.properties.deviceName.data), 
+                print("% - % - %MB - score % %\n",
+                      to_string(properties.properties.deviceName.data),
                       properties.properties.deviceType,
                       physical_devices_device_local_memory_sizes[it_index] / (1024 * 1024),
                       scores[it_index],
@@ -1051,7 +1052,7 @@ vulkan_deinit :: (using vulkan_context : *Vulkan_Context)
         vkDestroySwapchainKHR(device, swapchain, vulkan_allocator);
         for * swapchain_image_views
         {
-            vkDestroyImageView(device, <<it, vulkan_allocator);
+            vkDestroyImageView(device, it.*, vulkan_allocator);
             it = null;
         }
     }
@@ -1067,6 +1068,13 @@ vulkan_deinit :: (using vulkan_context : *Vulkan_Context)
     vkDestroyInstance(instance, vulkan_allocator);
     instance = null;
 
+    reset :: (array : * [] $T)
+    {
+        array.count = 0;
+        free(array.data);
+        array.data = null;
+    }
+
     reset(*surface_formats);
     reset(*surface_present_modes);
     for * command_pools_per_type
@@ -1081,12 +1089,6 @@ vulkan_deinit :: (using vulkan_context : *Vulkan_Context)
     reset(*rendering_finished_to_swapchain_image_semaphores);
     reset(*rendering_finished_to_swapchain_image_fences);
     reset(*frame_numbers_per_image);
-    reset :: (array : * [] $T)
-    {
-        array.count = 0;
-        free(array.data);
-        array.data = null;
-    }
 }
 
 
@@ -1095,10 +1097,10 @@ Presentation_Mode :: enum
     Mailbox;
     // Shows the latest available image on the next available blank
     //
-    // This means that if between two blanks we render 3 full frames, only the 
+    // This means that if between two blanks we render 3 full frames, only the
     // last one will be shown. This prioritizes low latency but can end up consuming
     // power since we keep rendering frames we might now show.
-    
+
     Strict_Fifo;
     // Has an internal queue to which we add images to, then each blank one image
     // gets taken from the queue to the frontbuffer while we add more images to the
@@ -1106,7 +1108,7 @@ Presentation_Mode :: enum
     //
     // This prioritizes having no absolutely no tearing ever although the latency can
     // end up being high depending on how long the queue gets.
-    
+
     Relaxed_Fifo;
     // Like Strict_Fifo, it has an internal queue but if at any point the queue was
     // empty when we tried to present an image, the next one available gets shown as
@@ -1114,15 +1116,15 @@ Presentation_Mode :: enum
     //
     // This is good for when we want to present an image every frame but we might be
     // late from time to time and we want to show that one anyway.
-    
+
     Immediate;
     // Just tries to show the image as soon as possible, without caring
     // about where the blank happens, low latency but suffers from tearing.
 }
 
 
-vulkan_create_swapchain :: (vulkan_context : *Vulkan_Context, 
-                            width : int = -999, height : int = -999, 
+vulkan_create_swapchain :: (vulkan_context : *Vulkan_Context,
+                            width : int = -999, height : int = -999,
                             presentation_mode := Presentation_Mode.Mailbox) -> success : bool
 {
     using Presentation_Mode;
@@ -1134,7 +1136,7 @@ vulkan_create_swapchain :: (vulkan_context : *Vulkan_Context,
 
     old_swapchain_data := swapchain_data;
 
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, surface, *surface_capabilities);    
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, surface, *surface_capabilities);
     if surface_capabilities.maxImageExtent.width == 0 || surface_capabilities.maxImageExtent.height == 0
     {
         // If width or height of the swapchain would have been 0 then we can't create one, so we don't
@@ -1166,7 +1168,7 @@ vulkan_create_swapchain :: (vulkan_context : *Vulkan_Context,
         extent : VkExtent2D;
         {
             user_gave_data := (width != -999 || height != -999);
-            if surface_capabilities.currentExtent.width == 0xFF_FF_FF_FF && surface_capabilities.currentExtent.height == 0xFF_FF_FF_FF 
+            if surface_capabilities.currentExtent.width == 0xFF_FF_FF_FF && surface_capabilities.currentExtent.height == 0xFF_FF_FF_FF
             {
                 assert(user_gave_data);
                 // @@NOTE Expecial case in the API where the size of the surface will be
@@ -1313,7 +1315,7 @@ vulkan_create_swapchain :: (vulkan_context : *Vulkan_Context,
             swapchain_image_views = alloc_and_copy_array(new_image_views);
         else if swapchain_image_views.count == new_image_views.count
             copy_array_dst_src(swapchain_image_views, new_image_views);
-        else    
+        else
             assert(false);
     }
 
@@ -1395,9 +1397,6 @@ else #assert(false);
 
 vulkan_create_command_pools :: (using vulkan_context : *Vulkan_Context)
 {
-    do_for_type(Queue_Type.Graphics, cast(u32) queue_family_indices.graphics_family_index);
-    do_for_type(Queue_Type.Async_Compute,  cast(u32) queue_family_indices.async_family_index);
-    do_for_type(Queue_Type.Transfer, cast(u32) queue_family_indices.transfer_family_index);
     do_for_type :: (type : Queue_Type, queue_family_index : u32) #expand
     {
         temp_command_pools := new_temporary_array(VkCommandPool);
@@ -1420,6 +1419,10 @@ vulkan_create_command_pools :: (using vulkan_context : *Vulkan_Context)
         command_pools_per_type[type].used_command_buffers  = alloc_and_copy_array(temp_used_command_buffers);
         command_pools_per_type[type].free_command_buffers  = alloc_and_copy_array(temp_free_command_buffers);
     }
+
+    do_for_type(Queue_Type.Graphics, cast(u32) queue_family_indices.graphics_family_index);
+    do_for_type(Queue_Type.Async_Compute,  cast(u32) queue_family_indices.async_family_index);
+    do_for_type(Queue_Type.Transfer, cast(u32) queue_family_indices.transfer_family_index);
 }
 
 
@@ -1441,7 +1444,7 @@ vulkan_get_new_command_buffer_for_transfer_queue :: (using vulkan_context : *Vul
 }
 
 
-vulkan_get_new_command_buffer_for_queue_type :: (using vulkan_context : *Vulkan_Context, 
+vulkan_get_new_command_buffer_for_queue_type :: (using vulkan_context : *Vulkan_Context,
                                                  queue_type : Queue_Type) -> VkCommandBuffer
 {
     per_type := *command_pools_per_type[queue_type];
@@ -1513,7 +1516,7 @@ vulkan_one_time_submit_to_queue :: (using vulkan_context : *Vulkan_Context, queu
     }
     {
         vkEndCommandBuffer(`command_buffer);
-        
+
         submit_info : VkSubmitInfo;
         submit_info.commandBufferCount = 1;
         submit_info.pCommandBuffers = *`command_buffer;
@@ -1531,7 +1534,7 @@ vulkan_one_time_submit_to_queue :: (using vulkan_context : *Vulkan_Context, queu
         // We have to be conservative here and wait at the beginning of the pipeline but if, for example,
         // we were waiting on a semaphore that transfers a texture to a GPU we only sample on the fragment shader
         // we could put VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT and vertex work could start earlier and get some
-        // sweet overlap! :) 
+        // sweet overlap! :)
         //
         // This would be maybe annoying for the user to have to set though, cause they would need to give us
         // a stage per semaphore. So maybe we can overload this procedure and default to TOP_OF_PIPE if we're not
@@ -1545,7 +1548,7 @@ vulkan_one_time_submit_to_queue :: (using vulkan_context : *Vulkan_Context, queu
         fence : VkFence = null;
         if fence_to_signal
         {
-            fence = <<fence_to_signal;
+            fence = fence_to_signal.*;
         }
         result := vkQueueSubmit(queue,
                                 submitCount = 1,
@@ -1599,14 +1602,14 @@ vulkan_create_shader_module :: (using vulkan_context : *Vulkan_Context, shader_s
 
 vulkan_destroy_shader_module :: (using vulkan_context : *Vulkan_Context, module : *VkShaderModule)
 {
-    vkDestroyShaderModule(device, <<module, vulkan_allocator);
-    <<module = VK_NULL_HANDLE;
+    vkDestroyShaderModule(device, module.*, vulkan_allocator);
+    module.* = VK_NULL_HANDLE;
 }
 
 
 // @@NOTE: :example_specific
 vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Context,
-                                            vertex_shader_module : VkShaderModule, 
+                                            vertex_shader_module : VkShaderModule,
                                             fragment_shader_module : VkShaderModule,
                                             $has_vertex_stuff : bool) -> VkPipeline,
                                                                          VkRenderPass,
@@ -1617,7 +1620,7 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
 
     @@NOTE: If you wanted to use this to do some real stuff, you'd need to provide
     more inputs to configure the state of the fixed function stuff of the pipeline.
-    
+
     Most of this fixed function stuff will depend on the inputs and outputs for the
     shaders you're using. We're hardcoding here most of it cause we'd end up with a full
     renderer if we tried to support all the configurations.
@@ -1629,7 +1632,7 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
     vulkan bindings and a simple vulkan example, which is what this module is for :)
 
 
-    
+
     @@IMPROVEMENT: Eventually I'd like to move away from giving the descriptor set layouts and pipeline layouts here
     and have those cached internally. The reasoning is that for shaders that will have the exact same pipeline
     layout and descriptor set layouts we're creating duplicated objects, which we then have to destroy. The other
@@ -1648,9 +1651,9 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
     All that matters for renderpasses (I think) to create the pipeline is which targets this actually writes to, how many
     MSAA samples they have and which format they have (rgba16, rgb32, whatever). All we need here is just a "compatible" render
     pass to be able to create the pipeline, not the actual renderpass that will be used during rendering which will be created
-    in the middle of the frame when needed. For compatibility see: 
+    in the middle of the frame when needed. For compatibility see:
         - https://renderdoc.org/vkspec_chunked/chap7.html#renderpass-compatibility
-    
+
     */
 
     vertex_shader_stage_create_info : VkPipelineShaderStageCreateInfo;
@@ -1685,24 +1688,24 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
 
         // ## Position
         vertex_attribute_descriptions[0].location = 0;
-        vertex_attribute_descriptions[0].binding = 0; 
-        vertex_attribute_descriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT; 
+        vertex_attribute_descriptions[0].binding = 0;
+        vertex_attribute_descriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
         vertex_attribute_descriptions[0].offset = #run offset_of(Vertex, "position");
 
         // ## Color
         vertex_attribute_descriptions[1].location = 1;
-        vertex_attribute_descriptions[1].binding = 0; 
-        vertex_attribute_descriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT; 
+        vertex_attribute_descriptions[1].binding = 0;
+        vertex_attribute_descriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
         vertex_attribute_descriptions[1].offset = #run offset_of(Vertex, "color");
 
-        vertex_input_state.vertexBindingDescriptionCount = 1; 
+        vertex_input_state.vertexBindingDescriptionCount = 1;
         vertex_input_state.pVertexBindingDescriptions = *vertex_binding_description;
         vertex_input_state.vertexAttributeDescriptionCount = vertex_attribute_descriptions.count;
         vertex_input_state.pVertexAttributeDescriptions = vertex_attribute_descriptions.data;
     }
     else
     {
-        vertex_input_state.vertexBindingDescriptionCount = 0; 
+        vertex_input_state.vertexBindingDescriptionCount = 0;
         vertex_input_state.pVertexBindingDescriptions = null;
         vertex_input_state.vertexAttributeDescriptionCount = 0;
         vertex_input_state.pVertexAttributeDescriptions = null;
@@ -1726,8 +1729,8 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
     viewport_state.pViewports = *viewport;
     viewport_state.scissorCount = 1;
     scissor_rect : VkRect2D;
-    scissor_rect.offset.x = 0;  
-    scissor_rect.offset.y = 0;  
+    scissor_rect.offset.x = 0;
+    scissor_rect.offset.y = 0;
     scissor_rect.extent.width = 1920;
     scissor_rect.extent.height = 1080;
     viewport_state.pScissors = *scissor_rect;
@@ -1745,7 +1748,7 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
     rasterization_state.depthBiasSlopeFactor = 0.0;
     rasterization_state.lineWidth = 1.0;
 
-    // # Multisample 
+    // # Multisample
     multisample_state : VkPipelineMultisampleStateCreateInfo;
     multisample_state.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -1826,7 +1829,7 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
         create_info.flags = 0;
         create_info.bindingCount = 1;
         binding : VkDescriptorSetLayoutBinding;
-        binding.binding = 0; 
+        binding.binding = 0;
         binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         binding.descriptorCount = 1;
         binding.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
@@ -1841,7 +1844,7 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
         create_info.flags = 0;
         create_info.bindingCount = 1;
         binding : VkDescriptorSetLayoutBinding;
-        binding.binding = 0; 
+        binding.binding = 0;
         binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         binding.descriptorCount = 1;
         binding.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
@@ -1850,10 +1853,10 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
         result := vkCreateDescriptorSetLayout(device, *create_info, vulkan_allocator, *per_object_descriptor_set_layout);
         assert(result == VK_SUCCESS);
     }
-    all_descriptor_set_layouts : [3] VkDescriptorSetLayout; 
-    all_descriptor_set_layouts[0] = per_frame_descriptor_set_layout; 
-    all_descriptor_set_layouts[1] = per_view_descriptor_set_layout; 
-    all_descriptor_set_layouts[2] = per_object_descriptor_set_layout; 
+    all_descriptor_set_layouts : [3] VkDescriptorSetLayout;
+    all_descriptor_set_layouts[0] = per_frame_descriptor_set_layout;
+    all_descriptor_set_layouts[1] = per_view_descriptor_set_layout;
+    all_descriptor_set_layouts[2] = per_object_descriptor_set_layout;
 
     pipeline_layout_create_info.setLayoutCount = xx all_descriptor_set_layouts.count;
     pipeline_layout_create_info.pSetLayouts = all_descriptor_set_layouts.data;
@@ -1886,7 +1889,7 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
     subpass.pInputAttachments = null;
     subpass.colorAttachmentCount = 1;
     color_attachment : VkAttachmentReference;
-    color_attachment.attachment = 0; 
+    color_attachment.attachment = 0;
     color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     subpass.pColorAttachments = *color_attachment;
     subpass.pResolveAttachments = null;
@@ -1901,7 +1904,7 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
 
     create_info : VkGraphicsPipelineCreateInfo;
     create_info.stageCount = xx stage_create_infos.count;
-    create_info.pStages    = stage_create_infos.data; 
+    create_info.pStages    = stage_create_infos.data;
     create_info.pVertexInputState   = *vertex_input_state;
     create_info.pInputAssemblyState = *input_assembly_state;
     create_info.pViewportState      = *viewport_state;
@@ -1922,21 +1925,21 @@ vulkan_example_create_graphics_pipeline :: (using vulkan_context : *Vulkan_Conte
 }
 
 
-vulkan_destroy_graphics_pipeline :: (using vulkan_context : *Vulkan_Context, 
-                                     graphics_pipeline : *VkPipeline, 
-                                     render_pass : *VkRenderPass, 
+vulkan_destroy_graphics_pipeline :: (using vulkan_context : *Vulkan_Context,
+                                     graphics_pipeline : *VkPipeline,
+                                     render_pass : *VkRenderPass,
                                      pipeline_layout : *VkPipelineLayout,
                                      descriptor_set_layout : [] VkDescriptorSetLayout)
 {
     for descriptor_set_layout  vkDestroyDescriptorSetLayout(device, it, vulkan_allocator);
-    if <<graphics_pipeline     vkDestroyPipeline(device, <<graphics_pipeline, vulkan_allocator);
-    if <<pipeline_layout       vkDestroyPipelineLayout(device, <<pipeline_layout, vulkan_allocator);
-    if <<render_pass           vkDestroyRenderPass(device, <<render_pass, vulkan_allocator);
-    
+    if graphics_pipeline.*     vkDestroyPipeline(device, graphics_pipeline.*, vulkan_allocator);
+    if pipeline_layout.*       vkDestroyPipelineLayout(device, pipeline_layout.*, vulkan_allocator);
+    if render_pass.*           vkDestroyRenderPass(device, render_pass.*, vulkan_allocator);
+
     for descriptor_set_layout it = null;
-    <<graphics_pipeline = null;
-    <<render_pass =  null;
-    <<pipeline_layout = null;
+    graphics_pipeline.* = null;
+    render_pass.* =  null;
+    pipeline_layout.* = null;
 }
 
 
@@ -1948,8 +1951,8 @@ vulkan_example_create_render_pass :: (using vulkan_context : *Vulkan_Context) ->
     @@NOTE: Same as the graphics pipeline procedure, a lot of this config you'd
     need to decide yourself when making the pass, but we're setting it up for this example
     only while showing the kind of parameters you'll need to setup.
-    
-    */    
+
+    */
 
     attachment_description : VkAttachmentDescription;
     attachment_description.flags = 0;
@@ -1963,7 +1966,7 @@ vulkan_example_create_render_pass :: (using vulkan_context : *Vulkan_Context) ->
     attachment_description.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     color_attachment : VkAttachmentReference;
-    color_attachment.attachment = 0; 
+    color_attachment.attachment = 0;
     color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     subpass : VkSubpassDescription;
@@ -1986,7 +1989,7 @@ vulkan_example_create_render_pass :: (using vulkan_context : *Vulkan_Context) ->
     render_pass_create_info.pSubpasses = *subpass;
     render_pass_create_info.dependencyCount = 0;
     render_pass_create_info.pDependencies = null;
-    
+
     render_pass : VkRenderPass;
     render_pass_result := vkCreateRenderPass(device, *render_pass_create_info, vulkan_allocator, *render_pass);
     assert(render_pass_result == VK_SUCCESS);
@@ -1996,8 +1999,8 @@ vulkan_example_create_render_pass :: (using vulkan_context : *Vulkan_Context) ->
 
 vulkan_destroy_render_pass :: (using vulkan_context : *Vulkan_Context, render_pass : *VkRenderPass)
 {
-    vkDestroyRenderPass(device, <<render_pass, vulkan_allocator);
-    <<render_pass =  null;
+    vkDestroyRenderPass(device, render_pass.*, vulkan_allocator);
+    render_pass.* =  null;
 }
 
 
@@ -2022,12 +2025,12 @@ vulkan_example_make_framebuffers_for_renderpass_to_render_to_current_swapchain :
 
     if previous
     {
-        for <<previous
+        for previous.*
         {
             vkDestroyFramebuffer(device, it, vulkan_allocator);
         }
         assert(previous.count == framebuffers.count);
-        to_return := <<previous;
+        to_return := previous.*;
         copy_array_dst_src(to_return, framebuffers);
         return to_return;
     }
@@ -2040,10 +2043,10 @@ vulkan_example_make_framebuffers_for_renderpass_to_render_to_current_swapchain :
 
 vulkan_destroy_framebuffers :: (using vulkan_context : *Vulkan_Context, framebuffers : * [] VkFramebuffer)
 {
-    for * <<framebuffers
+    for * framebuffers.*
     {
-        vkDestroyFramebuffer(device, <<it, vulkan_allocator);
-        <<it = null;
+        vkDestroyFramebuffer(device, it.*, vulkan_allocator);
+        it.* = null;
     }
     free(framebuffers.data);
     framebuffers.data = null;
@@ -2062,8 +2065,8 @@ vulkan_create_semaphore :: (using vulkan_context : *Vulkan_Context) -> VkSemapho
 
 vulkan_destroy_semaphore :: (using vulkan_context : *Vulkan_Context, semaphore : *VkSemaphore)
 {
-    vkDestroySemaphore(device, <<semaphore, vulkan_allocator);
-    <<semaphore = null;
+    vkDestroySemaphore(device, semaphore.*, vulkan_allocator);
+    semaphore.* = null;
 }
 
 
@@ -2079,16 +2082,16 @@ vulkan_create_fence :: (using vulkan_context : *Vulkan_Context, signaled : bool)
 
 vulkan_destroy_fence :: (using vulkan_context : *Vulkan_Context, fence : *VkFence)
 {
-    vkDestroyFence(device, <<fence, vulkan_allocator);
-    <<fence = null;
+    vkDestroyFence(device, fence.*, vulkan_allocator);
+    fence.* = null;
 }
 
 
-vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_context : *Vulkan_Context) -> can_render : bool, 
-                                                                                                           image : VkImage, 
-                                                                                                           image_view : VkImageView, 
-                                                                                                           image_index : u32, 
-                                                                                                           image_acquired_semaphore : VkSemaphore, 
+vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_context : *Vulkan_Context) -> can_render : bool,
+                                                                                                           image : VkImage,
+                                                                                                           image_view : VkImageView,
+                                                                                                           image_index : u32,
+                                                                                                           image_acquired_semaphore : VkSemaphore,
                                                                                                            finished_rendering_semaphore : VkSemaphore,
                                                                                                            finished_rendering_fence : VkFence,
                                                                                                            recreated_swapchain : bool
@@ -2105,10 +2108,10 @@ vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_con
         if !success
         {
             return can_render = false,
-                   image = null, 
-                   image_view = null, 
-                   image_index = 0, 
-                   image_acquired_semaphore = null, 
+                   image = null,
+                   image_view = null,
+                   image_index = 0,
+                   image_acquired_semaphore = null,
                    finished_rendering_semaphore = null,
                    finished_rendering_fence = null,
                    recreated_swapchain = false;
@@ -2142,7 +2145,7 @@ vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_con
     }
     finished_rendering_fence := rendering_finished_to_swapchain_image_fences[current_swapchain_semaphore_index];
     image_index : u32 = 0xFF_FF_FF_FF;
-    result := vkAcquireNextImageKHR(device, swapchain, 
+    result := vkAcquireNextImageKHR(device, swapchain,
                                     timeout = 0xFF_FF_FF_FF_FF_FF_FF_FF,
                                     image_acquired_semaphore,
                                     fence = null,
@@ -2153,10 +2156,10 @@ vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_con
         if !success
         {
             return can_render = false,
-                   image = null, 
-                   image_view = null, 
-                   image_index = 0, 
-                   image_acquired_semaphore = null, 
+                   image = null,
+                   image_view = null,
+                   image_index = 0,
+                   image_acquired_semaphore = null,
                    finished_rendering_semaphore = null,
                    finished_rendering_fence = null,
                    recreated_swapchain = false;
@@ -2199,7 +2202,7 @@ vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_con
                 it.last_frame_that_used_it = -1;
                 result := vkResetDescriptorPool(device, it.pool, flags=0);
                 assert(result == VK_SUCCESS);
-                array_add(*empty_descriptor_pools, <<it);
+                array_add(*empty_descriptor_pools, it.*);
                 remove it;
             }
         }
@@ -2207,12 +2210,12 @@ vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_con
 
 
     return can_render = true,
-           swapchain_images[image_index], 
-           swapchain_image_views[image_index], 
-           image_index, 
-           image_acquired_semaphore, 
-           finished_rendering_semaphore, 
-           finished_rendering_fence, 
+           swapchain_images[image_index],
+           swapchain_image_views[image_index],
+           image_index,
+           image_acquired_semaphore,
+           finished_rendering_semaphore,
+           finished_rendering_fence,
            recreated_swapchain;
 }
 
@@ -2314,9 +2317,9 @@ vulkan_destroy_uniform_buffers :: (using vulkan_context : *Vulkan_Context, buffe
     assert(buffers.count == memories.count);
     for 0..buffers.count-1
     {
-        buffer := *(<<buffers)[it];
-        memory := *(<<memories)[it];
-        vulkan_destroy_buffer(vulkan_context, buffer, memory); 
+        buffer := *(buffers.*)[it];
+        memory := *(memories.*)[it];
+        vulkan_destroy_buffer(vulkan_context, buffer, memory);
     }
     free(buffers.data);
     free(memories.data);
@@ -2329,15 +2332,15 @@ vulkan_create_uniform_buffer :: (using vulkan_context : *Vulkan_Context, $Buffer
 {
     size_of_buffer := size_of(Buffer_Type);
     assert(size_of_buffer & 15 == 0);
-    buffer, memory := vulkan_create_buffer(vulkan_context, 
+    buffer, memory := vulkan_create_buffer(vulkan_context,
                                            size_of_buffer,
-                                           desired_properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                                           desired_properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                            usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
     return buffer, memory;
 }
 
 
-vulkan_create_buffer :: (using vulkan_context : *Vulkan_Context, 
+vulkan_create_buffer :: (using vulkan_context : *Vulkan_Context,
                          size_of_buffer : int,
                          desired_properties : VkMemoryPropertyFlagBits,
                          usage : VkBufferUsageFlagBits) -> VkBuffer, VkDeviceMemory
@@ -2354,13 +2357,28 @@ vulkan_create_buffer :: (using vulkan_context : *Vulkan_Context,
     result := vkCreateBuffer(device, *create_info, vulkan_allocator, *buffer);
     assert(result == VK_SUCCESS);
 
+    find_memory_type_index :: (using vulkan_context : *Vulkan_Context,
+                            memory_type_bits : u32,
+                            desired_properties : VkMemoryPropertyFlags) -> found : bool, u32
+    {
+        for 0..vulkan_context.physical_device_memory_properties.memoryTypeCount-1
+        {
+            if (memory_type_bits & (1 << it)) &&
+               ((desired_properties & vulkan_context.physical_device_memory_properties.memoryTypes[it].propertyFlags) == desired_properties)
+            {
+                return true, it;
+            }
+        }
+        return false, 0;
+    }
+
     // # Now we need to calculate the memory requirements of it and allocate it
     memory_requirements : VkMemoryRequirements;
     vkGetBufferMemoryRequirements(device, buffer, *memory_requirements);
     allocate_info : VkMemoryAllocateInfo;
     allocate_info.allocationSize = memory_requirements.size;
-    found_memory_type, memory_type_index := find_memory_type_index(vulkan_context, 
-                                                                   memory_requirements.memoryTypeBits, 
+    found_memory_type, memory_type_index := find_memory_type_index(vulkan_context,
+                                                                   memory_requirements.memoryTypeBits,
                                                                    desired_properties);
     // This is the index on the physical device memoryTypes in physical_device_memory_properties that covers all the requirements
     // this buffer has, that is, it has to be one of the indices indicated by the memory_requirements.memoryTypeBits bit-field but also
@@ -2375,62 +2393,47 @@ vulkan_create_buffer :: (using vulkan_context : *Vulkan_Context,
     assert(bind_result == VK_SUCCESS);
 
     return buffer, device_memory;
-
-    find_memory_type_index :: (using vulkan_context : *Vulkan_Context, 
-                               memory_type_bits : u32, 
-                               desired_properties : VkMemoryPropertyFlags) -> found : bool, u32
-    {
-        for 0..vulkan_context.physical_device_memory_properties.memoryTypeCount-1
-        {
-            if (memory_type_bits & (1 << it)) && 
-               ((desired_properties & vulkan_context.physical_device_memory_properties.memoryTypes[it].propertyFlags) == desired_properties)
-            {
-                return true, it;
-            }
-        }
-        return false, 0;
-    }
 }
 
 
-vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context, 
-                                        vertices : [] $Vertex_Type, 
+vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
+                                        vertices : [] $Vertex_Type,
                                         indices : [] $Index_Type) -> vertex_buffer                   : VkBuffer,
                                                                      vertex_buffer_memory            : VkDeviceMemory,
                                                                      index_buffer                    : VkBuffer,
                                                                      index_buffer_memory             : VkDeviceMemory,
                                                                      semaphore_signalled_when_ending : VkSemaphore,
-                                                                     fence_signalled_when_ending     : VkFence       
+                                                                     fence_signalled_when_ending     : VkFence
 {
     size_of_vertex_buffer := size_of(Vertex_Type) * vertices.count;
     size_of_index_buffer  := size_of(Index_Type) * indices.count;
 
-    vertex_staging_buffer, vertex_staging_buffer_memory := vulkan_create_buffer(vulkan_context, 
+    vertex_staging_buffer, vertex_staging_buffer_memory := vulkan_create_buffer(vulkan_context,
                                                                                 size_of_vertex_buffer,
-                                                                                desired_properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                                                                                desired_properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                                                                 usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
     defer vulkan_destroy_buffer(vulkan_context, *vertex_staging_buffer, *vertex_staging_buffer_memory);
-                                                                  
-    index_staging_buffer, index_staging_buffer_memory := vulkan_create_buffer(vulkan_context, 
+
+    index_staging_buffer, index_staging_buffer_memory := vulkan_create_buffer(vulkan_context,
                                                                               size_of_index_buffer,
-                                                                              desired_properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                                                                              desired_properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                                                               usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
     defer vulkan_destroy_buffer(vulkan_context, *index_staging_buffer, *index_staging_buffer_memory);
 
-    
-    vertex_buffer, vertex_buffer_memory := vulkan_create_buffer(vulkan_context, 
+
+    vertex_buffer, vertex_buffer_memory := vulkan_create_buffer(vulkan_context,
                                                                 size_of_vertex_buffer,
-                                                                desired_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                                                                desired_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                                                 usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
-                                                                  
-    index_buffer, index_buffer_memory := vulkan_create_buffer(vulkan_context, 
+
+    index_buffer, index_buffer_memory := vulkan_create_buffer(vulkan_context,
                                                               size_of_index_buffer,
-                                                              desired_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                                                              desired_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                                               usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
     mapped_vertex_data : *Vertex_Type;
-    vkMapMemory(device, 
+    vkMapMemory(device,
                 vertex_staging_buffer_memory,
                 offset = 0,
                 size = cast(u64) size_of_vertex_buffer,
@@ -2438,9 +2441,9 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
                 ppData = xx *mapped_vertex_data);
     memcpy(mapped_vertex_data, vertices.data, size_of_vertex_buffer);
     vkUnmapMemory(device, vertex_staging_buffer_memory);
-    
+
     mapped_index_data : *Index_Type;
-    vkMapMemory(device, 
+    vkMapMemory(device,
                 index_staging_buffer_memory,
                 offset = 0,
                 size = cast(u64) size_of_index_buffer,
@@ -2461,7 +2464,7 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
 
     {
         semaphores_to_wait_on : [0] VkSemaphore;
-        vulkan_one_time_submit_to_transfer_queue(vulkan_context, semaphores_to_wait_on = semaphores_to_wait_on, #code 
+        vulkan_one_time_submit_to_transfer_queue(vulkan_context, semaphores_to_wait_on = semaphores_to_wait_on, #code
         {
             vertex_copy_region : VkBufferCopy;
             vertex_copy_region.srcOffset = 0;
@@ -2474,7 +2477,7 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
             index_copy_region.dstOffset = 0;
             index_copy_region.size = cast(u64) size_of_index_buffer;
             vkCmdCopyBuffer(command_buffer, srcBuffer = index_staging_buffer, dstBuffer = index_buffer, regionCount = 1, pRegions = *index_copy_region);
-    
+
             vertex_buffer_memory_barrier : VkBufferMemoryBarrier;
             vertex_buffer_memory_barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             vertex_buffer_memory_barrier.dstAccessMask = 0;
@@ -2507,14 +2510,14 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
                                  pBufferMemoryBarriers = buffer_memory_barriers.data,
                                  imageMemoryBarrierCount = 0,
                                  pImageMemoryBarriers = null);
-        
+
         }, *semaphore);
     }
 
     {
         semaphores_to_wait_on : [1] VkSemaphore;
         semaphores_to_wait_on[0] = semaphore;
-        vulkan_one_time_submit_to_graphics_queue(vulkan_context, semaphores_to_wait_on = semaphores_to_wait_on, #code 
+        vulkan_one_time_submit_to_graphics_queue(vulkan_context, semaphores_to_wait_on = semaphores_to_wait_on, #code
         {
             vertex_buffer_memory_barrier : VkBufferMemoryBarrier;
             vertex_buffer_memory_barrier.srcAccessMask = 0;
@@ -2548,7 +2551,7 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
                                  pBufferMemoryBarriers = buffer_memory_barriers.data,
                                  imageMemoryBarrierCount = 0,
                                  pImageMemoryBarriers = null);
-        
+
         }, semaphore_to_signal = *semaphore, fence_to_signal = *all_finished_fence);
     }
 
@@ -2556,10 +2559,10 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
     // end of this procedure (see defer uses above). If we wanted to not have to wait
     // we could add these to a list with the associated fence and destroy them when the fence
     // is signalled or something.
-    wait_result := vkWaitForFences(device, 
-                                   fenceCount = 1, 
-                                   pFences = *all_finished_fence, 
-                                   waitAll = VK_TRUE, 
+    wait_result := vkWaitForFences(device,
+                                   fenceCount = 1,
+                                   pFences = *all_finished_fence,
+                                   waitAll = VK_TRUE,
                                    timeout = 0xFF_FF_FF_FF_FF_FF_FF_FF);
     assert(wait_result == VK_SUCCESS);
 
@@ -2571,10 +2574,10 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
 
 vulkan_destroy_buffer :: (using vulkan_context : *Vulkan_Context, buffer : *VkBuffer, device_memory : *VkDeviceMemory)
 {
-    vkFreeMemory(device, <<device_memory, vulkan_allocator);
-    vkDestroyBuffer(device, <<buffer, vulkan_allocator);
-    <<device_memory = null;
-    <<buffer = null;
+    vkFreeMemory(device, device_memory.*, vulkan_allocator);
+    vkDestroyBuffer(device, buffer.*, vulkan_allocator);
+    device_memory.* = null;
+    buffer.* = null;
 }
 
 
@@ -2591,7 +2594,7 @@ vulkan_destroy_buffer :: (using vulkan_context : *Vulkan_Context, buffer : *VkBu
 // - Update the descriptor set with all the bindings it might need.
 // - Then finally binding the descriptor set.
 //
-vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan_Context, 
+vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan_Context,
                                                   command_buffer : VkCommandBuffer,
                                                   pipeline_layout : VkPipelineLayout,
                                                   descriptor_set_layout : VkDescriptorSetLayout,
@@ -2609,7 +2612,7 @@ vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan
                               flags = 0,
                               ppData = xx *data);
     assert(map_result == VK_SUCCESS);
-    <<data = buffer_data;
+    data.* = buffer_data;
     vkUnmapMemory(vulkan_context.device, uniform_buffer_memory);
 
     descriptor_set := vulkan_allocate_descriptor_set(vulkan_context, descriptor_set_layout);
@@ -2623,19 +2626,19 @@ vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan
     // even if you end up using the descriptor in multiple draw-calls. That means that different shaders
     // if they both have the following code for example:
     //
-    // 
+    //
     //         layout(set = 0, binding = 0) uniform per_frame_data
     //         {
     //             ivec2 something;
     //             float and_something_more;
     //             float why_not_one_more_thing;
     //         };
-    // 
+    //
     // You should be able to only have to bind this once. This is handy for what we're doing here for example, which is
     // binding a whole uniform buffer that is going to be long lived, in this case for the whole frame. We never
     // need to bind this again until the next frame. You can use this also for per-view data, per-model if you're going
     // to render it multiple times, shared textures that are always the same, anything really :)
-    //         
+    //
 
     descriptor_buffer_info : VkDescriptorBufferInfo;
     descriptor_buffer_info.buffer = uniform_buffer;
@@ -2647,8 +2650,8 @@ vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan
     write_descriptor_set.dstBinding = binding;
     write_descriptor_set.dstArrayElement = 0;
     write_descriptor_set.descriptorCount = 1;
-    write_descriptor_set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; 
-    write_descriptor_set.pImageInfo = null; 
+    write_descriptor_set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    write_descriptor_set.pImageInfo = null;
     write_descriptor_set.pBufferInfo = *descriptor_buffer_info;
     write_descriptor_set.pTexelBufferView = null;
 
@@ -2657,9 +2660,9 @@ vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan
                            pDescriptorWrites = *write_descriptor_set,
                            descriptorCopyCount = 0,
                            pDescriptorCopies = null);
-    
-    vkCmdBindDescriptorSets(command_buffer, 
-                            VK_PIPELINE_BIND_POINT_GRAPHICS, 
+
+    vkCmdBindDescriptorSets(command_buffer,
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
                             pipeline_layout,
                             firstSet = set,
                             descriptorSetCount = 1,
@@ -2713,7 +2716,7 @@ fill_extension_set :: (array_of_extension_properties : [] $Extension_Properties_
 }
 
 
-get_set_extension_cstrings :: (is_set : Vulkan_Context.Extension_Data.Is_Set) -> [] *u8 
+get_set_extension_cstrings :: (is_set : Vulkan_Context.Extension_Data.Is_Set) -> [] *u8
 {
     names := new_temporary_array(*u8);
     #insert #run () -> string
@@ -2754,7 +2757,7 @@ cleanup_extension_name :: (name : string) -> string
 
 
 //
-// Generates 
+// Generates
 //
 //      - vulkan_fill_array :: ($type : Type, procedure : $Procedure, WITH_ARGUMENTS_FOR_PROCEDURE_HERE) -> [] type {...}
 //        // Use this one when the procedure passed in returns a VkResult so we assert on it.
@@ -2796,7 +2799,7 @@ cleanup_extension_name :: (name : string) -> string
 
     builder : String_Builder;
     free_buffers(*builder);
-    for 0..17 
+    for 0..17
     {
         arguments_builder : String_Builder;
         free_buffers(*arguments_builder);
@@ -2811,15 +2814,15 @@ cleanup_extension_name :: (name : string) -> string
 
         arguments       := builder_to_string(*arguments_builder);
         forwarding_args := builder_to_string(*forwarding_args_builder);
-        print_to_builder(*builder, FILL_ARRAY_STRING, 
-                         arguments, 
-                         forwarding_args, forwarding_args, 
-                         arguments, 
+        print_to_builder(*builder, FILL_ARRAY_STRING,
+                         arguments,
+                         forwarding_args, forwarding_args,
+                         arguments,
                          forwarding_args, forwarding_args);
     }
 
     /*
-    
+
     @@NOTE: I would like to be able to derive the return type from the procedure they pass in. This
     would mean that we can get the type of the last argument and use it in the declaration of the procedure
     which I can't find a way to do right now for it to work with polymorphism. Essentially I would like to do something
@@ -2849,7 +2852,7 @@ cleanup_extension_name :: (name : string) -> string
 alloc_and_copy_array :: (array : [] $T, allocator := context.allocator) -> [] T
 {
     new_array := array;
-    new_array.data = xx alloc(array.count * size_of(T), allocator);
+    new_array.data = xx alloc(array.count * size_of(T),, allocator);
     memcpy(new_array.data, array.data, array.count * size_of(T));
     return new_array;
 }
@@ -2866,7 +2869,7 @@ array_contains_string :: (array : [] string, the_string : string) -> bool
 {
     for array if it == the_string return true;
     return false;
-} 
+}
 
 
 insert_array_of_bytes :: (name_of_constant : string, filename : string) -> string
@@ -2906,9 +2909,9 @@ offset_of :: ($struct_type : Type, name : string) -> offset : int, found : bool
 }
 
 
-make_projection_matrix_for_vulkan :: (fov_vertical_in_degrees : float, 
-                                      aspect_ratio_horizontal_over_vertical : float, 
-                                      near : float, 
+make_projection_matrix_for_vulkan :: (fov_vertical_in_degrees : float,
+                                      aspect_ratio_horizontal_over_vertical : float,
+                                      near : float,
                                       far : float) -> Matrix4
 {
     /*

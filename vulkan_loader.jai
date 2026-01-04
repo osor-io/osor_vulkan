@@ -5,8 +5,8 @@ entry-points to. You can also link against their own loader and that will give y
 the procedures directly, but this would have *some* overhead and we don't want that :)
 
 In this file there is global variables that will hold all the procedure pointers for
-each entry-point, and then there is the procedures you can call to fill them. If you want 
-to load the procedures into your own structures and not the global variables here, 
+each entry-point, and then there is the procedures you can call to fill them. If you want
+to load the procedures into your own structures and not the global variables here,
 you can pass in the data structure to fill in each of the load_vulkan_* procedures.
 
 Usage should be fairly straight-forward, there's 3 types of commands (for our purposes):
@@ -35,11 +35,11 @@ An Example in Windows would look something like this:
 load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type, loader_commands : *Vulkan_Loader_Commands = null)
 {
     loader_commands = ifx loader_commands then loader_commands else *_vulkan_loader_commands;
-    info := type_info(type_of(<<loader_commands));
-    for member: info.members 
+    info := type_info(type_of(loader_commands.*));
+    for member: info.members
     {
         member_to_set := cast(**void)((cast(*u8)loader_commands) + member.offset_in_bytes);
-        <<member_to_set = cast(*void) load(library_handle, member.name.data);
+        member_to_set.* = cast(*void) load(library_handle, member.name.data);
     }
 }
 
@@ -47,11 +47,11 @@ load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load :
 load_vulkan_instance_procedures :: (instance : VkInstance, instance_commands : *Vulkan_Instance_Commands = null)
 {
     instance_commands = ifx instance_commands then instance_commands else *_vulkan_instance_commands;
-    info := type_info(type_of(<<instance_commands));
-    for member: info.members 
+    info := type_info(type_of(instance_commands.*));
+    for member: info.members
     {
         member_to_set := cast(**void)((cast(*u8)instance_commands) + member.offset_in_bytes);
-        <<member_to_set = cast(*void) vkGetInstanceProcAddr(instance, member.name.data);
+        member_to_set.* = cast(*void) vkGetInstanceProcAddr(instance, member.name.data);
     }
 }
 
@@ -59,11 +59,11 @@ load_vulkan_instance_procedures :: (instance : VkInstance, instance_commands : *
 load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_Device_Commands = null)
 {
     device_commands = ifx device_commands then device_commands else *_vulkan_device_commands;
-    info := type_info(type_of(<<device_commands));
-    for member: info.members 
+    info := type_info(type_of(device_commands.*));
+    for member: info.members
     {
         member_to_set := cast(**void)((cast(*u8)device_commands) + member.offset_in_bytes);
-        <<member_to_set = cast(*void) vkGetDeviceProcAddr(device, member.name.data);
+        member_to_set.* = cast(*void) vkGetDeviceProcAddr(device, member.name.data);
     }
 }
 
@@ -145,6 +145,7 @@ Vulkan_All_Commands :: struct
         vkGetPhysicalDeviceDisplayPlaneProperties2KHR : PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR;
         vkGetDisplayModeProperties2KHR : PFN_vkGetDisplayModeProperties2KHR;
         vkGetDisplayPlaneCapabilities2KHR : PFN_vkGetDisplayPlaneCapabilities2KHR;
+        vkGetPhysicalDeviceCalibrateableTimeDomainsKHR : PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsKHR;
         vkGetPhysicalDeviceCalibrateableTimeDomainsEXT : PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT;
         vkSetDebugUtilsObjectNameEXT : PFN_vkSetDebugUtilsObjectNameEXT;
         vkSetDebugUtilsObjectTagEXT : PFN_vkSetDebugUtilsObjectTagEXT;
@@ -168,9 +169,17 @@ Vulkan_All_Commands :: struct
         vkGetPhysicalDeviceFragmentShadingRatesKHR : PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR;
         vkGetPhysicalDeviceVideoCapabilitiesKHR : PFN_vkGetPhysicalDeviceVideoCapabilitiesKHR;
         vkGetPhysicalDeviceVideoFormatPropertiesKHR : PFN_vkGetPhysicalDeviceVideoFormatPropertiesKHR;
+        vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR : PFN_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR;
         vkAcquireDrmDisplayEXT : PFN_vkAcquireDrmDisplayEXT;
         vkGetDrmDisplayEXT : PFN_vkGetDrmDisplayEXT;
         vkGetPhysicalDeviceOpticalFlowImageFormatsNV : PFN_vkGetPhysicalDeviceOpticalFlowImageFormatsNV;
+        vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR : PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR;
+        vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV : PFN_vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV;
+        vkGetPhysicalDeviceCooperativeVectorPropertiesNV : PFN_vkGetPhysicalDeviceCooperativeVectorPropertiesNV;
+        vkGetPhysicalDeviceExternalTensorPropertiesARM : PFN_vkGetPhysicalDeviceExternalTensorPropertiesARM;
+        vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM : PFN_vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM;
+        vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM : PFN_vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM;
+        vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM : PFN_vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM;
         #if VULKAN_PLATFORM == .X11
         {
             vkCreateXlibSurfaceKHR : PFN_vkCreateXlibSurfaceKHR;
@@ -234,6 +243,10 @@ Vulkan_All_Commands :: struct
             vkGetPhysicalDeviceSciBufAttributesNV : PFN_vkGetPhysicalDeviceSciBufAttributesNV;
             vkGetPhysicalDeviceSciSyncAttributesNV : PFN_vkGetPhysicalDeviceSciSyncAttributesNV;
         }
+        #if VULKAN_PLATFORM == .OHOS
+        {
+            vkCreateSurfaceOHOS : PFN_vkCreateSurfaceOHOS;
+        }
     }
 
     using _vulkan_device_commands : Vulkan_Device_Commands;
@@ -289,6 +302,11 @@ Vulkan_All_Commands :: struct
         vkDestroyPipelineCache : PFN_vkDestroyPipelineCache;
         vkGetPipelineCacheData : PFN_vkGetPipelineCacheData;
         vkMergePipelineCaches : PFN_vkMergePipelineCaches;
+        vkCreatePipelineBinariesKHR : PFN_vkCreatePipelineBinariesKHR;
+        vkDestroyPipelineBinaryKHR : PFN_vkDestroyPipelineBinaryKHR;
+        vkGetPipelineKeyKHR : PFN_vkGetPipelineKeyKHR;
+        vkGetPipelineBinaryDataKHR : PFN_vkGetPipelineBinaryDataKHR;
+        vkReleaseCapturedPipelineDataKHR : PFN_vkReleaseCapturedPipelineDataKHR;
         vkCreateGraphicsPipelines : PFN_vkCreateGraphicsPipelines;
         vkCreateComputePipelines : PFN_vkCreateComputePipelines;
         vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI : PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI;
@@ -310,6 +328,8 @@ Vulkan_All_Commands :: struct
         vkCreateRenderPass : PFN_vkCreateRenderPass;
         vkDestroyRenderPass : PFN_vkDestroyRenderPass;
         vkGetRenderAreaGranularity : PFN_vkGetRenderAreaGranularity;
+        vkGetRenderingAreaGranularity : PFN_vkGetRenderingAreaGranularity;
+        vkGetRenderingAreaGranularityKHR : PFN_vkGetRenderingAreaGranularityKHR;
         vkCreateCommandPool : PFN_vkCreateCommandPool;
         vkDestroyCommandPool : PFN_vkDestroyCommandPool;
         vkResetCommandPool : PFN_vkResetCommandPool;
@@ -319,6 +339,7 @@ Vulkan_All_Commands :: struct
         vkEndCommandBuffer : PFN_vkEndCommandBuffer;
         vkResetCommandBuffer : PFN_vkResetCommandBuffer;
         vkCmdBindPipeline : PFN_vkCmdBindPipeline;
+        vkCmdSetAttachmentFeedbackLoopEnableEXT : PFN_vkCmdSetAttachmentFeedbackLoopEnableEXT;
         vkCmdSetViewport : PFN_vkCmdSetViewport;
         vkCmdSetScissor : PFN_vkCmdSetScissor;
         vkCmdSetLineWidth : PFN_vkCmdSetLineWidth;
@@ -342,13 +363,16 @@ Vulkan_All_Commands :: struct
         vkCmdSubpassShadingHUAWEI : PFN_vkCmdSubpassShadingHUAWEI;
         vkCmdDrawClusterHUAWEI : PFN_vkCmdDrawClusterHUAWEI;
         vkCmdDrawClusterIndirectHUAWEI : PFN_vkCmdDrawClusterIndirectHUAWEI;
+        vkCmdUpdatePipelineIndirectBufferNV : PFN_vkCmdUpdatePipelineIndirectBufferNV;
         vkCmdCopyBuffer : PFN_vkCmdCopyBuffer;
         vkCmdCopyImage : PFN_vkCmdCopyImage;
         vkCmdBlitImage : PFN_vkCmdBlitImage;
         vkCmdCopyBufferToImage : PFN_vkCmdCopyBufferToImage;
         vkCmdCopyImageToBuffer : PFN_vkCmdCopyImageToBuffer;
         vkCmdCopyMemoryIndirectNV : PFN_vkCmdCopyMemoryIndirectNV;
+        vkCmdCopyMemoryIndirectKHR : PFN_vkCmdCopyMemoryIndirectKHR;
         vkCmdCopyMemoryToImageIndirectNV : PFN_vkCmdCopyMemoryToImageIndirectNV;
+        vkCmdCopyMemoryToImageIndirectKHR : PFN_vkCmdCopyMemoryToImageIndirectKHR;
         vkCmdUpdateBuffer : PFN_vkCmdUpdateBuffer;
         vkCmdFillBuffer : PFN_vkCmdFillBuffer;
         vkCmdClearColorImage : PFN_vkCmdClearColorImage;
@@ -363,6 +387,7 @@ Vulkan_All_Commands :: struct
         vkCmdEndQuery : PFN_vkCmdEndQuery;
         vkCmdBeginConditionalRenderingEXT : PFN_vkCmdBeginConditionalRenderingEXT;
         vkCmdEndConditionalRenderingEXT : PFN_vkCmdEndConditionalRenderingEXT;
+        vkCmdBeginCustomResolveEXT : PFN_vkCmdBeginCustomResolveEXT;
         vkCmdResetQueryPool : PFN_vkCmdResetQueryPool;
         vkCmdWriteTimestamp : PFN_vkCmdWriteTimestamp;
         vkCmdCopyQueryPoolResults : PFN_vkCmdCopyQueryPoolResults;
@@ -388,6 +413,16 @@ Vulkan_All_Commands :: struct
         vkGetGeneratedCommandsMemoryRequirementsNV : PFN_vkGetGeneratedCommandsMemoryRequirementsNV;
         vkCreateIndirectCommandsLayoutNV : PFN_vkCreateIndirectCommandsLayoutNV;
         vkDestroyIndirectCommandsLayoutNV : PFN_vkDestroyIndirectCommandsLayoutNV;
+        vkCmdExecuteGeneratedCommandsEXT : PFN_vkCmdExecuteGeneratedCommandsEXT;
+        vkCmdPreprocessGeneratedCommandsEXT : PFN_vkCmdPreprocessGeneratedCommandsEXT;
+        vkGetGeneratedCommandsMemoryRequirementsEXT : PFN_vkGetGeneratedCommandsMemoryRequirementsEXT;
+        vkCreateIndirectCommandsLayoutEXT : PFN_vkCreateIndirectCommandsLayoutEXT;
+        vkDestroyIndirectCommandsLayoutEXT : PFN_vkDestroyIndirectCommandsLayoutEXT;
+        vkCreateIndirectExecutionSetEXT : PFN_vkCreateIndirectExecutionSetEXT;
+        vkDestroyIndirectExecutionSetEXT : PFN_vkDestroyIndirectExecutionSetEXT;
+        vkUpdateIndirectExecutionSetPipelineEXT : PFN_vkUpdateIndirectExecutionSetPipelineEXT;
+        vkUpdateIndirectExecutionSetShaderEXT : PFN_vkUpdateIndirectExecutionSetShaderEXT;
+        vkCmdPushDescriptorSet : PFN_vkCmdPushDescriptorSet;
         vkCmdPushDescriptorSetKHR : PFN_vkCmdPushDescriptorSetKHR;
         vkTrimCommandPool : PFN_vkTrimCommandPool;
         vkTrimCommandPoolKHR : PFN_vkTrimCommandPoolKHR;
@@ -428,6 +463,7 @@ Vulkan_All_Commands :: struct
         vkDestroyDescriptorUpdateTemplateKHR : PFN_vkDestroyDescriptorUpdateTemplateKHR;
         vkUpdateDescriptorSetWithTemplate : PFN_vkUpdateDescriptorSetWithTemplate;
         vkUpdateDescriptorSetWithTemplateKHR : PFN_vkUpdateDescriptorSetWithTemplateKHR;
+        vkCmdPushDescriptorSetWithTemplate : PFN_vkCmdPushDescriptorSetWithTemplate;
         vkCmdPushDescriptorSetWithTemplateKHR : PFN_vkCmdPushDescriptorSetWithTemplateKHR;
         vkSetHdrMetadataEXT : PFN_vkSetHdrMetadataEXT;
         vkGetSwapchainStatusKHR : PFN_vkGetSwapchainStatusKHR;
@@ -463,6 +499,7 @@ Vulkan_All_Commands :: struct
         vkGetDescriptorSetLayoutSupportKHR : PFN_vkGetDescriptorSetLayoutSupportKHR;
         vkGetShaderInfoAMD : PFN_vkGetShaderInfoAMD;
         vkSetLocalDimmingAMD : PFN_vkSetLocalDimmingAMD;
+        vkGetCalibratedTimestampsKHR : PFN_vkGetCalibratedTimestampsKHR;
         vkGetCalibratedTimestampsEXT : PFN_vkGetCalibratedTimestampsEXT;
         vkGetMemoryHostPointerPropertiesEXT : PFN_vkGetMemoryHostPointerPropertiesEXT;
         vkCmdWriteBufferMarkerAMD : PFN_vkCmdWriteBufferMarkerAMD;
@@ -533,10 +570,13 @@ Vulkan_All_Commands :: struct
         vkCreateRayTracingPipelinesKHR : PFN_vkCreateRayTracingPipelinesKHR;
         vkCmdTraceRaysIndirectKHR : PFN_vkCmdTraceRaysIndirectKHR;
         vkCmdTraceRaysIndirect2KHR : PFN_vkCmdTraceRaysIndirect2KHR;
+        vkGetClusterAccelerationStructureBuildSizesNV : PFN_vkGetClusterAccelerationStructureBuildSizesNV;
+        vkCmdBuildClusterAccelerationStructureIndirectNV : PFN_vkCmdBuildClusterAccelerationStructureIndirectNV;
         vkGetDeviceAccelerationStructureCompatibilityKHR : PFN_vkGetDeviceAccelerationStructureCompatibilityKHR;
         vkGetRayTracingShaderGroupStackSizeKHR : PFN_vkGetRayTracingShaderGroupStackSizeKHR;
         vkCmdSetRayTracingPipelineStackSizeKHR : PFN_vkCmdSetRayTracingPipelineStackSizeKHR;
         vkGetImageViewHandleNVX : PFN_vkGetImageViewHandleNVX;
+        vkGetImageViewHandle64NVX : PFN_vkGetImageViewHandle64NVX;
         vkGetImageViewAddressNVX : PFN_vkGetImageViewAddressNVX;
         vkAcquireProfilingLockKHR : PFN_vkAcquireProfilingLockKHR;
         vkReleaseProfilingLockKHR : PFN_vkReleaseProfilingLockKHR;
@@ -560,6 +600,8 @@ Vulkan_All_Commands :: struct
         vkGetPipelineExecutablePropertiesKHR : PFN_vkGetPipelineExecutablePropertiesKHR;
         vkGetPipelineExecutableStatisticsKHR : PFN_vkGetPipelineExecutableStatisticsKHR;
         vkGetPipelineExecutableInternalRepresentationsKHR : PFN_vkGetPipelineExecutableInternalRepresentationsKHR;
+        vkCmdSetLineStipple : PFN_vkCmdSetLineStipple;
+        vkCmdSetLineStippleKHR : PFN_vkCmdSetLineStippleKHR;
         vkCmdSetLineStippleEXT : PFN_vkCmdSetLineStippleEXT;
         vkGetFaultData : PFN_vkGetFaultData;
         vkCreateAccelerationStructureKHR : PFN_vkCreateAccelerationStructureKHR;
@@ -572,6 +614,9 @@ Vulkan_All_Commands :: struct
         vkGetDeferredOperationMaxConcurrencyKHR : PFN_vkGetDeferredOperationMaxConcurrencyKHR;
         vkGetDeferredOperationResultKHR : PFN_vkGetDeferredOperationResultKHR;
         vkDeferredOperationJoinKHR : PFN_vkDeferredOperationJoinKHR;
+        vkGetPipelineIndirectMemoryRequirementsNV : PFN_vkGetPipelineIndirectMemoryRequirementsNV;
+        vkGetPipelineIndirectDeviceAddressNV : PFN_vkGetPipelineIndirectDeviceAddressNV;
+        vkAntiLagUpdateAMD : PFN_vkAntiLagUpdateAMD;
         vkCmdSetCullMode : PFN_vkCmdSetCullMode;
         vkCmdSetCullModeEXT : PFN_vkCmdSetCullModeEXT;
         vkCmdSetFrontFace : PFN_vkCmdSetFrontFace;
@@ -582,6 +627,8 @@ Vulkan_All_Commands :: struct
         vkCmdSetViewportWithCountEXT : PFN_vkCmdSetViewportWithCountEXT;
         vkCmdSetScissorWithCount : PFN_vkCmdSetScissorWithCount;
         vkCmdSetScissorWithCountEXT : PFN_vkCmdSetScissorWithCountEXT;
+        vkCmdBindIndexBuffer2 : PFN_vkCmdBindIndexBuffer2;
+        vkCmdBindIndexBuffer2KHR : PFN_vkCmdBindIndexBuffer2KHR;
         vkCmdBindVertexBuffers2 : PFN_vkCmdBindVertexBuffers2;
         vkCmdBindVertexBuffers2EXT : PFN_vkCmdBindVertexBuffers2EXT;
         vkCmdSetDepthTestEnable : PFN_vkCmdSetDepthTestEnable;
@@ -675,11 +722,20 @@ Vulkan_All_Commands :: struct
         vkCmdWriteTimestamp2KHR : PFN_vkCmdWriteTimestamp2KHR;
         vkCmdWriteBufferMarker2AMD : PFN_vkCmdWriteBufferMarker2AMD;
         vkGetQueueCheckpointData2NV : PFN_vkGetQueueCheckpointData2NV;
+        vkCopyMemoryToImage : PFN_vkCopyMemoryToImage;
+        vkCopyMemoryToImageEXT : PFN_vkCopyMemoryToImageEXT;
+        vkCopyImageToMemory : PFN_vkCopyImageToMemory;
+        vkCopyImageToMemoryEXT : PFN_vkCopyImageToMemoryEXT;
+        vkCopyImageToImage : PFN_vkCopyImageToImage;
+        vkCopyImageToImageEXT : PFN_vkCopyImageToImageEXT;
+        vkTransitionImageLayout : PFN_vkTransitionImageLayout;
+        vkTransitionImageLayoutEXT : PFN_vkTransitionImageLayoutEXT;
         vkGetCommandPoolMemoryConsumption : PFN_vkGetCommandPoolMemoryConsumption;
         vkCreateVideoSessionKHR : PFN_vkCreateVideoSessionKHR;
         vkDestroyVideoSessionKHR : PFN_vkDestroyVideoSessionKHR;
         vkCreateVideoSessionParametersKHR : PFN_vkCreateVideoSessionParametersKHR;
         vkUpdateVideoSessionParametersKHR : PFN_vkUpdateVideoSessionParametersKHR;
+        vkGetEncodedVideoSessionParametersKHR : PFN_vkGetEncodedVideoSessionParametersKHR;
         vkDestroyVideoSessionParametersKHR : PFN_vkDestroyVideoSessionParametersKHR;
         vkGetVideoSessionMemoryRequirementsKHR : PFN_vkGetVideoSessionMemoryRequirementsKHR;
         vkBindVideoSessionMemoryKHR : PFN_vkBindVideoSessionMemoryKHR;
@@ -687,8 +743,13 @@ Vulkan_All_Commands :: struct
         vkCmdBeginVideoCodingKHR : PFN_vkCmdBeginVideoCodingKHR;
         vkCmdControlVideoCodingKHR : PFN_vkCmdControlVideoCodingKHR;
         vkCmdEndVideoCodingKHR : PFN_vkCmdEndVideoCodingKHR;
+        vkCmdEncodeVideoKHR : PFN_vkCmdEncodeVideoKHR;
         vkCmdDecompressMemoryNV : PFN_vkCmdDecompressMemoryNV;
         vkCmdDecompressMemoryIndirectCountNV : PFN_vkCmdDecompressMemoryIndirectCountNV;
+        vkGetPartitionedAccelerationStructuresBuildSizesNV : PFN_vkGetPartitionedAccelerationStructuresBuildSizesNV;
+        vkCmdBuildPartitionedAccelerationStructuresNV : PFN_vkCmdBuildPartitionedAccelerationStructuresNV;
+        vkCmdDecompressMemoryEXT : PFN_vkCmdDecompressMemoryEXT;
+        vkCmdDecompressMemoryIndirectCountEXT : PFN_vkCmdDecompressMemoryIndirectCountEXT;
         vkCreateCuModuleNVX : PFN_vkCreateCuModuleNVX;
         vkCreateCuFunctionNVX : PFN_vkCreateCuFunctionNVX;
         vkDestroyCuModuleNVX : PFN_vkDestroyCuModuleNVX;
@@ -706,10 +767,13 @@ Vulkan_All_Commands :: struct
         vkGetSamplerOpaqueCaptureDescriptorDataEXT : PFN_vkGetSamplerOpaqueCaptureDescriptorDataEXT;
         vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT : PFN_vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT;
         vkSetDeviceMemoryPriorityEXT : PFN_vkSetDeviceMemoryPriorityEXT;
+        vkWaitForPresent2KHR : PFN_vkWaitForPresent2KHR;
         vkWaitForPresentKHR : PFN_vkWaitForPresentKHR;
         vkCmdBeginRendering : PFN_vkCmdBeginRendering;
         vkCmdBeginRenderingKHR : PFN_vkCmdBeginRenderingKHR;
         vkCmdEndRendering : PFN_vkCmdEndRendering;
+        vkCmdEndRendering2KHR : PFN_vkCmdEndRendering2KHR;
+        vkCmdEndRendering2EXT : PFN_vkCmdEndRendering2EXT;
         vkCmdEndRenderingKHR : PFN_vkCmdEndRenderingKHR;
         vkGetDescriptorSetLayoutHostMappingInfoVALVE : PFN_vkGetDescriptorSetLayoutHostMappingInfoVALVE;
         vkGetDescriptorSetHostMappingVALVE : PFN_vkGetDescriptorSetHostMappingVALVE;
@@ -729,8 +793,11 @@ Vulkan_All_Commands :: struct
         vkGetMicromapBuildSizesEXT : PFN_vkGetMicromapBuildSizesEXT;
         vkGetShaderModuleIdentifierEXT : PFN_vkGetShaderModuleIdentifierEXT;
         vkGetShaderModuleCreateInfoIdentifierEXT : PFN_vkGetShaderModuleCreateInfoIdentifierEXT;
+        vkGetImageSubresourceLayout2 : PFN_vkGetImageSubresourceLayout2;
+        vkGetImageSubresourceLayout2KHR : PFN_vkGetImageSubresourceLayout2KHR;
         vkGetImageSubresourceLayout2EXT : PFN_vkGetImageSubresourceLayout2EXT;
         vkGetPipelinePropertiesEXT : PFN_vkGetPipelinePropertiesEXT;
+        vkCmdBindTileMemoryQCOM : PFN_vkCmdBindTileMemoryQCOM;
         vkGetFramebufferTilePropertiesQCOM : PFN_vkGetFramebufferTilePropertiesQCOM;
         vkGetDynamicRenderingTilePropertiesQCOM : PFN_vkGetDynamicRenderingTilePropertiesQCOM;
         vkCreateOpticalFlowSessionNV : PFN_vkCreateOpticalFlowSessionNV;
@@ -738,13 +805,70 @@ Vulkan_All_Commands :: struct
         vkBindOpticalFlowSessionImageNV : PFN_vkBindOpticalFlowSessionImageNV;
         vkCmdOpticalFlowExecuteNV : PFN_vkCmdOpticalFlowExecuteNV;
         vkGetDeviceFaultInfoEXT : PFN_vkGetDeviceFaultInfoEXT;
+        vkCmdSetDepthBias2EXT : PFN_vkCmdSetDepthBias2EXT;
+        vkReleaseSwapchainImagesKHR : PFN_vkReleaseSwapchainImagesKHR;
         vkReleaseSwapchainImagesEXT : PFN_vkReleaseSwapchainImagesEXT;
+        vkGetDeviceImageSubresourceLayout : PFN_vkGetDeviceImageSubresourceLayout;
+        vkGetDeviceImageSubresourceLayoutKHR : PFN_vkGetDeviceImageSubresourceLayoutKHR;
+        vkMapMemory2 : PFN_vkMapMemory2;
         vkMapMemory2KHR : PFN_vkMapMemory2KHR;
+        vkUnmapMemory2 : PFN_vkUnmapMemory2;
         vkUnmapMemory2KHR : PFN_vkUnmapMemory2KHR;
         vkCreateShadersEXT : PFN_vkCreateShadersEXT;
         vkDestroyShaderEXT : PFN_vkDestroyShaderEXT;
         vkGetShaderBinaryDataEXT : PFN_vkGetShaderBinaryDataEXT;
         vkCmdBindShadersEXT : PFN_vkCmdBindShadersEXT;
+        vkSetSwapchainPresentTimingQueueSizeEXT : PFN_vkSetSwapchainPresentTimingQueueSizeEXT;
+        vkGetSwapchainTimingPropertiesEXT : PFN_vkGetSwapchainTimingPropertiesEXT;
+        vkGetSwapchainTimeDomainPropertiesEXT : PFN_vkGetSwapchainTimeDomainPropertiesEXT;
+        vkGetPastPresentationTimingEXT : PFN_vkGetPastPresentationTimingEXT;
+        vkCmdBindDescriptorSets2 : PFN_vkCmdBindDescriptorSets2;
+        vkCmdBindDescriptorSets2KHR : PFN_vkCmdBindDescriptorSets2KHR;
+        vkCmdPushConstants2 : PFN_vkCmdPushConstants2;
+        vkCmdPushConstants2KHR : PFN_vkCmdPushConstants2KHR;
+        vkCmdPushDescriptorSet2 : PFN_vkCmdPushDescriptorSet2;
+        vkCmdPushDescriptorSet2KHR : PFN_vkCmdPushDescriptorSet2KHR;
+        vkCmdPushDescriptorSetWithTemplate2 : PFN_vkCmdPushDescriptorSetWithTemplate2;
+        vkCmdPushDescriptorSetWithTemplate2KHR : PFN_vkCmdPushDescriptorSetWithTemplate2KHR;
+        vkCmdSetDescriptorBufferOffsets2EXT : PFN_vkCmdSetDescriptorBufferOffsets2EXT;
+        vkCmdBindDescriptorBufferEmbeddedSamplers2EXT : PFN_vkCmdBindDescriptorBufferEmbeddedSamplers2EXT;
+        vkSetLatencySleepModeNV : PFN_vkSetLatencySleepModeNV;
+        vkLatencySleepNV : PFN_vkLatencySleepNV;
+        vkSetLatencyMarkerNV : PFN_vkSetLatencyMarkerNV;
+        vkGetLatencyTimingsNV : PFN_vkGetLatencyTimingsNV;
+        vkQueueNotifyOutOfBandNV : PFN_vkQueueNotifyOutOfBandNV;
+        vkCmdSetRenderingAttachmentLocations : PFN_vkCmdSetRenderingAttachmentLocations;
+        vkCmdSetRenderingAttachmentLocationsKHR : PFN_vkCmdSetRenderingAttachmentLocationsKHR;
+        vkCmdSetRenderingInputAttachmentIndices : PFN_vkCmdSetRenderingInputAttachmentIndices;
+        vkCmdSetRenderingInputAttachmentIndicesKHR : PFN_vkCmdSetRenderingInputAttachmentIndicesKHR;
+        vkCmdSetDepthClampRangeEXT : PFN_vkCmdSetDepthClampRangeEXT;
+        vkConvertCooperativeVectorMatrixNV : PFN_vkConvertCooperativeVectorMatrixNV;
+        vkCmdConvertCooperativeVectorMatrixNV : PFN_vkCmdConvertCooperativeVectorMatrixNV;
+        vkCmdDispatchTileQCOM : PFN_vkCmdDispatchTileQCOM;
+        vkCmdBeginPerTileExecutionQCOM : PFN_vkCmdBeginPerTileExecutionQCOM;
+        vkCmdEndPerTileExecutionQCOM : PFN_vkCmdEndPerTileExecutionQCOM;
+        vkCreateExternalComputeQueueNV : PFN_vkCreateExternalComputeQueueNV;
+        vkDestroyExternalComputeQueueNV : PFN_vkDestroyExternalComputeQueueNV;
+        vkGetExternalComputeQueueDataNV : PFN_vkGetExternalComputeQueueDataNV;
+        vkCreateTensorARM : PFN_vkCreateTensorARM;
+        vkDestroyTensorARM : PFN_vkDestroyTensorARM;
+        vkCreateTensorViewARM : PFN_vkCreateTensorViewARM;
+        vkDestroyTensorViewARM : PFN_vkDestroyTensorViewARM;
+        vkGetTensorMemoryRequirementsARM : PFN_vkGetTensorMemoryRequirementsARM;
+        vkBindTensorMemoryARM : PFN_vkBindTensorMemoryARM;
+        vkGetDeviceTensorMemoryRequirementsARM : PFN_vkGetDeviceTensorMemoryRequirementsARM;
+        vkCmdCopyTensorARM : PFN_vkCmdCopyTensorARM;
+        vkGetTensorOpaqueCaptureDescriptorDataARM : PFN_vkGetTensorOpaqueCaptureDescriptorDataARM;
+        vkGetTensorViewOpaqueCaptureDescriptorDataARM : PFN_vkGetTensorViewOpaqueCaptureDescriptorDataARM;
+        vkCreateDataGraphPipelinesARM : PFN_vkCreateDataGraphPipelinesARM;
+        vkCreateDataGraphPipelineSessionARM : PFN_vkCreateDataGraphPipelineSessionARM;
+        vkGetDataGraphPipelineSessionBindPointRequirementsARM : PFN_vkGetDataGraphPipelineSessionBindPointRequirementsARM;
+        vkGetDataGraphPipelineSessionMemoryRequirementsARM : PFN_vkGetDataGraphPipelineSessionMemoryRequirementsARM;
+        vkBindDataGraphPipelineSessionMemoryARM : PFN_vkBindDataGraphPipelineSessionMemoryARM;
+        vkDestroyDataGraphPipelineSessionARM : PFN_vkDestroyDataGraphPipelineSessionARM;
+        vkCmdDispatchDataGraphARM : PFN_vkCmdDispatchDataGraphARM;
+        vkGetDataGraphPipelineAvailablePropertiesARM : PFN_vkGetDataGraphPipelineAvailablePropertiesARM;
+        vkGetDataGraphPipelinePropertiesARM : PFN_vkGetDataGraphPipelinePropertiesARM;
         #if VULKAN_PLATFORM == .Windows
         {
             vkGetMemoryWin32HandleNV : PFN_vkGetMemoryWin32HandleNV;
@@ -778,6 +902,12 @@ Vulkan_All_Commands :: struct
         #if VULKAN_PLATFORM == .MacOS
         {
             vkExportMetalObjectsEXT : PFN_vkExportMetalObjectsEXT;
+            vkGetMemoryMetalHandleEXT : PFN_vkGetMemoryMetalHandleEXT;
+            vkGetMemoryMetalHandlePropertiesEXT : PFN_vkGetMemoryMetalHandlePropertiesEXT;
+        }
+        #if VULKAN_PLATFORM == .Screen
+        {
+            vkGetScreenBufferPropertiesQNX : PFN_vkGetScreenBufferPropertiesQNX;
         }
         #if VULKAN_PLATFORM == .Jetson
         {
@@ -786,7 +916,27 @@ Vulkan_All_Commands :: struct
         }
         #if VK_ENABLE_BETA_EXTENSIONS
         {
-            vkCmdEncodeVideoKHR : PFN_vkCmdEncodeVideoKHR;
+            vkCreateCudaModuleNV : PFN_vkCreateCudaModuleNV;
+            vkGetCudaModuleCacheNV : PFN_vkGetCudaModuleCacheNV;
+            vkCreateCudaFunctionNV : PFN_vkCreateCudaFunctionNV;
+            vkDestroyCudaModuleNV : PFN_vkDestroyCudaModuleNV;
+            vkDestroyCudaFunctionNV : PFN_vkDestroyCudaFunctionNV;
+            vkCmdCudaLaunchKernelNV : PFN_vkCmdCudaLaunchKernelNV;
+            vkGetExecutionGraphPipelineScratchSizeAMDX : PFN_vkGetExecutionGraphPipelineScratchSizeAMDX;
+            vkGetExecutionGraphPipelineNodeIndexAMDX : PFN_vkGetExecutionGraphPipelineNodeIndexAMDX;
+            vkCreateExecutionGraphPipelinesAMDX : PFN_vkCreateExecutionGraphPipelinesAMDX;
+            vkCmdInitializeGraphScratchMemoryAMDX : PFN_vkCmdInitializeGraphScratchMemoryAMDX;
+            vkCmdDispatchGraphAMDX : PFN_vkCmdDispatchGraphAMDX;
+            vkCmdDispatchGraphIndirectAMDX : PFN_vkCmdDispatchGraphIndirectAMDX;
+            vkCmdDispatchGraphIndirectCountAMDX : PFN_vkCmdDispatchGraphIndirectCountAMDX;
+        }
+        #if VULKAN_PLATFORM == .OHOS
+        {
+            vkGetNativeBufferPropertiesOHOS : PFN_vkGetNativeBufferPropertiesOHOS;
+            vkGetMemoryNativeBufferOHOS : PFN_vkGetMemoryNativeBufferOHOS;
+            vkGetSwapchainGrallocUsageOHOS : PFN_vkGetSwapchainGrallocUsageOHOS;
+            vkAcquireImageOHOS : PFN_vkAcquireImageOHOS;
+            vkQueueSignalReleaseImageOHOS : PFN_vkQueueSignalReleaseImageOHOS;
         }
     }
 }
