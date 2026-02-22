@@ -113,6 +113,7 @@ main :: ()
     waited_for_vertex_buffer := false;
 
     // # Main Loop
+    get_time :: () -> float64 { return to_float64_seconds(current_time_monotonic()); }
     last_time := get_time() - 1.0/60.0;
     need_to_recreate_framebuffers := false;
     run_main_loop := true;
@@ -221,7 +222,7 @@ main :: ()
         per_frame_data.mouse_position_y = mouse_position_y;
 
         per_view_data : Per_View_Data;
-        camera_position := make_vector3(0,0,5);
+        camera_position := xyz(0,0,5);
         per_view_data.view_from_world_matrix = prepare_matrix_for_shader(make_translation_matrix4(-camera_position));
         per_view_data.projection_from_view_matrix = prepare_matrix_for_shader(
             make_projection_matrix_for_vulkan(fov_vertical_in_degrees = 90.0,
@@ -275,7 +276,7 @@ main :: ()
         // ## We record now drawing something with vertices
         {
             per_object_data : Per_Object_Data;
-            per_object_data.world_from_model_matrix = prepare_matrix_for_shader(make_scale_matrix4(make_vector3(0.3,0.3,0.3)) * make_translation_matrix4(make_vector3(0,0,-3)));
+            per_object_data.world_from_model_matrix = prepare_matrix_for_shader(make_scale_matrix4(xyz(0.3,0.3,0.3)) * make_translation_matrix4(xyz(0,0,-3)));
             vulkan_example_update_and_bind_uniform_buffer(*vulkan_context, 
                                                           command_buffer, 
                                                           common_pipeline_layout, 
@@ -401,31 +402,24 @@ Assets :: struct
 make_vertex_and_index_buffer_for_cube :: () -> [8] Vertex, [6*2*3] u32
 {
     vertices : [8] Vertex;
-    vertices[0].position = make_vector3(-1.0, +1.0, -1.0);
-    vertices[1].position = make_vector3(+1.0, +1.0, -1.0);
-    vertices[2].position = make_vector3(-1.0, +1.0, +1.0);
-    vertices[3].position = make_vector3(+1.0, +1.0, +1.0);
-    vertices[4].position = make_vector3(-1.0, -1.0, -1.0);
-    vertices[5].position = make_vector3(+1.0, -1.0, -1.0);
-    vertices[6].position = make_vector3(-1.0, -1.0, +1.0);
-    vertices[7].position = make_vector3(+1.0, -1.0, +1.0);
-    vertices[0].color = make_vector3(0.0, 1.0, 0.0);
-    vertices[1].color = make_vector3(1.0, 1.0, 0.0);
-    vertices[2].color = make_vector3(0.0, 1.0, 1.0);
-    vertices[3].color = make_vector3(1.0, 1.0, 1.0);
-    vertices[4].color = make_vector3(0.0, 0.0, 0.0);
-    vertices[5].color = make_vector3(1.0, 0.0, 0.0);
-    vertices[6].color = make_vector3(0.0, 0.0, 1.0);
-    vertices[7].color = make_vector3(1.0, 0.0, 1.0);
+    vertices[0].position = xyz(-1.0, +1.0, -1.0);
+    vertices[1].position = xyz(+1.0, +1.0, -1.0);
+    vertices[2].position = xyz(-1.0, +1.0, +1.0);
+    vertices[3].position = xyz(+1.0, +1.0, +1.0);
+    vertices[4].position = xyz(-1.0, -1.0, -1.0);
+    vertices[5].position = xyz(+1.0, -1.0, -1.0);
+    vertices[6].position = xyz(-1.0, -1.0, +1.0);
+    vertices[7].position = xyz(+1.0, -1.0, +1.0);
+    vertices[0].color = xyz(0.0, 1.0, 0.0);
+    vertices[1].color = xyz(1.0, 1.0, 0.0);
+    vertices[2].color = xyz(0.0, 1.0, 1.0);
+    vertices[3].color = xyz(1.0, 1.0, 1.0);
+    vertices[4].color = xyz(0.0, 0.0, 0.0);
+    vertices[5].color = xyz(1.0, 0.0, 0.0);
+    vertices[6].color = xyz(0.0, 0.0, 1.0);
+    vertices[7].color = xyz(1.0, 0.0, 1.0);
     indices : [6*2*3] u32;  
     counter := 0;
-    tri(0,2,1); tri(2,3,1);
-    tri(2,6,3); tri(3,6,7);
-    tri(1,5,0); tri(0,5,4);
-    tri(0,4,2); tri(2,4,6);
-    tri(3,5,1); tri(3,7,5);
-    tri(6,4,5); tri(6,5,7);
-    return vertices, indices;
     tri :: (a : u32, b : u32, c : u32) #expand
     {
         `indices[`counter] = a;
@@ -433,6 +427,13 @@ make_vertex_and_index_buffer_for_cube :: () -> [8] Vertex, [6*2*3] u32
         `indices[`counter+2] = c;
         `counter += 3;
     }
+    tri(0,2,1); tri(2,3,1);
+    tri(2,6,3); tri(3,6,7);
+    tri(1,5,0); tri(0,5,4);
+    tri(0,4,2); tri(2,4,6);
+    tri(3,5,1); tri(3,7,5);
+    tri(6,4,5); tri(6,5,7);
+    return vertices, indices;
 }
     
     
@@ -686,7 +687,7 @@ vulkan_init :: (using vulkan_context : *Vulkan_Context,
                                else ifx is_general "[GENERAL]" 
                                else "";
 
-                temp_context : Context;
+                temp_context : #Context;
                 push_context temp_context 
                 {
                     print("\n\nVulkan Debug Message % %:\n\n%\n\n", 
@@ -1051,7 +1052,7 @@ vulkan_deinit :: (using vulkan_context : *Vulkan_Context)
         vkDestroySwapchainKHR(device, swapchain, vulkan_allocator);
         for * swapchain_image_views
         {
-            vkDestroyImageView(device, <<it, vulkan_allocator);
+            vkDestroyImageView(device, it.*, vulkan_allocator);
             it = null;
         }
     }
@@ -1067,6 +1068,12 @@ vulkan_deinit :: (using vulkan_context : *Vulkan_Context)
     vkDestroyInstance(instance, vulkan_allocator);
     instance = null;
 
+    reset :: (array : * [] $T)
+    {
+        array.count = 0;
+        free(array.data);
+        array.data = null;
+    }
     reset(*surface_formats);
     reset(*surface_present_modes);
     for * command_pools_per_type
@@ -1081,12 +1088,6 @@ vulkan_deinit :: (using vulkan_context : *Vulkan_Context)
     reset(*rendering_finished_to_swapchain_image_semaphores);
     reset(*rendering_finished_to_swapchain_image_fences);
     reset(*frame_numbers_per_image);
-    reset :: (array : * [] $T)
-    {
-        array.count = 0;
-        free(array.data);
-        array.data = null;
-    }
 }
 
 
@@ -1395,9 +1396,6 @@ else #assert(false);
 
 vulkan_create_command_pools :: (using vulkan_context : *Vulkan_Context)
 {
-    do_for_type(Queue_Type.Graphics, cast(u32) queue_family_indices.graphics_family_index);
-    do_for_type(Queue_Type.Async_Compute,  cast(u32) queue_family_indices.async_family_index);
-    do_for_type(Queue_Type.Transfer, cast(u32) queue_family_indices.transfer_family_index);
     do_for_type :: (type : Queue_Type, queue_family_index : u32) #expand
     {
         temp_command_pools := new_temporary_array(VkCommandPool);
@@ -1420,6 +1418,9 @@ vulkan_create_command_pools :: (using vulkan_context : *Vulkan_Context)
         command_pools_per_type[type].used_command_buffers  = alloc_and_copy_array(temp_used_command_buffers);
         command_pools_per_type[type].free_command_buffers  = alloc_and_copy_array(temp_free_command_buffers);
     }
+    do_for_type(Queue_Type.Graphics, cast(u32) queue_family_indices.graphics_family_index);
+    do_for_type(Queue_Type.Async_Compute,  cast(u32) queue_family_indices.async_family_index);
+    do_for_type(Queue_Type.Transfer, cast(u32) queue_family_indices.transfer_family_index);
 }
 
 
@@ -1545,7 +1546,7 @@ vulkan_one_time_submit_to_queue :: (using vulkan_context : *Vulkan_Context, queu
         fence : VkFence = null;
         if fence_to_signal
         {
-            fence = <<fence_to_signal;
+            fence = fence_to_signal.*;
         }
         result := vkQueueSubmit(queue,
                                 submitCount = 1,
@@ -1599,8 +1600,8 @@ vulkan_create_shader_module :: (using vulkan_context : *Vulkan_Context, shader_s
 
 vulkan_destroy_shader_module :: (using vulkan_context : *Vulkan_Context, module : *VkShaderModule)
 {
-    vkDestroyShaderModule(device, <<module, vulkan_allocator);
-    <<module = VK_NULL_HANDLE;
+    vkDestroyShaderModule(device, module.*, vulkan_allocator);
+    module.* = VK_NULL_HANDLE;
 }
 
 
@@ -1929,14 +1930,14 @@ vulkan_destroy_graphics_pipeline :: (using vulkan_context : *Vulkan_Context,
                                      descriptor_set_layout : [] VkDescriptorSetLayout)
 {
     for descriptor_set_layout  vkDestroyDescriptorSetLayout(device, it, vulkan_allocator);
-    if <<graphics_pipeline     vkDestroyPipeline(device, <<graphics_pipeline, vulkan_allocator);
-    if <<pipeline_layout       vkDestroyPipelineLayout(device, <<pipeline_layout, vulkan_allocator);
-    if <<render_pass           vkDestroyRenderPass(device, <<render_pass, vulkan_allocator);
+    if graphics_pipeline.*     vkDestroyPipeline(device, graphics_pipeline.*, vulkan_allocator);
+    if pipeline_layout.*       vkDestroyPipelineLayout(device, pipeline_layout.*, vulkan_allocator);
+    if render_pass.*           vkDestroyRenderPass(device, render_pass.*, vulkan_allocator);
     
     for descriptor_set_layout it = null;
-    <<graphics_pipeline = null;
-    <<render_pass =  null;
-    <<pipeline_layout = null;
+    graphics_pipeline.* = null;
+    render_pass.* =  null;
+    pipeline_layout.* = null;
 }
 
 
@@ -1996,8 +1997,8 @@ vulkan_example_create_render_pass :: (using vulkan_context : *Vulkan_Context) ->
 
 vulkan_destroy_render_pass :: (using vulkan_context : *Vulkan_Context, render_pass : *VkRenderPass)
 {
-    vkDestroyRenderPass(device, <<render_pass, vulkan_allocator);
-    <<render_pass =  null;
+    vkDestroyRenderPass(device, render_pass.*, vulkan_allocator);
+    render_pass.* =  null;
 }
 
 
@@ -2022,12 +2023,12 @@ vulkan_example_make_framebuffers_for_renderpass_to_render_to_current_swapchain :
 
     if previous
     {
-        for <<previous
+        for previous.*
         {
             vkDestroyFramebuffer(device, it, vulkan_allocator);
         }
         assert(previous.count == framebuffers.count);
-        to_return := <<previous;
+        to_return := previous.*;
         copy_array_dst_src(to_return, framebuffers);
         return to_return;
     }
@@ -2040,10 +2041,10 @@ vulkan_example_make_framebuffers_for_renderpass_to_render_to_current_swapchain :
 
 vulkan_destroy_framebuffers :: (using vulkan_context : *Vulkan_Context, framebuffers : * [] VkFramebuffer)
 {
-    for * <<framebuffers
+    for * framebuffers.*
     {
-        vkDestroyFramebuffer(device, <<it, vulkan_allocator);
-        <<it = null;
+        vkDestroyFramebuffer(device, it.*, vulkan_allocator);
+        it.* = null;
     }
     free(framebuffers.data);
     framebuffers.data = null;
@@ -2062,8 +2063,8 @@ vulkan_create_semaphore :: (using vulkan_context : *Vulkan_Context) -> VkSemapho
 
 vulkan_destroy_semaphore :: (using vulkan_context : *Vulkan_Context, semaphore : *VkSemaphore)
 {
-    vkDestroySemaphore(device, <<semaphore, vulkan_allocator);
-    <<semaphore = null;
+    vkDestroySemaphore(device, semaphore.*, vulkan_allocator);
+    semaphore.* = null;
 }
 
 
@@ -2079,8 +2080,8 @@ vulkan_create_fence :: (using vulkan_context : *Vulkan_Context, signaled : bool)
 
 vulkan_destroy_fence :: (using vulkan_context : *Vulkan_Context, fence : *VkFence)
 {
-    vkDestroyFence(device, <<fence, vulkan_allocator);
-    <<fence = null;
+    vkDestroyFence(device, fence.*, vulkan_allocator);
+    fence.* = null;
 }
 
 
@@ -2199,7 +2200,7 @@ vulkan_begin_frame_and_acquire_swapchain_image_to_render_to :: (using vulkan_con
                 it.last_frame_that_used_it = -1;
                 result := vkResetDescriptorPool(device, it.pool, flags=0);
                 assert(result == VK_SUCCESS);
-                array_add(*empty_descriptor_pools, <<it);
+                array_add(*empty_descriptor_pools, it.*);
                 remove it;
             }
         }
@@ -2314,8 +2315,8 @@ vulkan_destroy_uniform_buffers :: (using vulkan_context : *Vulkan_Context, buffe
     assert(buffers.count == memories.count);
     for 0..buffers.count-1
     {
-        buffer := *(<<buffers)[it];
-        memory := *(<<memories)[it];
+        buffer := *(buffers.*)[it];
+        memory := *(memories.*)[it];
         vulkan_destroy_buffer(vulkan_context, buffer, memory); 
     }
     free(buffers.data);
@@ -2354,6 +2355,22 @@ vulkan_create_buffer :: (using vulkan_context : *Vulkan_Context,
     result := vkCreateBuffer(device, *create_info, vulkan_allocator, *buffer);
     assert(result == VK_SUCCESS);
 
+
+    find_memory_type_index :: (using vulkan_context : *Vulkan_Context, 
+                               memory_type_bits : u32, 
+                               desired_properties : VkMemoryPropertyFlags) -> found : bool, u32
+    {
+        for 0..vulkan_context.physical_device_memory_properties.memoryTypeCount-1
+        {
+            if (memory_type_bits & (1 << it)) && 
+               ((desired_properties & vulkan_context.physical_device_memory_properties.memoryTypes[it].propertyFlags) == desired_properties)
+            {
+                return true, it;
+            }
+        }
+        return false, 0;
+    }
+
     // # Now we need to calculate the memory requirements of it and allocate it
     memory_requirements : VkMemoryRequirements;
     vkGetBufferMemoryRequirements(device, buffer, *memory_requirements);
@@ -2375,21 +2392,6 @@ vulkan_create_buffer :: (using vulkan_context : *Vulkan_Context,
     assert(bind_result == VK_SUCCESS);
 
     return buffer, device_memory;
-
-    find_memory_type_index :: (using vulkan_context : *Vulkan_Context, 
-                               memory_type_bits : u32, 
-                               desired_properties : VkMemoryPropertyFlags) -> found : bool, u32
-    {
-        for 0..vulkan_context.physical_device_memory_properties.memoryTypeCount-1
-        {
-            if (memory_type_bits & (1 << it)) && 
-               ((desired_properties & vulkan_context.physical_device_memory_properties.memoryTypes[it].propertyFlags) == desired_properties)
-            {
-                return true, it;
-            }
-        }
-        return false, 0;
-    }
 }
 
 
@@ -2571,10 +2573,10 @@ vulkan_make_vertex_and_index_buffer :: (using vulkan_context : *Vulkan_Context,
 
 vulkan_destroy_buffer :: (using vulkan_context : *Vulkan_Context, buffer : *VkBuffer, device_memory : *VkDeviceMemory)
 {
-    vkFreeMemory(device, <<device_memory, vulkan_allocator);
-    vkDestroyBuffer(device, <<buffer, vulkan_allocator);
-    <<device_memory = null;
-    <<buffer = null;
+    vkFreeMemory(device, device_memory.*, vulkan_allocator);
+    vkDestroyBuffer(device, buffer.*, vulkan_allocator);
+    device_memory.* = null;
+    buffer.* = null;
 }
 
 
@@ -2609,7 +2611,7 @@ vulkan_example_update_and_bind_uniform_buffer :: (using vulkan_context : *Vulkan
                               flags = 0,
                               ppData = xx *data);
     assert(map_result == VK_SUCCESS);
-    <<data = buffer_data;
+    data.* = buffer_data;
     vkUnmapMemory(vulkan_context.device, uniform_buffer_memory);
 
     descriptor_set := vulkan_allocate_descriptor_set(vulkan_context, descriptor_set_layout);
@@ -2849,7 +2851,7 @@ cleanup_extension_name :: (name : string) -> string
 alloc_and_copy_array :: (array : [] $T, allocator := context.allocator) -> [] T
 {
     new_array := array;
-    new_array.data = xx alloc(array.count * size_of(T), allocator);
+    new_array.data = xx alloc(array.count * size_of(T),, allocator);
     memcpy(new_array.data, array.data, array.count * size_of(T));
     return new_array;
 }

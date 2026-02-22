@@ -35,11 +35,9 @@
     build_options.output_path = join(#filepath, "run_tree/");
 	make_directory_if_it_does_not_exist(build_options.output_path);
 
-    new_import_path := string.[
-        "../../", // @@NOTE: Relative path to wherever this module is
-        "",  
-    ];
-    new_import_path[1] = build_options.import_path[0];
+    new_import_path : [..]string;
+    array_add(*new_import_path, "../../"); // @@NOTE: Relative path to wherever this module is
+    for build_options.import_path array_add(*new_import_path, it);
     build_options.import_path = new_import_path;
 
     print("\n");
@@ -76,20 +74,20 @@
 
 shader_compiler_available :: () -> bool
 {
-    success, 
-    exit_code, 
+    result,
     output_string, 
-    error_string := os_run_command("glslc", "--version");
+    error_string := run_command("glslc", "--version");
+    success := result.type == .EXITED && result.exit_code == 0; 
     if success print("\n");
     return success;
 }
 
 build_shader :: (filename : string, output : string) #expand
 {
-    success, 
-    exit_code, 
+    result,
     output_string, 
-    error_string := os_run_command("glslc", filename, "-o", output);
+    error_string := run_command("glslc", filename, "-o", output);
+    success := result.type == .EXITED && result.exit_code == 0; 
     if !success
         print("Couldn't build shader %!! Error: %\n", filename, error_string);
     else

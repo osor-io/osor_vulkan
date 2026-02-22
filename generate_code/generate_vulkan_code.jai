@@ -38,6 +38,8 @@ Vulkan_Platform :: enum
     IDirectFB;
     Screen;
     Jetson;
+    UBM;
+    OHOS;
     Provisional; // Jesus, Mary and Joseph and the wee donkey, why is this a platform. 
 }
 
@@ -152,7 +154,8 @@ Command_Instance :: struct
         Sparse_Binding;
         Decode;
         Encode;
-        Optical_Flow; // wat
+        Optical_Flow;
+        Data_Graph_ARM;
     }
 
     renderpass : Render_Pass;
@@ -313,6 +316,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "ggp_c/vulkan_types.h",    .GGP);
     table_add(*requires_strings_to_platform, "directfb.h",              .IDirectFB);
     table_add(*requires_strings_to_platform, "screen/screen.h",         .Screen);
+    table_add(*requires_strings_to_platform, "ubm.h",                   .UBM);
+    table_add(*requires_strings_to_platform, "ubm_common.h",            .UBM);
     // The xml doesn't contain any platform="x" for these two, but this page describes NvSciSync as
     //     "The NvMedia APIs provide true hardware acceleration of image processing using hardware engines on Jetson devices."
     // I don't know what a Jetson is but it's a platform now
@@ -325,6 +330,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std.h",        .Provisional);
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_decode.h", .Provisional);
     table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_h265std_encode.h", .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_vp9std.h",         .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_vp9std_decode.h",  .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_vp9std_encode.h",  .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_av1std.h",         .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_av1std_decode.h",  .Provisional);
+    table_add(*requires_strings_to_platform, "vk_video/vulkan_video_codec_av1std_encode.h",  .Provisional);
 
     platform_name_to_platform_table : Table(string, Vulkan_Platform);
     defer deinit(*platform_name_to_platform_table);
@@ -343,11 +354,13 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     table_add(*platform_name_to_platform_table, "ggp",          .GGP);
     table_add(*platform_name_to_platform_table, "provisional",  .Provisional);
     table_add(*platform_name_to_platform_table, "screen",       .Screen);
+    table_add(*platform_name_to_platform_table, "ubm",          .UBM);
+    table_add(*platform_name_to_platform_table, "ohos",         .OHOS);
     find_platform_from_platform_name :: (name : string) -> Vulkan_Platform #expand
     {
         platform := table_find_pointer(*platform_name_to_platform_table, name);
         if !platform then return Vulkan_Platform.None;
-        return <<platform;
+        return platform.*;
     }
 
 
@@ -366,7 +379,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     add_platform_specific_name :: (requires_string : string, name : string) #expand
     {
-        platform, found := table_find(*requires_strings_to_platform, requires_string);
+        found, platform := table_find(*requires_strings_to_platform, requires_string);
         assert(found, "add_platform_specific_name unable to find requires_string=%", requires_string);
         names := *array_of_platform_specific_names[platform];
         array_add(*names.names, name);
@@ -374,7 +387,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     add_platform_specific_name :: (array_of_platform_specific_names : *[platform_count] Platform_Specific_Names, platform : Vulkan_Platform, name : string)
     {
-        names := *((<<array_of_platform_specific_names)[platform]);
+        names := *((array_of_platform_specific_names.*)[platform]);
         for names.names
         {
             if it == name 
@@ -499,11 +512,8 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         {
             has_name_attribute, name_attribute := find_attribute_with_name_and_strip(type, "name");
             name_node := find_first_node_with_name(type, "name");
-            if has_name_attribute && name_node
-            {
-                error("This tag (%) has both a name attribute and a name child, dunno which one to use", <<type);
-            }
-            else if has_name_attribute
+            proto_node := find_first_node_with_name(type, "proto");
+            if has_name_attribute
             {
                 type_name = name_attribute;
             }
@@ -512,10 +522,16 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 assert(name_node.contents.count == 1);
                 type_name = strip_quotes_and_whitespace(name_node.contents[0]);
             }
+            else if proto_node
+            {
+                proto_name_node := find_first_node_with_name(proto_node, "name"); 
+                assert(proto_name_node.contents.count == 1);
+                type_name = strip_quotes_and_whitespace(proto_name_node.contents[0]);
+            }
             
             if !type_name
             {
-                error("<type> tag (%) inside <types> has no name when we should be defining it", type);
+                error("<type> tag (%) inside <types> has no name when we should be defining it", type.*);
             }
         }
 
@@ -554,7 +570,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
             case Include;
             {
-                platform, found := table_find(*requires_strings_to_platform, type_name);
+                found, platform := table_find(*requires_strings_to_platform, type_name);
                 assert(found || type_name == "vk_platform", "Unable to find type_name or the type name was not vk_platform. found=% - type_name=%", found, type_name);
                 // Checking that we already matched the include to a platform earlier
                 // in case other types reference it and we need to put platform requirements
@@ -683,17 +699,17 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                             {
                                 current := string_after_name.data;
                                 advanced := false;
-                                while <<current == #char "["
+                                while current.* == #char "["
                                 {
                                     advanced = true;
-                                    while <<current != #char "]"
+                                    while current.* != #char "]"
                                     {
                                         current += 1;
                                     }
                                     current += 1;
-                                    if <<current == #char " "
+                                    if current.* == #char " "
                                     {
-                                        while <<current == #char " " current += 1;
+                                        while current.* == #char " " current += 1;
                                     }
                                 }
                                 if advanced string_after_name.count = current - string_after_name.data;
@@ -708,30 +724,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                             tokens := tokenizer.tokens;
                             if (tokens.count > 1)
                             {
-                                using Token.Type;
-                                token := *tokens[0];
-
-                                stop := false;
-
-                                if token.type == Colon
-                                {
-                                    advance();
-                                    assert(token.type == Integer);
-                                    member.bit_field_count = string_to_int(token.text);
-                                }
-                                while !stop
-                                {
-                                    if token.type == Open_Brackets
-                                    {
-                                        advance_ignoring_tags();
-                                        member.array_dimensions[member.array_dimensions_used] = token.text;
-                                        member.array_dimensions_used += 1;
-                                        advance_ignoring_tags();
-                                        assert(token.type == Close_Brackets);
-                                    }
-                                    advance();
-                                }
-
                                 advance_ignoring_tags :: () #expand
                                 {
                                     advance();
@@ -755,6 +747,30 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
                                         if token.type != Whitespace keep_advancing = false; 
                                     }
+                                }
+
+                                using Token.Type;
+                                token := *tokens[0];
+
+                                stop := false;
+
+                                if token.type == Colon
+                                {
+                                    advance();
+                                    assert(token.type == Integer);
+                                    member.bit_field_count = string_to_int(token.text);
+                                }
+                                while !stop
+                                {
+                                    if token.type == Open_Brackets
+                                    {
+                                        advance_ignoring_tags();
+                                        member.array_dimensions[member.array_dimensions_used] = token.text;
+                                        member.array_dimensions_used += 1;
+                                        advance_ignoring_tags();
+                                        assert(token.type == Close_Brackets);
+                                    }
+                                    advance();
                                 }
                             }
                         }
@@ -881,147 +897,44 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 using Token.Type;
                 procedure_instance : Procedure_Instance;
                 procedure_instance.name = type_name;
-                contents_or_children := type.all_contents_or_children[0];
-                assert(contents_or_children.type == string);
 
                 // Return Value
                 {
-                    tokenizer : Tokenizer;
-                    return_value_string := type.contents[contents_or_children.index];
-                    init_tokenizer(*tokenizer, return_value_string);
-                    defer free(*tokenizer);
-                    tokenize_whole_string(*tokenizer, do_comments = false, ignore_whitespace = true);
-                    tokens := tokenizer.tokens;
-                    assert(tokens[0].type == Identifier);
-                    assert(tokens[0].text == "typedef");
-                    assert(tokens[1].type == Identifier);
-                    procedure_instance.return_type.name = tokens[1].text;
-                    for 0..return_value_string.count-1
-                    {
-                        if return_value_string[it] == 
-                        {
-                            case #char "*"; procedure_instance.return_type.pointer_count += 1;
-                            case #char "("; break;
-                        }
-                    }
-                }
+                    proto_node := find_first_node_with_name(type, "proto");
+                    proto_type_node := find_first_node_with_name(proto_node, "type");
 
-                // Name of the procedure
-                contents_or_children = type.all_contents_or_children[1];
-                assert(contents_or_children.type == Node);
-                assert(type.children[contents_or_children.index].name == "name");
+                    assert(proto_type_node.contents.count == 1);
+                    procedure_instance.return_type.name = strip_quotes_and_whitespace(proto_type_node.contents[0]);
 
-                // Parentheses to start arguments, or ")(void)"
-                has_arguments := true;
-                contents_or_children = type.all_contents_or_children[2];
-                assert(contents_or_children.type == string);
-                {
-                    tokenizer : Tokenizer;
-                    init_tokenizer(*tokenizer, type.contents[contents_or_children.index]);
-                    defer free(*tokenizer);
-                    tokenize_whole_string(*tokenizer, do_comments = false, ignore_whitespace = true);
-                    tokens := tokenizer.tokens;
-                    index := 0;
-                    assert(tokens[index].type == Close_Parentheses);
-                    index += 1;
-                    assert(tokens[index].type == Open_Parentheses);
-                    index += 1;
-                    if tokens[index].type == Identifier &&
-                       tokens[index].text == "void" &&
-                       tokens[index+1].type == Close_Parentheses &&
-                       tokens[index+2].type == Semicolon
-                    {
-                        has_arguments = false; // The argument list is "(void)", so no arguments
-                    }
-                    else
-                    {
-                        has_arguments = true;
-                    }
+                    proto_string := proto_node.all_node_text_content; 
+                    for 0..proto_string.count-1 if proto_string[it] == #char "*" then procedure_instance.return_type.pointer_count += 1;
                 }
 
                 // Arguments
-                if has_arguments
+                param_nodes := find_all_nodes_with_name(type, "param");
+                defer array_reset(*param_nodes);
+                for param_node : param_nodes
                 {
-                    index_of_arguments := 3;
-                    while true
+                    argument : Procedure_Instance.Argument;
+
+                    param_type_node := find_first_node_with_name(param_node, "type");
+                    param_name_node := find_first_node_with_name(param_node, "name");
+
+                    assert(param_type_node.contents.count == 1);
+                    argument.type.name = strip_quotes_and_whitespace(param_type_node.contents[0]);
+
+                    param_string := param_node.all_node_text_content; 
+                    for 0..param_string.count-1 if param_string[it] == #char "*" then argument.type.pointer_count += 1;
+
+                    assert(param_name_node.contents.count == 1);
+                    argument.name = strip_quotes_and_whitespace(param_name_node.contents[0]);
+
+                    for c : param_node.all_node_text_content
                     {
-                        argument : Procedure_Instance.Argument;
-
-                        // First we have the <type> tag with the type name inside
-                        contents_or_children = type.all_contents_or_children[index_of_arguments];
-                        index_of_arguments += 1;
-                        assert(contents_or_children.type == Node);
-                        node := type.children[contents_or_children.index];
-                        assert(node.name == "type");
-                        assert(node.contents.count == 1);
-                        argument.type.name = strip_quotes_and_whitespace(node.contents[0]);
-                    
-                        // After the <type> tag we can have pointers, the type, the name and a comma maybe
-                        contents_or_children = type.all_contents_or_children[index_of_arguments];
-                        index_of_arguments += 1;
-                        assert(contents_or_children.type == string);
-                        content := type.contents[contents_or_children.index];                    
-                        tokenizer : Tokenizer;
-                        init_tokenizer(*tokenizer, content);
-                        defer free(*tokenizer);
-                        tokenize_whole_string(*tokenizer, do_comments = false, ignore_whitespace = true);
-                        tokens := tokenizer.tokens;
-                        index := 0;
-                        for 0..content.count-1
-                        {
-                            char := content[it];
-                            if char == 
-                            {
-                                case #char "*"; argument.type.pointer_count += 1;
-                                case #char ","; break;
-                                case #char ";"; break;
-                            }
-                        }
-                        // Go until the comma or semicolon since the name should be before it, if it's not
-                        // (because there's arrays or something) then we'll assert and we can look to do 
-                        // something better here.
-                        while true
-                        {
-                            if tokens[index].type == Comma
-                            {
-                                index -= 1;
-                                break;
-                            }
-                            else if tokens[index].type == Semicolon
-                            {
-                                index -= 2;
-                                break;
-                            }
-                            else
-                            {
-                                index += 1;
-                            }
-                        }
-                        assert(tokens[index].type == Identifier);
-                        argument.name = tokens[index].text;
-                        index += 1;
-
-                        while tokens[index].type == Open_Brackets
-                        {
-                            index += 1;
-                            assert(tokens[index].type == Identifier);
-                            array_add(*argument.type.array_counts, tokens[index].text);
-                            index += 1;
-                            assert(tokens[index].type == Close_Brackets);
-                            index += 1;
-                        }
-
-                        array_add(*procedure_instance.arguments, argument);
-
-                        if tokens[index].type == Comma
-                        {
-                            // continue iterating, there's more arguments
-                        }
-                        else if tokens[index].type == Close_Parentheses && tokens[index+1].type == Semicolon
-                        {
-                            break;
-                        }
+                        if c == #char "[" then error("Array in a funcpointer param, which we aren't parsing right now");
                     }
+
+                    array_add(*procedure_instance.arguments, argument);
                 }
     
                 array_add(*procedure_pointers, procedure_instance);
@@ -1131,6 +1044,81 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
     }
     print_to_builder(*prelude_builder, "\n\n");
+
+
+
+    // Some useful extension and printing help that'll come in handy in the following sections
+
+    print_address_of_manual_for_extension :: (builder : *String_Builder, extension_name : string) #expand
+    {
+        print_to_builder(builder, "(https://docs.vulkan.org/refpages/latest/refpages/source/%.html)\n", extension_name);
+    }
+
+    print_address_of_manual_for_extension_comment :: (builder : *String_Builder, extension_name : string) #expand
+    {
+        print_to_builder(builder, "//  - ");
+        print_address_of_manual_for_extension(builder, extension_name);
+    }
+
+    print_address_of_manual_for_command_comment :: (builder : *String_Builder, command_name : string) #expand
+    {
+        print_to_builder(builder, "//  - (https://docs.vulkan.org/refpages/latest/refpages/source/%.html)\n", command_name);
+    }
+
+    print_address_of_manual_for_enum_comment :: (builder : *String_Builder, enum_name : string) #expand
+    {
+        print_to_builder(builder, "//  - (https://docs.vulkan.org/refpages/latest/refpages/source/%.html)\n", enum_name);
+    }
+
+    print_address_of_manual_for_struct_comment :: (builder : *String_Builder, struct_name : string) #expand
+    {
+        print_to_builder(builder, "//  - (https://docs.vulkan.org/refpages/latest/refpages/source/%.html)\n", struct_name);
+    }
+
+    print_address_of_manual_for_procedure_pointer_comment :: (builder : *String_Builder, struct_name : string) #expand
+    {
+        print_to_builder(builder, "//  - (https://docs.vulkan.org/refpages/latest/refpages/source/%.html)\n", struct_name);
+    }
+
+    print_extensions_that_reference :: (builder : *String_Builder, extensions_that_reference : [] int)
+    {
+        if extensions_that_reference.count > 0
+        {
+            print_to_builder(builder, "// Referenced by ");
+            for extensions_that_reference
+            {
+                extension := extensions[it];
+                if it_index == 0 
+                    print_to_builder(builder, "%", extension.name);
+                else
+                    print_to_builder(builder, ", %", extension.name);
+            }
+            print_to_builder(builder, "\n");
+            
+            #if print_extension_address
+            {
+                for extensions_that_reference
+                {
+                    extension := extensions[it];
+                    print_address_of_manual_for_extension_comment(builder, extension.name);
+                }
+            }
+        }
+    }
+
+    all_extensions_that_reference_this_are_disabled :: (extensions_that_reference : [] int) -> bool
+    {
+        if extensions_that_reference.count > 0 
+        {
+            for extensions_that_reference  
+            {
+                extension := extensions[it];  
+                if extension.enabled then return false;
+            }
+            return true;
+        }
+        return false;
+    }
     
 
 
@@ -1260,7 +1248,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     find_enum :: (enums : *[..] Enum_Instance, name : string) -> *Enum_Instance
     {
-        for * enum_instance : <<enums
+        for * enum_instance : enums.*
         {
             if enum_instance.name == name return enum_instance;
         }
@@ -1278,9 +1266,12 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             enum_value.name = value_name;
             enum_value.value_type = In_Int;
             int_value, success := string_to_int(value);
-            assert(int_value >= 0);
-            if dir == "-" int_value = -int_value;
             assert(success);
+            if dir == "-"
+            {
+                assert(int_value >= 0, "Weird that the value was negative but there was a dir=\"-\" in there, check it makes sense...");
+                int_value = -int_value;
+            }
             enum_value.value_in_int = int_value;
             enum_value.comment = comment;
             array_add(*instance.values, enum_value);
@@ -1398,7 +1389,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         {
             assert(false);
         }
-        comment.text = builder_to_string(*builder, __temporary_allocator, do_reset = false);
+        comment.text = builder_to_string(*builder, do_reset = false,, __temporary_allocator);
         array_add(*instance.comments, comment);
     }
 
@@ -1438,13 +1429,14 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             {
                 if it ==
                 {
-                    case "graphics";        array_add(*command_instance.queues, Command_Instance.Queue.Graphics);
-                    case "transfer";        array_add(*command_instance.queues, Command_Instance.Queue.Transfer);
-                    case "compute";         array_add(*command_instance.queues, Command_Instance.Queue.Compute);
-                    case "sparse_binding";  array_add(*command_instance.queues, Command_Instance.Queue.Sparse_Binding);
-                    case "decode";          array_add(*command_instance.queues, Command_Instance.Queue.Decode);
-                    case "encode";          array_add(*command_instance.queues, Command_Instance.Queue.Encode);
-                    case "opticalflow";     array_add(*command_instance.queues, Command_Instance.Queue.Optical_Flow);
+                    case "VK_QUEUE_GRAPHICS_BIT";         array_add(*command_instance.queues, Command_Instance.Queue.Graphics);
+                    case "VK_QUEUE_TRANSFER_BIT";         array_add(*command_instance.queues, Command_Instance.Queue.Transfer);
+                    case "VK_QUEUE_COMPUTE_BIT";          array_add(*command_instance.queues, Command_Instance.Queue.Compute);
+                    case "VK_QUEUE_SPARSE_BINDING_BIT";   array_add(*command_instance.queues, Command_Instance.Queue.Sparse_Binding);
+                    case "VK_QUEUE_VIDEO_DECODE_BIT_KHR"; array_add(*command_instance.queues, Command_Instance.Queue.Decode);
+                    case "VK_QUEUE_VIDEO_ENCODE_BIT_KHR"; array_add(*command_instance.queues, Command_Instance.Queue.Encode);
+                    case "VK_QUEUE_OPTICAL_FLOW_BIT_NV";  array_add(*command_instance.queues, Command_Instance.Queue.Optical_Flow);
+                    case "VK_QUEUE_DATA_GRAPH_BIT_ARM";   array_add(*command_instance.queues, Command_Instance.Queue.Data_Graph_ARM);
                     case; assert(false, "No matching case for queue '%'", it);
                 }
             }
@@ -1702,7 +1694,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         
         extension_index_in_array := extensions.count;
         extension_instance := array_add(*extensions);
-        <<extension_instance = .{};
+        extension_instance.* = .{};
         assert(found_extension_name);
         extension_instance.name = extension_name;
         assert(found_extension_number);
@@ -1884,7 +1876,21 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     }
 
     // Finding out which commands are loader, instance or device commands
-
+    
+    find_non_aliased_instance :: (instances : [] $Instance_Type, alias : string) -> *Instance_Type
+    {
+        for * instance : instances
+        {
+            if alias == instance.name
+            {
+                if instance.alias
+                    return find_non_aliased_instance(instances, instance.alias);
+                else
+                    return instance;
+            }
+        }
+        return null;
+    }
     for * command_instance : commands
     {
         //
@@ -2031,12 +2037,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
     // Fixing platform requirements and type aliasing
     
     iteration := 0;
-    while true
-    {
-        changed := do_one_step_of_expanding_requirements();
-        if !changed then break;
-        iteration += 1;
-    }
     do_one_step_of_expanding_requirements :: () -> bool #expand
     {
         changed := false;
@@ -2083,6 +2083,21 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             for extension_index : procedure_instance.extensions_that_reference_this
                changed |= set_requirements(procedure_instance, extensions[extension_index].platform);
 
+        update_requiremens_for_type :: (instance : $Instance_Type, type_name : string) -> bool #expand
+        {
+            platform := get_type_platform_requirements(array_of_platform_specific_names, type_name);
+
+            if platform == .None
+                for structs  if type_name == it.name then platform = it.requires_platform;
+
+            if platform == .None
+                for commands if type_name == it.name then platform = it.requires_platform;
+
+            if platform == .None
+                for procedure_pointers if type_name == it.name then platform = it.requires_platform;
+
+            return set_requirements(instance, platform);
+        }
         for * struct_instance : structs
         {
             for * member : struct_instance.members
@@ -2100,25 +2115,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             for * procedure_instance.arguments
                    changed |= update_requiremens_for_type(procedure_instance, it.type.name);
         }
-        update_requiremens_for_type :: (instance : $Instance_Type, type_name : string) -> bool #expand
-        {
-            platform := get_type_platform_requirements(array_of_platform_specific_names, type_name);
 
-            if platform == .None
-                for structs  if type_name == it.name then platform = it.requires_platform;
-
-            if platform == .None
-                for commands if type_name == it.name then platform = it.requires_platform;
-
-            if platform == .None
-                for procedure_pointers if type_name == it.name then platform = it.requires_platform;
-
-            return set_requirements(instance, platform);
-        }
-
-        changed |= fixup_platform_requirements_of_aliased_types(structs);
-        changed |= fixup_platform_requirements_of_aliased_types(commands);
-        changed |= fixup_platform_requirements_of_aliased_types(procedure_pointers);
         fixup_platform_requirements_of_aliased_types :: (instances : [] $Instance_Type) -> bool
         {
             changed := false;
@@ -2134,21 +2131,16 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
             }
             return changed;
         }
+        changed |= fixup_platform_requirements_of_aliased_types(structs);
+        changed |= fixup_platform_requirements_of_aliased_types(commands);
+        changed |= fixup_platform_requirements_of_aliased_types(procedure_pointers);
         return changed;
     }
-    find_non_aliased_instance :: (instances : [] $Instance_Type, alias : string) -> *Instance_Type
+    while true
     {
-        for * instance : instances
-        {
-            if alias == instance.name
-            {
-                if instance.alias
-                    return find_non_aliased_instance(instances, instance.alias);
-                else
-                    return instance;
-            }
-        }
-        return null;
+        changed := do_one_step_of_expanding_requirements();
+        if !changed then break;
+        iteration += 1;
     }
 
 
@@ -2277,7 +2269,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 //
                 end := string_so_far.data + string_so_far.count - 1;
                 current := end;
-                while current > string_so_far.data && <<current != #char "\n"
+                while current > string_so_far.data && current.* != #char "\n"
                 {
                     current -= 1;
                 }
@@ -2342,94 +2334,6 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
 
     // Output the rest of the types
 
-    // First non-platform specific stuff
-    {
-        // The base types, bitmasks and handles we're defining them
-        // as if they weren't platform specific.
-        append(*types_builder, VK_BOOL_CODE);
-        for * base_types
-        {
-            if it.name != "VkBool32"
-            {
-                pointer_builder : String_Builder;
-                defer reset(*pointer_builder);
-                for 0..it.alias_pointer_count-1
-                {
-                    append(*pointer_builder, "*");
-                }
-                pointer_string := builder_to_string(*pointer_builder, do_reset = false);
-                print_to_builder(*types_builder, "%1 :: %2%3;\n", it.name, pointer_string, it.alias);
-            }
-        }
-        append(*types_builder, "\n");
-        for * bitmask : bitmasks
-        {
-            if bitmask.requires.count > 0
-            {
-                for * alias : enums
-                    if alias.name == bitmask.requires
-                        if all_extensions_that_reference_this_are_disabled(alias.extensions_that_reference_this)  
-                            continue bitmask;
-                // @@NOTE: Have to check here that the enum that we reference has not been disabled by an extension. Which
-                // kiiinda sucks :) This might pop up in some other places if they keep insisting in adding disabled extensions to
-                // the headers but still add a bunch of types, enums and commands.
-            }
-            print_to_builder(*types_builder, "% :: %;\n", bitmask.name, bitmask.alias);
-        }
-        append(*types_builder, "\n");
-        for * handles
-        {
-            if it.alias
-            {
-                print_to_builder(*types_builder, "% :: %;\n\n", it.name, it.alias);
-            }
-            else
-            {
-                if it.type == 
-                {
-                    case Handle_Instance.Type.Dispatchable;
-                        print_to_builder(*types_builder, "// Dispatchable Handle\n");
-                    case Handle_Instance.Type.Non_Dispatchable;
-                        print_to_builder(*types_builder, "// Non-Dispatchable Handle\n");
-                    case; error();
-                }
-                print_to_builder(*types_builder, "%_T :: struct {};\n% :: *%_T;\n\n", it.name, it.name, it.name);
-            }
-        }
-        append(*types_builder, "\n");
-        output_all_structs(structs, *types_builder);
-        output_all_procedure_pointers(procedure_pointers, *types_builder);
-        output_all_commands(loader_commands, *types_builder);
-        output_all_commands(instance_commands, *types_builder);
-        output_all_commands(device_commands, *types_builder);
-    }
-
-    // Then here all the platform specific stuff inside the #if guard
-    for get_enum_values(Vulkan_Platform)
-    {
-        platform := cast(Vulkan_Platform) it;
-        if platform == .None
-        {
-            continue;
-        }
-        else if platform == .Provisional
-        {
-            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n");
-        }
-        else
-        {
-            print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", enum_value_to_name(platform));
-        }
-        output_all_structs(structs, *types_builder, platform);
-        output_all_procedure_pointers(procedure_pointers, *types_builder, platform);
-        output_all_commands(loader_commands, *types_builder, platform);
-        output_all_commands(instance_commands, *types_builder, platform);
-        output_all_commands(device_commands, *types_builder, platform);
-        print_to_builder(*types_builder, "}\n");
-    }
-    print_to_builder(*types_builder, "\n\n");
-    
-    
     output_all_structs :: (structs : [] Struct_Instance, builder : *String_Builder, platform := Vulkan_Platform.None)
     {
         for * struct_instance : structs
@@ -2628,7 +2532,7 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
                 //
                 end := string_so_far.data + string_so_far.count - 1;
                 current := end;
-                while current > string_so_far.data && <<current != #char "\n"
+                while current > string_so_far.data && current.* != #char "\n"
                 {
                     current -= 1;
                 }
@@ -2708,6 +2612,95 @@ generate_jai_vulkan_code :: (vk_xml_contents : string) -> header : string, loade
         }
     }
 
+    // First non-platform specific stuff
+    {
+        // The base types, bitmasks and handles we're defining them
+        // as if they weren't platform specific.
+        append(*types_builder, VK_BOOL_CODE);
+        for * base_types
+        {
+            if it.name != "VkBool32"
+            {
+                pointer_builder : String_Builder;
+                defer reset(*pointer_builder);
+                for 0..it.alias_pointer_count-1
+                {
+                    append(*pointer_builder, "*");
+                }
+                pointer_string := builder_to_string(*pointer_builder, do_reset = false);
+                defer free(pointer_string);
+                print_to_builder(*types_builder, "%1 :: %2%3;\n", it.name, pointer_string, it.alias);
+            }
+        }
+        append(*types_builder, "\n");
+        for * bitmask : bitmasks
+        {
+            if bitmask.requires.count > 0
+            {
+                for * alias : enums
+                    if alias.name == bitmask.requires
+                        if all_extensions_that_reference_this_are_disabled(alias.extensions_that_reference_this)  
+                            continue bitmask;
+                // @@NOTE: Have to check here that the enum that we reference has not been disabled by an extension. Which
+                // kiiinda sucks :) This might pop up in some other places if they keep insisting in adding disabled extensions to
+                // the headers but still add a bunch of types, enums and commands.
+            }
+            print_to_builder(*types_builder, "% :: %;\n", bitmask.name, bitmask.alias);
+        }
+        append(*types_builder, "\n");
+        for * handles
+        {
+            if it.alias
+            {
+                print_to_builder(*types_builder, "% :: %;\n\n", it.name, it.alias);
+            }
+            else
+            {
+                if it.type == 
+                {
+                    case Handle_Instance.Type.Dispatchable;
+                        print_to_builder(*types_builder, "// Dispatchable Handle\n");
+                    case Handle_Instance.Type.Non_Dispatchable;
+                        print_to_builder(*types_builder, "// Non-Dispatchable Handle\n");
+                    case; error();
+                }
+                print_to_builder(*types_builder, "%_T :: struct {};\n% :: *%_T;\n\n", it.name, it.name, it.name);
+            }
+        }
+        append(*types_builder, "\n");
+        output_all_structs(structs, *types_builder);
+        output_all_procedure_pointers(procedure_pointers, *types_builder);
+        output_all_commands(loader_commands, *types_builder);
+        output_all_commands(instance_commands, *types_builder);
+        output_all_commands(device_commands, *types_builder);
+    }
+
+    // Then here all the platform specific stuff inside the #if guard
+    for get_enum_values(Vulkan_Platform)
+    {
+        platform := cast(Vulkan_Platform) it;
+        if platform == .None
+        {
+            continue;
+        }
+        else if platform == .Provisional
+        {
+            print_to_builder(*types_builder, "#if VK_ENABLE_BETA_EXTENSIONS\n{\n\n");
+        }
+        else
+        {
+            print_to_builder(*types_builder, "#if VULKAN_PLATFORM == .%\n{\n\n", enum_value_to_name(platform));
+        }
+        output_all_structs(structs, *types_builder, platform);
+        output_all_procedure_pointers(procedure_pointers, *types_builder, platform);
+        output_all_commands(loader_commands, *types_builder, platform);
+        output_all_commands(instance_commands, *types_builder, platform);
+        output_all_commands(device_commands, *types_builder, platform);
+        print_to_builder(*types_builder, "}\n");
+    }
+    print_to_builder(*types_builder, "\n\n");
+    
+    
     
     // Writing the loader code
     loader_builder : String_Builder;
@@ -2752,11 +2745,11 @@ An Example in Windows would look something like this:
 load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load : $Loader_Procedure_Type, loader_commands : *Vulkan_Loader_Commands = null)
 {
     loader_commands = ifx loader_commands then loader_commands else *_vulkan_loader_commands;
-    info := type_info(type_of(<<loader_commands));
+    info := type_info(type_of(loader_commands.*));
     for member: info.members 
     {
         member_to_set := cast(**void)((cast(*u8)loader_commands) + member.offset_in_bytes);
-        <<member_to_set = cast(*void) load(library_handle, member.name.data);
+        member_to_set.* = cast(*void) load(library_handle, member.name.data);
     }
 }
 
@@ -2764,11 +2757,11 @@ load_vulkan_loader_procedures :: (library_handle : $Library_Handle_Type, $load :
 load_vulkan_instance_procedures :: (instance : VkInstance, instance_commands : *Vulkan_Instance_Commands = null)
 {
     instance_commands = ifx instance_commands then instance_commands else *_vulkan_instance_commands;
-    info := type_info(type_of(<<instance_commands));
+    info := type_info(type_of(instance_commands.*));
     for member: info.members 
     {
         member_to_set := cast(**void)((cast(*u8)instance_commands) + member.offset_in_bytes);
-        <<member_to_set = cast(*void) vkGetInstanceProcAddr(instance, member.name.data);
+        member_to_set.* = cast(*void) vkGetInstanceProcAddr(instance, member.name.data);
     }
 }
 
@@ -2776,11 +2769,11 @@ load_vulkan_instance_procedures :: (instance : VkInstance, instance_commands : *
 load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_Device_Commands = null)
 {
     device_commands = ifx device_commands then device_commands else *_vulkan_device_commands;
-    info := type_info(type_of(<<device_commands));
+    info := type_info(type_of(device_commands.*));
     for member: info.members 
     {
         member_to_set := cast(**void)((cast(*u8)device_commands) + member.offset_in_bytes);
-        <<member_to_set = cast(*void) vkGetDeviceProcAddr(device, member.name.data);
+        member_to_set.* = cast(*void) vkGetDeviceProcAddr(device, member.name.data);
     }
 }
 
@@ -2789,50 +2782,6 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     append(*loader_builder, initial_loader_code);
     // Output the command variables into a struct and instantiate it
     {
-        write("using _vulkan_all_commands : Vulkan_All_Commands;\n");
-        write("Vulkan_All_Commands :: struct\n{\n");
-        
-        write("    using _vulkan_loader_commands : Vulkan_Loader_Commands;\n");
-        write("    Vulkan_Loader_Commands :: struct #type_info_no_size_complaint\n    {\n");
-        do_it_for_commands(loader_commands);
-        write("    }\n\n");
-        
-        write("    using _vulkan_instance_commands : Vulkan_Instance_Commands;\n");
-        write("    Vulkan_Instance_Commands :: struct #type_info_no_size_complaint\n    {\n");
-        do_it_for_commands(instance_commands);
-        write("    }\n\n");
-
-        write("    using _vulkan_device_commands : Vulkan_Device_Commands;\n");
-        write("    Vulkan_Device_Commands :: struct #type_info_no_size_complaint\n    {\n");
-        do_it_for_commands(device_commands);
-        write("    }\n");
-
-        write("}\n");
-
-        do_it_for_commands :: (commands : [] *Command_Instance) #expand
-        {
-            write_all_commands(commands);
-            for get_enum_values(Vulkan_Platform)
-            {
-                platform := cast(Vulkan_Platform) it;
-                if !has_commands(commands, platform) continue;
-                if platform == .None
-                {
-                    continue;
-                }
-                else if platform == .Provisional
-                {
-                    write("        #if VK_ENABLE_BETA_EXTENSIONS\n        {\n");
-                }
-                else
-                {
-                    write("        #if VULKAN_PLATFORM == .%\n        {\n", enum_value_to_name(platform));
-                }
-                write_all_commands(commands, platform, "            ");
-                write("        }\n");
-            }
-        }
-
         has_commands :: (commands : [] *Command_Instance, platform := Vulkan_Platform.None) -> bool
         {
             for command : commands
@@ -2866,6 +2815,50 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
         {
             print_to_builder(*loader_builder, format, ..args);
         }
+
+        do_it_for_commands :: (commands : [] *Command_Instance) #expand
+        {
+            write_all_commands(commands);
+            for get_enum_values(Vulkan_Platform)
+            {
+                platform := cast(Vulkan_Platform) it;
+                if !has_commands(commands, platform) continue;
+                if platform == .None
+                {
+                    continue;
+                }
+                else if platform == .Provisional
+                {
+                    write("        #if VK_ENABLE_BETA_EXTENSIONS\n        {\n");
+                }
+                else
+                {
+                    write("        #if VULKAN_PLATFORM == .%\n        {\n", enum_value_to_name(platform));
+                }
+                write_all_commands(commands, platform, "            ");
+                write("        }\n");
+            }
+        }
+
+        write("using _vulkan_all_commands : Vulkan_All_Commands;\n");
+        write("Vulkan_All_Commands :: struct\n{\n");
+        
+        write("    using _vulkan_loader_commands : Vulkan_Loader_Commands;\n");
+        write("    Vulkan_Loader_Commands :: struct #type_info_no_size_complaint\n    {\n");
+        do_it_for_commands(loader_commands);
+        write("    }\n\n");
+        
+        write("    using _vulkan_instance_commands : Vulkan_Instance_Commands;\n");
+        write("    Vulkan_Instance_Commands :: struct #type_info_no_size_complaint\n    {\n");
+        do_it_for_commands(instance_commands);
+        write("    }\n\n");
+
+        write("    using _vulkan_device_commands : Vulkan_Device_Commands;\n");
+        write("    Vulkan_Device_Commands :: struct #type_info_no_size_complaint\n    {\n");
+        do_it_for_commands(device_commands);
+        write("    }\n");
+
+        write("}\n");
     }
 
 
@@ -2908,7 +2901,7 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     {
         using Vulkan_Platform;
 
-        for * platform_preludes { <<it = ""; };
+        for * platform_preludes { it.* = ""; };
 
         platform_preludes[X11]       = VULKAN_LINUX_PRELUDE;
         platform_preludes[Wayland]   = VULKAN_LINUX_PRELUDE;
@@ -2997,87 +2990,11 @@ load_vulkan_device_procedures :: (device: VkDevice, device_commands : *Vulkan_De
     print_to_builder(*header_builder, "%\n\n%\n\n%\n\n%\n\n", prelude_code, enums_code, types_code, extensions_code);
 
     return builder_to_string(*header_builder), builder_to_string(*loader_builder);
+} // end of generate procedure
 
 
 
 
-
-    // # Some stuff help with the implementation of the generate procedure:
-
-
-    print_extensions_that_reference :: (builder : *String_Builder, extensions_that_reference : [] int)
-    {
-        if extensions_that_reference.count > 0
-        {
-            print_to_builder(builder, "// Referenced by ");
-            for extensions_that_reference
-            {
-                extension := extensions[it];
-                if it_index == 0 
-                    print_to_builder(builder, "%", extension.name);
-                else
-                    print_to_builder(builder, ", %", extension.name);
-            }
-            print_to_builder(builder, "\n");
-            
-            #if print_extension_address
-            {
-                for extensions_that_reference
-                {
-                    extension := extensions[it];
-                    print_address_of_manual_for_extension_comment(builder, extension.name);
-                }
-            }
-        }
-    }
-
-    all_extensions_that_reference_this_are_disabled :: (extensions_that_reference : [] int) -> bool
-    {
-        if extensions_that_reference.count > 0 
-        {
-            for extensions_that_reference  
-            {
-                extension := extensions[it];  
-                if extension.enabled then return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-
-
-    print_address_of_manual_for_extension :: (builder : *String_Builder, extension_name : string) #expand
-    {
-        print_to_builder(builder, "(https://www.khronos.org/registry/vulkan/specs/%-extensions/man/html/%.html)\n", max_feature_level_found, extension_name);
-    }
-
-    print_address_of_manual_for_extension_comment :: (builder : *String_Builder, extension_name : string) #expand
-    {
-        print_to_builder(builder, "//  - ");
-        print_address_of_manual_for_extension(builder, extension_name);
-    }
-
-    print_address_of_manual_for_command_comment :: (builder : *String_Builder, command_name : string) #expand
-    {
-        print_to_builder(builder, "//  - (https://www.khronos.org/registry/vulkan/specs/%-extensions/man/html/%.html)\n", max_feature_level_found, command_name);
-    }
-
-    print_address_of_manual_for_enum_comment :: (builder : *String_Builder, enum_name : string) #expand
-    {
-        print_to_builder(builder, "//  - (https://www.khronos.org/registry/vulkan/specs/%-extensions/man/html/%.html)\n", max_feature_level_found, enum_name);
-    }
-
-    print_address_of_manual_for_struct_comment :: (builder : *String_Builder, struct_name : string) #expand
-    {
-        print_to_builder(builder, "//  - (https://www.khronos.org/registry/vulkan/specs/%-extensions/man/html/%.html)\n", max_feature_level_found, struct_name);
-    }
-
-    print_address_of_manual_for_procedure_pointer_comment :: (builder : *String_Builder, struct_name : string) #expand
-    {
-        print_to_builder(builder, "//  - (https://www.khronos.org/registry/vulkan/specs/%-extensions/man/html/%.html)\n", max_feature_level_found, struct_name);
-    }
-    
 
 VULKAN_PLATFORM_SELECTION_PRELUDE :: #string DONE
 #module_parameters(VK_ENABLE_BETA_EXTENSIONS := false);
@@ -3138,7 +3055,6 @@ using VkBool32 :: enum u32 #specified
 DONE
 
 
-} // end of generate procedure
 
 
 
@@ -3269,6 +3185,68 @@ init_tokenizer :: (tokenizer : *Tokenizer, text : string)
 
 tokenize_whole_string :: (tokenizer : *Tokenizer, do_comments : bool, ignore_whitespace := false)
 {
+    get :: (tokenizer : *Tokenizer) -> u8
+    {
+        if tokenizer.current.count <= 0 return 0;
+        return tokenizer.current.data.*;
+    }
+
+    peek :: (tokenizer : *Tokenizer, forward := 1) -> u8
+    {
+        if forward > tokenizer.current.count return 0;
+        return (tokenizer.current.data + forward).*;
+    }
+
+    found_token :: (type : Token.Type, ignore := false) #expand
+    {
+        token : Token;
+        token.type = type;
+        token.line = tokenizer.current_line;
+        token.text.data = tokenizer.beginning_of_current_token;
+        token.text.count = tokenizer.current.data - tokenizer.beginning_of_current_token;
+        tokenizer.beginning_of_current_token = tokenizer.current.data;
+        if !ignore
+            array_add(*tokenizer.tokens, token);
+    }
+
+    is_operator :: (tokenizer : *Tokenizer, $operator_string : string) -> bool
+    {
+        #assert(operator_string.count == 1);
+        return get(tokenizer) == operator_string.data.*;
+    }
+    
+    advance_and_found :: (type : Token.Type) #expand
+    {
+        advance(tokenizer);
+        found_token(type);
+    }
+
+    advance :: (tokenizer : *Tokenizer, allow_end := true) -> u8
+    {
+        advancing_line := tokenizer.current.data.* == #char "\n";
+        
+        tokenizer.current.data  += 1;
+        tokenizer.current.count -= 1;
+
+        if advancing_line
+        {
+            tokenizer.current_line.number += 1;
+            tokenizer.current_line.text.data = tokenizer.current.data;
+            tokenizer.current_line.text.count = count_till_end_of_line(tokenizer.current.data);
+        }
+
+        if !allow_end && tokenizer.current.count == 0
+        {
+            tokenizer.error("Unexpected end of text to tokenize in line %", tokenizer.current_line);
+        }
+        else if tokenizer.current.count <= -1
+        {
+            tokenizer.error("Wend outside the text to tokenize in line %", tokenizer.current_line);
+        }
+
+        return tokenizer.current.data.*;
+    }
+
     using Token.Type;
     while tokenizer.current.count > 0
     {
@@ -3359,68 +3337,6 @@ tokenize_whole_string :: (tokenizer : *Tokenizer, do_comments : bool, ignore_whi
     }
     found_token(End);
     return;
-    
-    advance :: (tokenizer : *Tokenizer, allow_end := true) -> u8
-    {
-        advancing_line := <<tokenizer.current.data == #char "\n";
-        
-        tokenizer.current.data  += 1;
-        tokenizer.current.count -= 1;
-
-        if advancing_line
-        {
-            tokenizer.current_line.number += 1;
-            tokenizer.current_line.text.data = tokenizer.current.data;
-            tokenizer.current_line.text.count = count_till_end_of_line(tokenizer.current.data);
-        }
-
-        if !allow_end && tokenizer.current.count == 0
-        {
-            tokenizer.error("Unexpected end of text to tokenize in line %", tokenizer.current_line);
-        }
-        else if tokenizer.current.count <= -1
-        {
-            tokenizer.error("Wend outside the text to tokenize in line %", tokenizer.current_line);
-        }
-
-        return <<tokenizer.current.data;
-    }
-
-    get :: (tokenizer : *Tokenizer) -> u8
-    {
-        if tokenizer.current.count <= 0 return 0;
-        return <<tokenizer.current.data;
-    }
-
-    peek :: (tokenizer : *Tokenizer, forward := 1) -> u8
-    {
-        if forward > tokenizer.current.count return 0;
-        return <<(tokenizer.current.data + forward);
-    }
-
-    found_token :: (type : Token.Type, ignore := false) #expand
-    {
-        token : Token;
-        token.type = type;
-        token.line = tokenizer.current_line;
-        token.text.data = tokenizer.beginning_of_current_token;
-        token.text.count = tokenizer.current.data - tokenizer.beginning_of_current_token;
-        tokenizer.beginning_of_current_token = tokenizer.current.data;
-        if !ignore
-            array_add(*tokenizer.tokens, token);
-    }
-
-    is_operator :: (tokenizer : *Tokenizer, $operator_string : string) -> bool
-    {
-        #assert(operator_string.count == 1);
-        return get(tokenizer) == <<operator_string.data;
-    }
-    
-    advance_and_found :: (type : Token.Type) #expand
-    {
-        advance(tokenizer);
-        found_token(type);
-    }
 }
 
 free :: (tokenizer : *Tokenizer)
@@ -3448,7 +3364,7 @@ count_till_end_of_line :: (s_ : *u8) -> int
 {
     s := s_;
     count := 0;
-    while ( <<s != #char "\n" && <<s != 0)
+    while ( s.* != #char "\n" && s.* != 0)
     {
         s += 1;
         count += 1;
@@ -3507,7 +3423,7 @@ strip_quotes_and_whitespace :: (s : string) -> string
     Quote :: #char "\"";
     result := s;
 
-    while is_whitespace(<<result.data)
+    while is_whitespace(result.data.*)
     {
         result.data += 1;
         result.count -= 1;
@@ -3515,7 +3431,7 @@ strip_quotes_and_whitespace :: (s : string) -> string
     }
 
     found_quote := false;
-    if <<result.data == Quote
+    if result.data.* == Quote
     {
         found_quote = true;
         result.data += 1;
@@ -3528,8 +3444,8 @@ strip_quotes_and_whitespace :: (s : string) -> string
         current := result.data;
         while true
         {
-            if <<current == Quote break;
-            if <<current == #char "\\" current += 1;
+            if current.* == Quote break;
+            if current.* == #char "\\" current += 1;
             current += 1;
             assert(current < result.data + result.count);
         }
@@ -3539,7 +3455,7 @@ strip_quotes_and_whitespace :: (s : string) -> string
     {
         current := result.data + result.count - 1;
 
-        while is_whitespace(<<current)
+        while is_whitespace(current.*)
         {
             current -= 1;
             if current < result.data
@@ -3741,10 +3657,6 @@ find_first_node_with_name_and_attribute_value_recursive :: (root : *Node, name :
 
 find_all_nodes_with_name_and_attribute_recursive :: (root : *Node, name : string, attribute : string) -> [..] *Node
 {
-    nodes : [..] *Node;
-    recurse(root, name, attribute, *nodes);
-    return nodes;
-
     recurse :: (root : *Node, name : string, attribute : string, nodes : * [..] *Node)
     {
         for * root.children
@@ -3759,14 +3671,13 @@ find_all_nodes_with_name_and_attribute_recursive :: (root : *Node, name : string
             node := recurse(it, name, attribute, nodes);
         }
     }
+    nodes : [..] *Node;
+    recurse(root, name, attribute, *nodes);
+    return nodes;
 }
 
 find_all_nodes_with_name_and_not_attribute_recursive :: (root : *Node, name : string, attribute : string) -> [..] *Node
 {
-    nodes : [..] *Node;
-    recurse(root, name, attribute, *nodes);
-    return nodes;
-
     recurse :: (root : *Node, name : string, attribute : string, nodes : * [..] *Node)
     {
         for * root.children
@@ -3781,6 +3692,9 @@ find_all_nodes_with_name_and_not_attribute_recursive :: (root : *Node, name : st
             node := recurse(it, name, attribute, nodes);
         }
     }
+    nodes : [..] *Node;
+    recurse(root, name, attribute, *nodes);
+    return nodes;
 }
 
 find_first_node_with_name :: (root : *Node, name : string) -> *Node
@@ -3844,7 +3758,14 @@ find_contents_after_node :: (parent : *Node, child : *Node) -> string
 }
 
 aggregate_all_contents_of_node_and_children :: (node : *Node, buffer : [] u8) -> string
-{
+{    
+    advance :: () #expand
+    {
+        assert(`raw_text_content.count > 0);
+        `raw_text_content.data  += 1;
+        `raw_text_content.count -= 1;
+    }
+
     raw_text_content := node.all_node_text_content;
 
     result : string;
@@ -3853,26 +3774,20 @@ aggregate_all_contents_of_node_and_children :: (node : *Node, buffer : [] u8) ->
 
     while raw_text_content.count > 0
     {
-        if <<raw_text_content.data == #char "<"
+        if raw_text_content.data.* == #char "<"
         {
             advance();
-            while <<raw_text_content.data != #char ">" advance();
+            while raw_text_content.data.* != #char ">" advance();
             advance();
             continue;
         }
         result.count += 1;
         assert(result.count <= buffer.count);
-        result[result.count - 1] = <<raw_text_content.data;
+        result[result.count - 1] = raw_text_content.data.*;
         advance();
     }
 
     return result;
-    advance :: () #expand
-    {
-        assert(`raw_text_content.count > 0);
-        `raw_text_content.data  += 1;
-        `raw_text_content.count -= 1;
-    }
 }
 
 print_node :: (node : *Node)
@@ -3896,6 +3811,45 @@ print_node :: (node : *Node)
 
 parse_xml :: (contents : string) -> root_node : Node
 {
+    add_child :: (parent : *Node, child : Node) -> *Node
+    {
+        array_add(*parent.children, child);
+        contents_or_children : Node.Contents_Or_Children;
+        contents_or_children.type = type_of(child);
+        contents_or_children.index = parent.children.count - 1;
+        array_add(*parent.all_contents_or_children, contents_or_children);
+        added_child := *parent.children[parent.children.count - 1];
+        added_child.parent = parent;
+        return added_child;
+    }
+
+    add_contents :: (parent : *Node, contents : string)
+    {
+        array_add(*parent.contents, contents);
+        contents_or_children : Node.Contents_Or_Children;
+        contents_or_children.type = type_of(contents);
+        contents_or_children.index = parent.contents.count - 1;
+        array_add(*parent.all_contents_or_children, contents_or_children);
+    }
+
+    advance :: (ignore_whitespace := true, allow_end := false) #expand
+    {
+        `token += 1;
+        `index += 1;
+        if ignore_whitespace
+        {
+            while `token.type == Token.Type.Whitespace
+            {
+                `token += 1;
+                `index += 1;
+            }
+        }
+        if (!allow_end && `index == `tokens.count)
+        {
+            error("Unexpected end of file while advancing to next token");
+        }
+    }
+
     tokenizer : Tokenizer;
     init_tokenizer(*tokenizer, contents);
     defer free(*tokenizer);
@@ -3929,7 +3883,7 @@ parse_xml :: (contents : string) -> root_node : Node
                 name_token := token;
                 while token.type != Interrogation && (token+1).type != More_Than advance();
                 advance();
-                text := get_text_between_tokens_inclusive(<<first_token, <<token);
+                text := get_text_between_tokens_inclusive(first_token.*, token.*);
                 node : Node;
                 node.name = name_token.text; 
                 node.line = name_token.line;
@@ -3960,7 +3914,7 @@ parse_xml :: (contents : string) -> root_node : Node
                         }
                         else
                         {
-                            error("Attribute has a value we didn't expect (vk.xml seems to have all the attribute values being a string) and it was %", <<token);
+                            error("Attribute has a value we didn't expect (vk.xml seems to have all the attribute values being a string) and it was %", token.*);
                         }
                         array_add(*node.attributes, attribute);
                         advance();
@@ -4035,56 +3989,24 @@ parse_xml :: (contents : string) -> root_node : Node
             {
                 advance(ignore_whitespace = false, allow_end = true);
             }
-            contents := get_text_between_tokens(<<first, <<token);
+            contents := get_text_between_tokens(first.*, token.*);
             add_contents(current_parent, contents);
         }
         if (token.type == End) break;
     }
 
     return root_node;
-
-    add_child :: (parent : *Node, child : Node) -> *Node
-    {
-        array_add(*parent.children, child);
-        contents_or_children : Node.Contents_Or_Children;
-        contents_or_children.type = type_of(child);
-        contents_or_children.index = parent.children.count - 1;
-        array_add(*parent.all_contents_or_children, contents_or_children);
-        added_child := *parent.children[parent.children.count - 1];
-        added_child.parent = parent;
-        return added_child;
-    }
-
-    add_contents :: (parent : *Node, contents : string)
-    {
-        array_add(*parent.contents, contents);
-        contents_or_children : Node.Contents_Or_Children;
-        contents_or_children.type = type_of(contents);
-        contents_or_children.index = parent.contents.count - 1;
-        array_add(*parent.all_contents_or_children, contents_or_children);
-    }
-
-    advance :: (ignore_whitespace := true, allow_end := false) #expand
-    {
-        `token += 1;
-        `index += 1;
-        if ignore_whitespace
-        {
-            while `token.type == Token.Type.Whitespace
-            {
-                `token += 1;
-                `index += 1;
-            }
-        }
-        if (!allow_end && `index == `tokens.count)
-        {
-            error("Unexpected end of file while advancing to next token");
-        }
-    }
 }
 
 fix_xml_ampersand_shit_in_place :: (original : string) -> string
 {
+    string_matches_at_beginning :: (ptr : *u8, b : string) -> bool
+    {
+        for 0..b.count-1
+            if ptr[it] != b[it] return false;
+        return true;
+    }
+
     new_string := original;
     chars_to_ignore := 0;
     writing := new_string.data;
@@ -4100,51 +4022,44 @@ fix_xml_ampersand_shit_in_place :: (original : string) -> string
             next := *original[it+1];
             if string_matches_at_beginning(next, "amp;")
             {
-                <<writing = #char "&";
+                writing.* = #char "&";
                 writing += 1;
                 chars_to_ignore = 4;
             }
             else if string_matches_at_beginning(next, "lt;")
             {
-                <<writing = #char "<";
+                writing.* = #char "<";
                 writing += 1;
                 chars_to_ignore = 3;
             }
             else if string_matches_at_beginning(next, "gt;")
             {
-                <<writing = #char ">";
+                writing.* = #char ">";
                 writing += 1;
                 chars_to_ignore = 3;
             }
             else if string_matches_at_beginning(next, "quot;")
             {
-                <<writing = #char "\"";
+                writing.* = #char "\"";
                 writing += 1;
                 chars_to_ignore = 5;
             }
             else if string_matches_at_beginning(next, "apos;")
             {
-                <<writing = #char "'";
+                writing.* = #char "'";
                 writing += 1;
                 chars_to_ignore = 5;
             }
         }
         else
         {
-            <<writing = original[it];
+            writing.* = original[it];
             writing += 1;
         }
     }
 
     new_string.count = writing - new_string.data;
     return new_string;
-
-    string_matches_at_beginning :: (ptr : *u8, b : string) -> bool
-    {
-        for 0..b.count-1
-            if ptr[it] != b[it] return false;
-        return true;
-    }
 }
 
 
